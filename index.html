@@ -375,6 +375,12 @@ const REVIEW_HEADERS = [
   "Eligibility JSON", "Ratings JSON", "Category Comments JSON",
   "Edited Gates", "Edited Ratings", "Score", "Verdict", "Notes"
 ];
+const AI_GATE_KEYS = ["maqasid", "compliance", "stage", "type", "availability"];
+const AI_SCORE_KEYS = [
+  "mission_alignment", "ummah_impact", "problem_solution", "team",
+  "traction", "viability", "scalability", "risk_governance"
+];
+const GEMINI_DRAFT_SCHEMA = createGeminiDraftSchema_();
 
 function doGet(e) {
   if (!e || !e.parameter) {
@@ -393,6 +399,9 @@ function doGet(e) {
     }
     if (action === "screen") {
       return respond(screenWithGemini_(p.prompt || ""), cb);
+    }
+    if (action === "screenApplicant") {
+      return respond(screenApplicant_(p.sheet || "Sheet1", p.applicationId || ""), cb);
     }
     if (action === "saveAssignment" || action === "assign") {
       return respond(saveAssignment_({
@@ -442,6 +451,9 @@ function doPost(e) {
     if (payload.action === "screen") {
       return respond(screenWithGemini_(payload.prompt || ""));
     }
+    if (payload.action === "screenApplicant") {
+      return respond(screenApplicant_(payload.sheet || "Sheet1", payload.applicationId || ""));
+    }
     if (payload.action === "saveAssignment" || payload.action === "assign") {
       return respond(saveAssignment_({
         applicationId: payload.applicationId || "",
@@ -484,18 +496,83 @@ function doOptions() {
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
-function loadApplicants_(sheetName) {
+function createGeminiDraftSchema_() {
+  const gateProperties = {};
+  const scoreProperties = {};
+  const commentProperties = {};
+
+  AI_GATE_KEYS.forEach(key => {
+    gateProperties[key] = {
+      type: "object",
+      propertyOrdering: ["verdict", "note"],
+      additionalProperties: false,
+      properties: {
+        verdict: { type: "string", enum: ["pass", "fail", "flag"] },
+        note: { type: "string" }
+      },
+      required: ["verdict", "note"]
+    };
+  });
+
+  AI_SCORE_KEYS.forEach(key => {
+    scoreProperties[key] = { type: "integer", minimum: 1, maximum: 5 };
+    commentProperties[key] = { type: "string" };
+  });
+
+  return {
+    type: "object",
+    propertyOrdering: ["eligibility", "scores", "category_comments", "summary"],
+    additionalProperties: false,
+    properties: {
+      eligibility: {
+        type: "object",
+        propertyOrdering: AI_GATE_KEYS.slice(),
+        additionalProperties: false,
+        properties: gateProperties,
+        required: AI_GATE_KEYS.slice()
+      },
+      scores: {
+        type: "object",
+        propertyOrdering: AI_SCORE_KEYS.slice(),
+        additionalProperties: false,
+        properties: scoreProperties,
+        required: AI_SCORE_KEYS.slice()
+      },
+      category_comments: {
+        type: "object",
+        propertyOrdering: AI_SCORE_KEYS.slice(),
+        additionalProperties: false,
+        properties: commentProperties,
+        required: AI_SCORE_KEYS.slice()
+      },
+      summary: { type: "string" }
+    },
+    required: ["eligibility", "scores", "category_comments", "summary"]
+  };
+}
+
+function buildGeminiRequestPayload_(prompt) {
+  return {
+    contents: [{ parts: [{ text: prompt || "" }] }],
+    generationConfig: {
+      temperature: 0.1,
+      maxOutputTokens: 2048,
+      responseMimeType: "application/json",
+      responseJsonSchema: GEMINI_DRAFT_SCHEMA
+    }
+  };
+}
+
+function getApplicantRows_(sheetName) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(sheetName);
   if (!sheet) throw new Error("Sheet '" + sheetName + "' not found");
 
   const raw = sheet.getDataRange().getValues();
-  if (raw.length < 4) {
-    return { ok: true, rows: [], assignments: getAssignments_(), savedReviews: getSavedReviews_(), resolutions: getResolutions_(), aiDrafts: getAiDrafts_(), total: 0 };
-  }
+  if (raw.length < 4) return [];
 
   const headers = raw[2].map(v => String(v).trim());
-  const rows = raw.slice(3)
+  return raw.slice(3)
     .filter(r => r.some(c => c !== "" && c !== null && c !== undefined))
     .map(r => {
       const obj = {};
@@ -504,6 +581,78 @@ function loadApplicants_(sheetName) {
       });
       return obj;
     });
+}
+
+function applicantIdFromRow_(row) {
+  return String((row["Email"] || row["Venture Name"] || "")).toLowerCase().trim();
+}
+
+function buildApplicantPrompt_(row) {
+  function g(key) {
+    return String(row[key] || "").trim().replace(/[\r\n]+/g, " ").replace(/"/g, "'");
+  }
+
+  const ventureName = g("Venture Name") || "Unknown";
+  const applicantName = (g("First Name") + " " + g("Last Name")).trim();
+
+  return 'You are a TPSS Accelerator Stage 1 review draft assistant. Prepare a draft assessment for human reviewers using the official TPSS scoring method. Return ONLY valid JSON with no markdown.\n\n' +
+    'STRICT RULES:\n' +
+    '- Use only facts explicitly present in the application text below.\n' +
+    '- Do not invent traction, team strength, governance, compliance, availability, metrics, partnerships, registrations, market size, or financial details.\n' +
+    '- If evidence is missing or unclear, say so explicitly in the note or category comment using the phrase "Insufficient evidence in application".\n' +
+    '- When evidence is missing, score conservatively.\n' +
+    '- Do not infer a pass on eligibility from silence; use flag when information is missing.\n\n' +
+    'VENTURE:' + ventureName + ' APPLICANT:' + applicantName + ' COUNTRY:' + g("Country") + '\n' +
+    'SECTOR:' + g("Venture Sector") + ' STAGE:' + g("Venture Stage") + ' TYPE:' + g("Venture Type") + '\n' +
+    'DESC:' + g("Venture Description").slice(0, 500) + '\n' +
+    'MISSION:' + g("Venture Mission").slice(0, 400) + '\n' +
+    'MAQASID:' + g("Maqasid Alignment") + '\n' +
+    'PROBLEM:' + g("Problem Statement").slice(0, 350) + '\n' +
+    'SOLUTION:' + g("Venture Solution").slice(0, 350) + '\n' +
+    'TRACTION:' + g("Current Traction") + ' ' + g("Traction Examples").slice(0, 300) + '\n' +
+    'TEAM:' + (g("Cofounders") || g("Cofounder Details")).slice(0, 300) + '\n' +
+    'FUNDING:' + g("Funding Source") + ' ASK:' + g("Funding Amount") + ' USE:' + g("Funds Use").slice(0, 220) + '\n' +
+    'IMPACT:' + g("Venture Impact").slice(0, 300) + '\n' +
+    'COMMIT:' + g("Commit") + '\n\n' +
+    'ELIGIBILITY CHECKS (pass/fail/flag each):\n' +
+    '1. maqasid: Mission fit with TPSS principles and Maqasid al-Shariah. Screens out non-permissible activities.\n' +
+    '2. compliance: No prohibited sectors, no riba-dependent revenue, Islamic governance integrity.\n' +
+    '3. stage: Proof-of-concept or stronger (small reserve for exceptional concept-stage). Pass if PoC+, flag if concept-only but strong.\n' +
+    '4. type: For-profit or nonprofit accepted, tech or non-tech accepted.\n' +
+    '5. availability: Able to participate in finals and coaching windows per TPSS 2026 calendar.\n\n' +
+    'TPSS STAGE 1 100-POINT RUBRIC - score each 1-5 (1=poor,3=adequate,5=excellent):\n' +
+    '1. mission_alignment (20pts): TPSS mission fit, Maqasid alignment, service to Ummah, ethical governance.\n' +
+    '2. ummah_impact (15pts): Theory of change, beneficiary scale, concrete outcome metrics, measurement plan.\n' +
+    '3. problem_solution (10pts): Problem clarity, solution differentiation, innovation edge over alternatives.\n' +
+    '4. team (15pts): Founder-market fit, track record, ability to recruit and deliver.\n' +
+    '5. traction (10pts): PoC, pilots, users, revenue, donations, letters of support.\n' +
+    '6. viability (20pts): For-profits: unit economics, market size, path to profitability, capital efficiency. Nonprofits: multi-year funding and sustainability plan. Preference for Islamic instruments.\n' +
+    '7. scalability (5pts): Ability to scale across markets, build generational institutions.\n' +
+    '8. risk_governance (5pts): Risk register, governance, safeguarding, data protection, Shariah readiness.\n\n' +
+    'Use the provided JSON schema exactly.';
+}
+
+function findApplicantRow_(sheetName, applicationId) {
+  const targetId = String(applicationId || "").toLowerCase().trim();
+  if (!targetId) throw new Error("Application ID is required");
+
+  const rows = getApplicantRows_(sheetName);
+  for (let i = 0; i < rows.length; i++) {
+    if (applicantIdFromRow_(rows[i]) === targetId) return rows[i];
+  }
+  throw new Error("Applicant '" + applicationId + "' was not found in sheet '" + sheetName + "'");
+}
+
+function screenApplicant_(sheetName, applicationId) {
+  const row = findApplicantRow_(sheetName, applicationId);
+  return screenWithGemini_(buildApplicantPrompt_(row));
+}
+
+function loadApplicants_(sheetName) {
+  const rows = getApplicantRows_(sheetName);
+  if (!rows.length) {
+    return { ok: true, rows: [], assignments: getAssignments_(), savedReviews: getSavedReviews_(), resolutions: getResolutions_(), aiDrafts: getAiDrafts_(), total: 0 };
+  }
 
   return {
     ok: true,
@@ -666,14 +815,7 @@ function screenWithGemini_(prompt) {
       {
         method: "post",
         contentType: "application/json",
-        payload: JSON.stringify({
-          contents: [{ parts: [{ text: prompt || "" }] }],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 2048,
-            responseMimeType: "application/json"
-          }
-        }),
+        payload: JSON.stringify(buildGeminiRequestPayload_(prompt || "")),
         muteHttpExceptions: true
       }
     );
@@ -696,7 +838,7 @@ function screenWithGemini_(prompt) {
     const end = cleaned.lastIndexOf("}");
     if (start === -1 || end === -1) throw new Error("Gemini response did not contain a JSON object.");
 
-    const parsed = safeJsonParse_(cleaned.slice(start, end + 1), null);
+    const parsed = safeJsonParse_(cleaned.slice(start, end + 1).replace(/[\x00-\x1F\x7F]/g, " "), null);
     if (!parsed) throw new Error("Gemini JSON could not be parsed.");
 
     return { ok: true, result: parsed };
@@ -946,12 +1088,134 @@ const RATINGS=[
   {id:'scalability',       label:'Scalability',        weight:5},
   {id:'risk_governance',   label:'Risk & governance',  weight:5}
 ];
+const AI_VERDICTS=['pass','fail','flag'];
+const AI_DRAFT_JSON_SCHEMA=createAiDraftJsonSchema();
 
 let apps=[], appFilter='all', sortBy='score-desc';
 let scriptUrl='https://script.google.com/macros/s/AKfycbyqnIeQLzOAD8MtyNAeUeDShzmNoaJx8XJpQLCx8vcOEtK5duZqvGdWfON1KMkCxOIL/exec', secretKey='tpss-2026-awais', sheetName='Sheet1', geminiKey='', currentReviewer=TEAM[0];
 let launchMode='missing-ai';
 let assignmentSaveState={};
 initReviewerSelect();
+
+function createAiDraftJsonSchema() {
+  var gateProperties={}, gateRequired=[], scoreProperties={}, scoreRequired=[], commentProperties={}, commentRequired=[], i, gateId, ratingId;
+  for (i=0; i<GATES.length; i++) {
+    gateId=GATES[i].id;
+    gateRequired.push(gateId);
+    gateProperties[gateId]={
+      type:'object',
+      propertyOrdering:['verdict','note'],
+      additionalProperties:false,
+      properties:{
+        verdict:{ type:'string', enum:AI_VERDICTS },
+        note:{ type:'string' }
+      },
+      required:['verdict','note']
+    };
+  }
+  for (i=0; i<RATINGS.length; i++) {
+    ratingId=RATINGS[i].id;
+    scoreRequired.push(ratingId);
+    commentRequired.push(ratingId);
+    scoreProperties[ratingId]={ type:'integer', minimum:1, maximum:5 };
+    commentProperties[ratingId]={ type:'string' };
+  }
+  return {
+    type:'object',
+    propertyOrdering:['eligibility','scores','category_comments','summary'],
+    additionalProperties:false,
+    properties:{
+      eligibility:{
+        type:'object',
+        propertyOrdering:gateRequired.slice(),
+        additionalProperties:false,
+        properties:gateProperties,
+        required:gateRequired.slice()
+      },
+      scores:{
+        type:'object',
+        propertyOrdering:scoreRequired.slice(),
+        additionalProperties:false,
+        properties:scoreProperties,
+        required:scoreRequired.slice()
+      },
+      category_comments:{
+        type:'object',
+        propertyOrdering:commentRequired.slice(),
+        additionalProperties:false,
+        properties:commentProperties,
+        required:commentRequired.slice()
+      },
+      summary:{ type:'string' }
+    },
+    required:['eligibility','scores','category_comments','summary']
+  };
+}
+
+function buildGeminiRequestPayload(prompt) {
+  return {
+    contents:[{ parts:[{ text:prompt }] }],
+    generationConfig:{
+      temperature:0.1,
+      maxOutputTokens:2048,
+      responseMimeType:'application/json',
+      responseJsonSchema:AI_DRAFT_JSON_SCHEMA
+    }
+  };
+}
+
+function extractGeminiJsonText(data) {
+  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+    throw new Error('Gemini returned no candidate content');
+  }
+  var raw=String(data.candidates[0].content.parts[0].text || '');
+  var cleaned=raw.replace(/```json|```/g, '').trim();
+  var start=cleaned.indexOf('{');
+  var end=cleaned.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON object found in response');
+  return cleaned.slice(start, end + 1).replace(/[\x00-\x1F\x7F]/g, ' ').trim();
+}
+
+function buildApplicantPrompt(row) {
+  function g(k){ return (row[k]||'').toString().trim().replace(/[\r\n]+/g,' ').replace(/"/g,"'"); }
+  var vName=g('Venture Name')||'Unknown';
+  var aName=(g('First Name')+' '+g('Last Name')).trim();
+  return 'You are a TPSS Accelerator Stage 1 review draft assistant. Prepare a draft assessment for human reviewers using the official TPSS scoring method. Return ONLY valid JSON with no markdown.\n\n'+
+    'STRICT RULES:\n'+
+    '- Use only facts explicitly present in the application text below.\n'+
+    '- Do not invent traction, team strength, governance, compliance, availability, metrics, partnerships, registrations, market size, or financial details.\n'+
+    '- If evidence is missing or unclear, say so explicitly in the note or category comment using the phrase "Insufficient evidence in application".\n'+
+    '- When evidence is missing, score conservatively.\n'+
+    '- Do not infer a pass on eligibility from silence; use flag when information is missing.\n\n'+
+    'VENTURE:'+vName+' APPLICANT:'+aName+' COUNTRY:'+g('Country')+'\n'+
+    'SECTOR:'+g('Venture Sector')+' STAGE:'+g('Venture Stage')+' TYPE:'+g('Venture Type')+'\n'+
+    'DESC:'+g('Venture Description').slice(0,500)+'\n'+
+    'MISSION:'+g('Venture Mission').slice(0,400)+'\n'+
+    'MAQASID:'+g('Maqasid Alignment')+'\n'+
+    'PROBLEM:'+g('Problem Statement').slice(0,350)+'\n'+
+    'SOLUTION:'+g('Venture Solution').slice(0,350)+'\n'+
+    'TRACTION:'+g('Current Traction')+' '+g('Traction Examples').slice(0,300)+'\n'+
+    'TEAM:'+(g('Cofounders')||g('Cofounder Details')).slice(0,300)+'\n'+
+    'FUNDING:'+g('Funding Source')+' ASK:'+g('Funding Amount')+' USE:'+g('Funds Use').slice(0,220)+'\n'+
+    'IMPACT:'+g('Venture Impact').slice(0,300)+'\n'+
+    'COMMIT:'+g('Commit')+'\n\n'+
+    'ELIGIBILITY CHECKS (pass/fail/flag each):\n'+
+    '1. maqasid: Mission fit with TPSS principles and Maqasid al-Shariah. Screens out non-permissible activities.\n'+
+    '2. compliance: No prohibited sectors, no riba-dependent revenue, Islamic governance integrity.\n'+
+    '3. stage: Proof-of-concept or stronger (small reserve for exceptional concept-stage). Pass if PoC+, flag if concept-only but strong.\n'+
+    '4. type: For-profit or nonprofit accepted, tech or non-tech accepted.\n'+
+    '5. availability: Able to participate in finals and coaching windows per TPSS 2026 calendar.\n\n'+
+    'TPSS STAGE 1 100-POINT RUBRIC - score each 1-5 (1=poor,3=adequate,5=excellent):\n'+
+    '1. mission_alignment (20pts): TPSS mission fit, Maqasid alignment, service to Ummah, ethical governance.\n'+
+    '2. ummah_impact (15pts): Theory of change, beneficiary scale, concrete outcome metrics, measurement plan.\n'+
+    '3. problem_solution (10pts): Problem clarity, solution differentiation, innovation edge over alternatives.\n'+
+    '4. team (15pts): Founder-market fit, track record, ability to recruit and deliver.\n'+
+    '5. traction (10pts): PoC, pilots, users, revenue, donations, letters of support.\n'+
+    '6. viability (20pts): For-profits: unit economics, market size, path to profitability, capital efficiency. Nonprofits: multi-year funding and sustainability plan. Preference for Islamic instruments.\n'+
+    '7. scalability (5pts): Ability to scale across markets, build generational institutions.\n'+
+    '8. risk_governance (5pts): Risk register, governance, safeguarding, data protection, Shariah readiness.\n\n'+
+    'Use the provided JSON schema exactly.';
+}
 
 // Reads still use JSONP because the app may be launched from a local file or simple local preview.
 // Writes use POST so larger review payloads are not forced through query strings.
@@ -1237,10 +1501,7 @@ async function requestBrowserAiDraft(prompt, ventureName) {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 2048, responseMimeType: 'application/json' }
-        })
+        body: JSON.stringify(buildGeminiRequestPayload(prompt))
       }
     );
     data = await resp.json();
@@ -1253,76 +1514,55 @@ async function requestBrowserAiDraft(prompt, ventureName) {
   }
   if (lastErr) throw lastErr;
   if (data.error) throw new Error(data.error.message);
-  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-    throw new Error('Gemini returned no candidate content');
-  }
-
-  var raw = data.candidates[0].content.parts[0].text || '';
-  var cleaned = raw.replace(/```json|```/g, '').trim();
-  var start = cleaned.indexOf('{');
-  var end = cleaned.lastIndexOf('}');
-  if (start === -1 || end === -1) throw new Error('No JSON object found in response');
-  cleaned = cleaned.slice(start, end + 1);
-  cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
+  var cleaned = extractGeminiJsonText(data);
   console.log('[TPSS] Raw browser Gemini JSON for', ventureName, ':', cleaned);
   return normalizeAiDraft(JSON.parse(cleaned));
 }
 
-async function requestAppsScriptAiDraft(prompt, ventureName) {
+async function requestAppsScriptAiDraft(row, ventureName, prompt) {
   if (!scriptUrl || !secretKey) throw new Error('Apps Script fallback is not configured');
-  var url=scriptUrl+
-    '?key='+encodeURIComponent(secretKey)+
-    '&action=screen'+
-    '&prompt='+encodeURIComponent(prompt);
-  var data=await jsonpFetch(url, 45000);
-  if (!data || data.ok === false || !data.result) {
-    throw new Error((data && data.error) || 'Apps Script returned no AI result');
+  var errors=[], data, applicationId=applicationIdFromRow(row);
+
+  if (applicationId) {
+    try {
+      data=await jsonpFetch(
+        scriptUrl+
+          '?key='+encodeURIComponent(secretKey)+
+          '&action=screenApplicant'+
+          '&sheet='+encodeURIComponent(sheetName)+
+          '&applicationId='+encodeURIComponent(applicationId),
+        45000
+      );
+      if (!data || data.ok === false || !data.result) {
+        throw new Error((data && data.error) || 'Apps Script returned no AI result');
+      }
+      console.log('[TPSS] Apps Script Gemini fallback used for', ventureName, '(sheet lookup)');
+      return normalizeAiDraft(data.result);
+    } catch (err) {
+      errors.push('sheet lookup: ' + err.message);
+    }
   }
-  console.log('[TPSS] Apps Script Gemini fallback used for', ventureName);
+
+  data=await jsonpFetch(
+    scriptUrl+
+      '?key='+encodeURIComponent(secretKey)+
+      '&action=screen'+
+      '&prompt='+encodeURIComponent(prompt),
+    45000
+  ).catch(function(err){
+    errors.push('legacy prompt: ' + err.message);
+    return null;
+  });
+  if (!data || data.ok === false || !data.result) {
+    throw new Error(errors.join(' | ') || ((data && data.error) || 'Apps Script returned no AI result'));
+  }
+  console.log('[TPSS] Apps Script Gemini fallback used for', ventureName, '(legacy prompt)');
   return normalizeAiDraft(data.result);
 }
 
 async function screenOne(row) {
-  function g(k){ return (row[k]||'').toString().trim().replace(/[\r\n]+/g,' ').replace(/"/g,"'"); }
-  var vName=g('Venture Name')||'Unknown';
-  var aName=(g('First Name')+' '+g('Last Name')).trim();
-
-  var prompt='You are a TPSS Accelerator Stage 1 review draft assistant. Prepare a draft assessment for human reviewers using the official TPSS scoring method. Return ONLY valid JSON with no markdown.\n\n'+
-    'STRICT RULES:\n'+
-    '- Use only facts explicitly present in the application text below.\n'+
-    '- Do not invent traction, team strength, governance, compliance, availability, metrics, partnerships, registrations, market size, or financial details.\n'+
-    '- If evidence is missing or unclear, say so explicitly in the note or category comment using the phrase "Insufficient evidence in application".\n'+
-    '- When evidence is missing, score conservatively.\n'+
-    '- Do not infer a pass on eligibility from silence; use flag when information is missing.\n\n'+
-    'VENTURE:'+vName+' APPLICANT:'+aName+' COUNTRY:'+g('Country')+'\n'+
-    'SECTOR:'+g('Venture Sector')+' STAGE:'+g('Venture Stage')+' TYPE:'+g('Venture Type')+'\n'+
-    'DESC:'+g('Venture Description').slice(0,500)+'\n'+
-    'MISSION:'+g('Venture Mission').slice(0,400)+'\n'+
-    'MAQASID:'+g('Maqasid Alignment')+'\n'+
-    'PROBLEM:'+g('Problem Statement').slice(0,350)+'\n'+
-    'SOLUTION:'+g('Venture Solution').slice(0,350)+'\n'+
-    'TRACTION:'+g('Current Traction')+' '+g('Traction Examples').slice(0,300)+'\n'+
-    'TEAM:'+(g('Cofounders')||g('Cofounder Details')).slice(0,300)+'\n'+
-    'FUNDING:'+g('Funding Source')+' ASK:'+g('Funding Amount')+' USE:'+g('Funds Use').slice(0,220)+'\n'+
-    'IMPACT:'+g('Venture Impact').slice(0,300)+'\n'+
-    'COMMIT:'+g('Commit')+'\n\n'+
-    'ELIGIBILITY CHECKS (pass/fail/flag each):\n'+
-    '1. maqasid: Mission fit with TPSS principles and Maqasid al-Shariah. Screens out non-permissible activities.\n'+
-    '2. compliance: No prohibited sectors, no riba-dependent revenue, Islamic governance integrity.\n'+
-    '3. stage: Proof-of-concept or stronger (small reserve for exceptional concept-stage). Pass if PoC+, flag if concept-only but strong.\n'+
-    '4. type: For-profit or nonprofit accepted, tech or non-tech accepted.\n'+
-    '5. availability: Able to participate in finals and coaching windows per TPSS 2026 calendar.\n\n'+
-    'TPSS STAGE 1 100-POINT RUBRIC - score each 1-5 (1=poor,3=adequate,5=excellent):\n'+
-    '1. mission_alignment (20pts): TPSS mission fit, Maqasid alignment, service to Ummah, ethical governance.\n'+
-    '2. ummah_impact (15pts): Theory of change, beneficiary scale, concrete outcome metrics, measurement plan.\n'+
-    '3. problem_solution (10pts): Problem clarity, solution differentiation, innovation edge over alternatives.\n'+
-    '4. team (15pts): Founder-market fit, track record, ability to recruit and deliver.\n'+
-    '5. traction (10pts): PoC, pilots, users, revenue, donations, letters of support.\n'+
-    '6. viability (20pts): For-profits: unit economics, market size, path to profitability, capital efficiency. Nonprofits: multi-year funding and sustainability plan. Preference for Islamic instruments.\n'+
-    '7. scalability (5pts): Ability to scale across markets, build generational institutions.\n'+
-    '8. risk_governance (5pts): Risk register, governance, safeguarding, data protection, Shariah readiness.\n\n'+
-    'Return this exact JSON shape:\n'+
-    '{"eligibility":{"maqasid":{"verdict":"pass","note":"one sentence"},"compliance":{"verdict":"pass","note":"one sentence"},"stage":{"verdict":"pass","note":"one sentence"},"type":{"verdict":"pass","note":"one sentence"},"availability":{"verdict":"pass","note":"one sentence"}},"scores":{"mission_alignment":3,"ummah_impact":3,"problem_solution":3,"team":3,"traction":3,"viability":3,"scalability":3,"risk_governance":3},"category_comments":{"mission_alignment":"one sentence","ummah_impact":"one sentence","problem_solution":"one sentence","team":"one sentence","traction":"one sentence","viability":"one sentence","scalability":"one sentence","risk_governance":"one sentence"},"summary":"two sentence plain text assessment"}';
+  var vName=((row['Venture Name']||'').toString().trim())||'Unknown';
+  var prompt=buildApplicantPrompt(row);
 
   var ai;
   var browserErr=null;
@@ -1336,7 +1576,7 @@ async function screenOne(row) {
 
   if (!ai) {
     try {
-      ai = await requestAppsScriptAiDraft(prompt, vName);
+      ai = await requestAppsScriptAiDraft(row, vName, prompt);
     } catch (err) {
       fallbackErr = err;
       console.error('[TPSS] Apps Script Gemini fallback failed for', vName + ':', err.message);
