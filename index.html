@@ -381,6 +381,7 @@ const AI_SCORE_KEYS = [
   "traction", "viability", "scalability", "risk_governance"
 ];
 const GEMINI_DRAFT_SCHEMA = createGeminiDraftSchema_();
+const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
 
 function doGet(e) {
   if (!e || !e.parameter) {
@@ -561,6 +562,23 @@ function buildGeminiRequestPayload_(prompt) {
       responseJsonSchema: GEMINI_DRAFT_SCHEMA
     }
   };
+}
+
+function extractGeminiJsonText_(data) {
+  const raw = data.candidates &&
+    data.candidates[0] &&
+    data.candidates[0].content &&
+    data.candidates[0].content.parts &&
+    data.candidates[0].content.parts[0] &&
+    data.candidates[0].content.parts[0].text
+      ? data.candidates[0].content.parts[0].text
+      : "";
+
+  const cleaned = String(raw || "").replace(/```json|```/g, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start === -1 || end === -1) throw new Error("Gemini response did not contain a JSON object.");
+  return cleaned.slice(start, end + 1).replace(/[\x00-\x1F\x7F]/g, " ");
 }
 
 function getApplicantRows_(sheetName) {
@@ -810,38 +828,43 @@ function screenWithGemini_(prompt) {
       return { ok: false, error: "Gemini API key is missing in Apps Script. Set GEMINI_KEY or use browser-side Gemini." };
     }
 
-    const response = UrlFetchApp.fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(GEMINI_KEY),
-      {
-        method: "post",
-        contentType: "application/json",
-        payload: JSON.stringify(buildGeminiRequestPayload_(prompt || "")),
-        muteHttpExceptions: true
+    const errors = [];
+
+    for (let m = 0; m < GEMINI_MODELS.length; m++) {
+      const model = GEMINI_MODELS[m];
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const response = UrlFetchApp.fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(GEMINI_KEY),
+            {
+              method: "post",
+              contentType: "application/json",
+              payload: JSON.stringify(buildGeminiRequestPayload_(prompt || "")),
+              muteHttpExceptions: true
+            }
+          );
+
+          const data = safeJsonParse_(response.getContentText(), null);
+          if (!data) throw new Error("Gemini returned invalid JSON.");
+          if (data.error) {
+            const code = Number(data.error.code || response.getResponseCode() || 0);
+            const msg = data.error.message || JSON.stringify(data.error);
+            if (code === 429 || code === 503) throw new Error(msg);
+            throw new Error(msg);
+          }
+
+          const parsed = safeJsonParse_(extractGeminiJsonText_(data), null);
+          if (!parsed) throw new Error("Gemini JSON could not be parsed.");
+
+          return { ok: true, result: parsed };
+        } catch (err) {
+          errors.push(model + " attempt " + (attempt + 1) + ": " + err.toString());
+          if (attempt < 1) Utilities.sleep((attempt + 1) * 2000);
+        }
       }
-    );
+    }
 
-    const data = safeJsonParse_(response.getContentText(), null);
-    if (!data) throw new Error("Gemini returned invalid JSON.");
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-
-    const raw = data.candidates &&
-      data.candidates[0] &&
-      data.candidates[0].content &&
-      data.candidates[0].content.parts &&
-      data.candidates[0].content.parts[0] &&
-      data.candidates[0].content.parts[0].text
-        ? data.candidates[0].content.parts[0].text
-        : "";
-
-    const cleaned = String(raw || "").replace(/```json|```/g, "").trim();
-    const start = cleaned.indexOf("{");
-    const end = cleaned.lastIndexOf("}");
-    if (start === -1 || end === -1) throw new Error("Gemini response did not contain a JSON object.");
-
-    const parsed = safeJsonParse_(cleaned.slice(start, end + 1).replace(/[\x00-\x1F\x7F]/g, " "), null);
-    if (!parsed) throw new Error("Gemini JSON could not be parsed.");
-
-    return { ok: true, result: parsed };
+    return { ok: false, error: errors.join(" | ") || "Gemini request failed." };
   } catch (err) {
     return { ok: false, error: err.toString() };
   }
@@ -1090,6 +1113,7 @@ const RATINGS=[
 ];
 const AI_VERDICTS=['pass','fail','flag'];
 const AI_DRAFT_JSON_SCHEMA=createAiDraftJsonSchema();
+const GEMINI_MODELS=['gemini-2.5-flash','gemini-2.5-flash-lite'];
 
 let apps=[], appFilter='all', sortBy='score-desc';
 let scriptUrl='https://script.google.com/macros/s/AKfycbyqnIeQLzOAD8MtyNAeUeDShzmNoaJx8XJpQLCx8vcOEtK5duZqvGdWfON1KMkCxOIL/exec', secretKey='tpss-2026-awais', sheetName='Sheet1', geminiKey='', currentReviewer=TEAM[0];
@@ -1162,6 +1186,11 @@ function buildGeminiRequestPayload(prompt) {
       responseJsonSchema:AI_DRAFT_JSON_SCHEMA
     }
   };
+}
+
+function formatGeminiAttemptError(model, attempt, err) {
+  var message=(err && err.message) ? err.message : String(err || 'Unknown Gemini error');
+  return model+' attempt '+attempt+': '+message;
 }
 
 function extractGeminiJsonText(data) {
@@ -1488,35 +1517,42 @@ async function batchScreen(rows, savedAssignments, savedReviews, savedResolution
 async function requestBrowserAiDraft(prompt, ventureName) {
   if (!geminiKey) throw new Error('No browser Gemini API key configured');
 
-  var resp, data, lastErr;
-  for (var attempt=0; attempt<3; attempt++) {
-    if (attempt > 0) {
-      var waitMs = attempt * 8000;
-      var pl=document.getElementById('pl');
-      if (pl) pl.textContent='Gemini busy — retrying '+ventureName+' in '+(waitMs/1000)+'s… (attempt '+(attempt+1)+'/3)';
-      await new Promise(function(r){setTimeout(r, waitMs);});
-    }
-    resp = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(geminiKey),
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildGeminiRequestPayload(prompt))
+  var errors=[], modelIndex, attempt, model, waitMs, pl, resp, rawText, data;
+  for (modelIndex=0; modelIndex<GEMINI_MODELS.length; modelIndex++) {
+    model=GEMINI_MODELS[modelIndex];
+    for (attempt=1; attempt<=2; attempt++) {
+      if (modelIndex > 0 || attempt > 1) {
+        waitMs = (attempt - 1) * 4000 + (modelIndex * 3000);
+        pl=document.getElementById('pl');
+        if (pl) pl.textContent='Gemini retrying '+ventureName+' with '+model+' in '+(waitMs/1000)+'s… (attempt '+attempt+'/2)';
+        if (waitMs > 0) await new Promise(function(r){setTimeout(r, waitMs);});
       }
-    );
-    data = await resp.json();
-    if (resp.status === 503 || resp.status === 429 || (data.error && (data.error.code === 503 || data.error.code === 429))) {
-      lastErr = new Error(data.error ? data.error.message : 'Service unavailable');
-      continue;
+
+      try {
+        resp = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(geminiKey),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(buildGeminiRequestPayload(prompt))
+          }
+        );
+        rawText = await resp.text();
+        data = JSON.parse(rawText);
+        if (resp.status === 503 || resp.status === 429 || (data.error && (data.error.code === 503 || data.error.code === 429))) {
+          throw new Error(data.error ? data.error.message : 'Service unavailable');
+        }
+        if (data.error) throw new Error(data.error.message);
+
+        var cleaned = extractGeminiJsonText(data);
+        console.log('[TPSS] Raw browser Gemini JSON for', ventureName, 'via', model + ':', cleaned);
+        return normalizeAiDraft(JSON.parse(cleaned));
+      } catch (err) {
+        errors.push(formatGeminiAttemptError(model, attempt, err));
+      }
     }
-    lastErr = null;
-    break;
   }
-  if (lastErr) throw lastErr;
-  if (data.error) throw new Error(data.error.message);
-  var cleaned = extractGeminiJsonText(data);
-  console.log('[TPSS] Raw browser Gemini JSON for', ventureName, ':', cleaned);
-  return normalizeAiDraft(JSON.parse(cleaned));
+  throw new Error(errors.join(' | ') || 'Gemini request failed');
 }
 
 async function requestAppsScriptAiDraft(row, ventureName, prompt) {
