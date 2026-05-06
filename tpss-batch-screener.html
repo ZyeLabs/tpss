@@ -1,0 +1,2694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPSS Accelerator — Stage 1 Reviewer System</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2e5a;--navy-deep:#0f1e3d;--navy-mid:#243c73;
+  --cyan:#00aeef;--cyan-pale:#e3f6fd;--cyan-mid:#9adcf5;
+  --bg:#eef1f8;--surface:#fff;--surface2:#f6f8fd;
+  --border:#dce3f0;--border2:#c5d0e6;
+  --text:#1a2e5a;--text2:#4a5e82;--text3:#7a8fac;
+  --pass-text:#27500a;--pass-bg:#eaf3de;--pass-border:#86efac;
+  --fail-text:#791f1f;--fail-bg:#fcebeb;--fail-border:#fca5a5;
+  --flag-text:#633806;--flag-bg:#fffbeb;--flag-border:#fcd34d;
+  --r:10px;--r-sm:6px;--r-lg:14px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.hdr{background:var(--navy-deep);padding:0 20px;display:flex;align-items:center;gap:14px;height:54px;border-bottom:2px solid var(--cyan);position:sticky;top:0;z-index:200}
+.hdr-logo{width:32px;height:32px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-logo svg{width:18px;height:18px}
+.hdr-brand{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#fff;letter-spacing:.05em;text-transform:uppercase}
+.hdr-brand span{color:var(--cyan)}
+.hdr-div{width:1px;height:20px;background:rgba(255,255,255,.15)}
+.hdr-title{font-size:12px;color:rgba(255,255,255,.6)}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.phase{font-size:11px;font-weight:600;padding:3px 11px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.phase.done{background:#eaf3de;color:#27500a}
+.phase.active{background:var(--cyan);color:#fff}
+.phase.idle{background:rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
+.config-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.config-label{font-size:12px;color:var(--text2);font-weight:500;white-space:nowrap}
+.btn{font-size:12px;font-weight:600;padding:7px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;font-family:'Montserrat',sans-serif;letter-spacing:.03em;white-space:nowrap;border:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-mid)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-sec{background:var(--surface);color:var(--text2);border:1px solid var(--border2)}
+.btn-sec:hover{border-color:var(--navy);color:var(--navy)}
+.conn-ok{font-size:11px;font-weight:500;color:var(--pass-text)}
+.conn-err{font-size:11px;font-weight:500;color:var(--fail-text)}
+.conn-chk{font-size:11px;color:var(--text3)}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface2);border-bottom:1px solid var(--border)}
+.sstat{padding:10px 14px;text-align:center;border-right:1px solid var(--border)}
+.sstat:last-child{border-right:none}
+.sstat .val{font-size:22px;font-weight:600;color:var(--text);font-family:'Montserrat',sans-serif}
+.sstat .lbl{font-size:11px;color:var(--text3);font-weight:500}
+.sstat.adv .val{color:var(--pass-text)}
+.sstat.rev .val{color:var(--flag-text)}
+.sstat.rej .val{color:var(--fail-text)}
+.sstat.sub .val{color:var(--cyan)}
+.filter-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 20px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flbl{font-size:12px;color:var(--text3);font-weight:500}
+.fpill{font-size:11px;font-weight:600;padding:4px 13px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
+.fpill:hover{border-color:var(--navy);color:var(--navy)}
+.fpill.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sort-sel{font-size:12px;padding:5px 9px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif}
+.refresh-btn{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:5px 12px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .15s}
+.refresh-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.refresh-btn svg{width:12px;height:12px;transition:transform .4s}
+.refresh-btn.spinning svg{animation:spin .7s linear infinite}
+.new-badge{font-size:10px;background:var(--cyan);color:#fff;padding:1px 6px;border-radius:20px;font-weight:700}
+@keyframes spin{to{transform:rotate(360deg)}}
+.main{max-width:1000px;margin:0 auto;padding:20px}
+.loading-wrap{text-align:center;padding:56px 20px}
+.loading-wrap h2{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.loading-wrap p{font-size:13px;color:var(--text2);margin-bottom:20px}
+.prog-bar{width:320px;height:6px;background:var(--border);border-radius:3px;margin:0 auto 8px;overflow:hidden}
+.prog-fill{height:100%;background:var(--cyan);border-radius:3px;transition:width .3s ease;width:0%}
+.prog-lbl{font-size:12px;color:var(--text3)}
+.spin-lg{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;transition:box-shadow .2s}
+.app-card:hover{box-shadow:0 4px 16px rgba(26,46,90,.08)}
+.app-card.submitted{border-color:var(--pass-border)}
+.card-top{padding:14px 16px}
+.row1{display:flex;align-items:flex-start;gap:12px;margin-bottom:11px}
+.avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'Montserrat',sans-serif}
+.av-b{background:#e6f1fb;color:#0c447c}
+.av-t{background:#e1f5ee;color:#085041}
+.av-p{background:#eeedfe;color:#3c3489}
+.av-c{background:#faece7;color:#712b13}
+.av-g{background:#f1efea;color:#444441}
+.app-info{flex:1;min-width:0}
+.app-name{font-size:15px;font-weight:500;color:var(--text)}
+.app-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.t-edu{background:#e6f1fb;color:#185fa5}
+.t-npo{background:#e1f5ee;color:#0f6e56}
+.t-fp{background:#faeeda;color:#854f0b}
+.t-sec{background:#f1efea;color:#5f5e5a}
+.score-row{display:flex;gap:10px;align-items:flex-start}
+.gates-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.gate-chip{padding:6px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2)}
+.gc-top{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:3px}
+.gc-name{font-size:10px;color:var(--text2);font-weight:600;font-family:'Montserrat',sans-serif;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.gbadge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;flex-shrink:0;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.gbadge.p{background:var(--pass-bg);color:var(--pass-text)}
+.gbadge.f{background:var(--fail-bg);color:var(--fail-text)}
+.gbadge.fl{background:var(--flag-bg);color:var(--flag-text)}
+.gc-note{font-size:10px;color:var(--text3);line-height:1.4;font-style:italic}
+.score-col{width:70px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:3px}
+.cscore{font-size:32px;font-weight:700;line-height:1;font-family:'Montserrat',sans-serif}
+.cscore.hi{color:var(--pass-text)}
+.cscore.md{color:var(--flag-text)}
+.cscore.lo{color:var(--fail-text)}
+.cscore-lbl{font-size:10px;color:var(--text3);text-align:center;font-weight:500}
+.sbar{width:58px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.sfill{height:100%;border-radius:3px;transition:width .4s}
+.sfill.hi{background:#639922}
+.sfill.md{background:#d97706}
+.sfill.lo{background:#dc2626}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-top:1px solid var(--border);background:var(--surface2);gap:10px;flex-wrap:wrap}
+.cf-left{display:flex;align-items:center;gap:7px;flex:1;min-width:0;flex-wrap:wrap}
+.ai-badges{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.ai-tag{font-size:10px;background:var(--cyan-pale);color:#185fa5;padding:2px 8px;border-radius:20px;font-weight:700;font-family:'Montserrat',sans-serif;flex-shrink:0;border:1px solid transparent}
+.ai-tag.ok{background:var(--pass-bg);border-color:var(--pass-border);color:var(--pass-text)}
+.ai-tag.warn{background:var(--flag-bg);border-color:var(--flag-border);color:var(--flag-text)}
+.ai-tag.manual{background:var(--surface);border-color:var(--border2);color:var(--text2)}
+.draft-badge{font-size:10px;background:#edf2ff;color:#31447d;border:1px solid #c7d2fe;padding:2px 8px;border-radius:20px;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.ai-summary{font-size:11px;color:var(--text2);font-style:italic;line-height:1.5;flex:1}
+.cf-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.assign-disp{font-size:11px;color:var(--text3)}
+.assign-disp strong{color:var(--text);font-weight:500}
+.assign-inline{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.assign-pair{display:flex;gap:4px;flex-wrap:wrap}
+.assign-slot-label{font-size:10px;color:var(--text3);font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.03em}
+.assign-inline-lbl{font-size:11px;color:var(--text3);white-space:nowrap}
+.assign-sel{font-size:11px;padding:3px 8px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;max-width:140px}
+.assign-sel.assigned{border-color:var(--cyan);color:var(--navy);font-weight:600}
+.assign-saving{font-size:10px;color:var(--text3);font-style:italic}
+.diff-badge{font-size:10px;background:var(--flag-bg);color:var(--flag-text);border:1px solid var(--flag-border);padding:2px 8px;border-radius:20px;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.workflow-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.02em;background:var(--surface);color:var(--text2);border:1px solid var(--border2)}
+.vbadge{font-size:11px;font-weight:700;padding:4px 13px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.vb-adv{background:var(--pass-bg);color:var(--pass-text);border:1px solid var(--pass-border)}
+.vb-rev{background:var(--flag-bg);color:var(--flag-text);border:1px solid var(--flag-border)}
+.vb-rej{background:var(--fail-bg);color:var(--fail-text);border:1px solid var(--fail-border)}
+.vb-sub{background:var(--cyan-pale);color:#185fa5;border:1px solid var(--cyan-mid)}
+.rev-btn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
+.rev-btn:hover{border-color:var(--navy);color:var(--navy)}
+.rev-btn.open{border-color:var(--navy);color:var(--navy);background:#f0f4fc}
+.sub-banner{background:var(--pass-bg);border-top:1px solid var(--pass-border);padding:7px 16px;font-size:11px;font-weight:600;color:var(--pass-text);font-family:'Montserrat',sans-serif;letter-spacing:.03em}
+.expand-panel{border-top:1px solid var(--border);padding:16px}
+.ep-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.ep-title{font-size:13px;font-weight:700;color:var(--navy);font-family:'Montserrat',sans-serif}
+.assign-sec{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.assign-lbl{font-size:11px;color:var(--text2);font-weight:500}
+.member-chips{display:flex;gap:4px;flex-wrap:wrap}
+.mchip{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
+.mchip:hover{border-color:var(--navy);color:var(--navy)}
+.mchip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ep-verdict{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-sm);margin-bottom:14px;flex-wrap:wrap}
+.ep-verdict.adv{background:var(--pass-bg);border:1px solid var(--pass-border)}
+.ep-verdict.rev{background:var(--flag-bg);border:1px solid var(--flag-border)}
+.ep-verdict.rej{background:var(--fail-bg);border:1px solid var(--fail-border)}
+.epv-lbl{font-size:12px;font-weight:700;font-family:'Montserrat',sans-serif}
+.epv-lbl.adv{color:var(--pass-text)}
+.epv-lbl.rev{color:var(--flag-text)}
+.epv-lbl.rej{color:var(--fail-text)}
+.epv-score{font-size:11px;color:var(--text2);margin-left:auto}
+.ai-status-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 14px}
+.ai-status-detail{font-size:11px;color:var(--text3)}
+.ep-sec{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-family:'Montserrat',sans-serif;margin-bottom:9px}
+.ep-gates{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.ep-gate{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
+.ep-gate.edited{border-color:var(--flag-border)}
+.epg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px;flex-wrap:wrap}
+.epg-name{font-size:12px;font-weight:600;color:var(--text);font-family:'Montserrat',sans-serif}
+.pill-grp{display:flex;gap:3px}
+.epill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
+.epill:hover{border-color:var(--navy);color:var(--navy)}
+.epill.sp{background:var(--pass-bg);border-color:var(--pass-border);color:var(--pass-text)}
+.epill.sf{background:var(--fail-bg);border-color:var(--fail-border);color:var(--fail-text)}
+.epill.sfl{background:var(--flag-bg);border-color:var(--flag-border);color:var(--flag-text)}
+.epg-note{font-size:11px;color:var(--text3);line-height:1.5;font-style:italic;margin-bottom:4px}
+.edited-flag{font-size:10px;color:var(--flag-text);font-weight:600;font-family:'Montserrat',sans-serif}
+.ep-ratings{margin-bottom:16px}
+.rat-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+.rlbl{font-size:12px;color:var(--text2);width:130px;flex-shrink:0;font-weight:500}
+.stars{display:flex;gap:3px}
+.star{width:22px;height:22px;border-radius:5px;border:1px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .1s}
+.star:hover{border-color:var(--navy);color:var(--navy)}
+.star.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.rat-ai{font-size:10px;color:var(--text3);margin-left:4px}
+.rat-ai.adj{color:var(--flag-text);font-weight:600}
+.reviewer-note{font-size:10px;color:var(--text3);font-weight:600}
+.rat-comment{width:100%;margin-left:130px;margin-top:6px}
+.review-helper{font-size:10px;color:var(--text3);margin-bottom:4px;line-height:1.4}
+.review-input{width:100%;font-size:12px;border:1px solid var(--border2);border-radius:var(--r-sm);padding:7px 9px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.review-input:focus{border-color:var(--cyan)}
+.review-meta-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+.resolution-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin:0 0 16px}
+.resolution-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ep-nl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-family:'Montserrat',sans-serif;margin-bottom:6px}
+.ep-notes{width:100%;font-size:13px;min-height:60px;resize:vertical;border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 11px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.ep-notes:focus{border-color:var(--cyan)}
+.ep-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:10px}
+.ep-act-l{font-size:11px;color:var(--text3)}
+.ep-act-r{display:flex;gap:8px}
+.btn-submit-card{font-size:12px;font-weight:700;padding:8px 20px;border-radius:var(--r-sm);border:none;background:var(--cyan);color:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.03em;transition:all .15s;display:flex;align-items:center;gap:7px}
+.btn-submit-card:hover{background:#0096ce}
+.btn-submit-card:disabled{opacity:.45;cursor:not-allowed}
+.btn-save-card{font-size:12px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);border:1px solid var(--navy);background:var(--surface);color:var(--navy);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.03em;transition:all .15s}
+.btn-save-card:hover{background:var(--navy);color:#fff}
+.empty-state{text-align:center;padding:48px 20px}
+.empty-state h3{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;color:var(--navy)}
+.empty-state p{font-size:13px;color:var(--text2)}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:999;transform:translateY(80px);opacity:0;transition:all .25s;max-width:360px;line-height:1.5}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--pass-text);color:#fff}
+.toast.error{background:var(--fail-text);color:#fff}
+.toast.info{background:var(--navy);color:#fff}
+.toast.warning{background:var(--flag-text);color:#fff}
+.mini-spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+.setup-wrap{max-width:600px;margin:40px auto}
+.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px}
+.setup-logo{width:52px;height:52px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.setup-logo svg{width:28px;height:28px}
+.setup-card h2{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:6px;text-align:center}
+.setup-card .sub{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6;text-align:center}
+.sf{margin-bottom:16px}
+.sf label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;font-family:'Montserrat',sans-serif}
+.sf input{width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.sf select{width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.sf input:focus,.sf select:focus{border-color:var(--cyan)}
+.sf input[type=password]{letter-spacing:.1em}
+.sf-note{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.5}
+.sf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-setup{width:100%;font-size:13px;font-weight:700;padding:11px;border-radius:var(--r-sm);border:none;background:var(--navy);color:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.04em;margin-top:4px;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-setup:hover{background:var(--navy-mid)}
+.btn-setup:disabled{opacity:.5;cursor:not-allowed}
+.setup-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.test-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:4px}
+.test-row .sf{flex:1;margin:0}
+.btn-test{font-size:12px;font-weight:600;padding:9px 16px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap}
+.btn-test:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-test:disabled{opacity:.5;cursor:not-allowed}
+.test-result{font-size:12px;font-weight:500;margin-top:8px;margin-bottom:16px;min-height:18px;padding:6px 10px;border-radius:var(--r-sm);display:none}
+.test-result.ok{color:var(--pass-text);background:var(--pass-bg);border:1px solid var(--pass-border);display:block}
+.test-result.err{color:var(--fail-text);background:var(--fail-bg);border:1px solid var(--fail-border);display:block}
+.test-result.chk{color:var(--text2);background:var(--surface2);border:1px solid var(--border);display:block}
+.divider{height:1px;background:var(--border);margin:24px 0}
+.section-title{font-size:13px;font-weight:700;color:var(--navy);font-family:'Montserrat',sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-num{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Montserrat',sans-serif}
+.security-note{background:var(--cyan-pale);border:1px solid var(--cyan-mid);border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:#185fa5;line-height:1.6;margin-bottom:16px}
+.security-note strong{font-weight:700}
+.script-toggle{font-size:12px;color:var(--cyan);cursor:pointer;font-weight:600;display:inline-block;margin-top:8px}
+.script-box{display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden}
+.script-header{padding:8px 12px;background:var(--navy-deep);display:flex;align-items:center;justify-content:space-between}
+.script-header span{font-size:11px;color:rgba(255,255,255,.7);font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.04em}
+.copy-btn{font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.8);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s}
+.copy-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+pre.script{font-size:11px;padding:14px;overflow-x:auto;line-height:1.7;color:var(--text2);white-space:pre;margin:0}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo">
+    <svg viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="6.5" r="3.5" fill="white"/>
+      <path d="M2 17c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <span class="hdr-brand">TPSS <span>Accelerator</span></span>
+  <div class="hdr-div"></div>
+  <span class="hdr-title">Stage 1 — Reviewer System</span>
+  <div class="hdr-right" id="phaseBar" style="display:none">
+    <span class="phase done" id="ph1">AI draft</span>
+    <span class="phase active" id="ph2">Human review</span>
+    <span class="phase idle" id="ph3">Submitting</span>
+  </div>
+</header>
+
+<!-- SETUP -->
+<div id="setupScreen" class="main">
+  <div class="setup-wrap">
+    <div class="setup-card">
+      <div class="setup-logo">
+        <svg viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="10" r="5" fill="white"/>
+          <path d="M3 26c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>TPSS Stage 1 Reviewer System</h2>
+      <p class="sub">Applications load from your Google Sheet through your Apps Script. Gemini is used only to prepare draft reviewer assessments in your browser.</p>
+
+      <div class="security-note">
+        <strong>Secure by design:</strong> Your sheet is never made public. The Apps Script acts as a private API — requests without your secret key are rejected immediately. Applicant data is read from your sheet, and any AI draft scoring is sent to Gemini using your browser key.
+      </div>
+
+      <div class="section-title"><div class="section-num">1</div>Connect your Apps Script</div>
+
+      <div class="test-row">
+        <div class="sf">
+          <label>Apps Script Web App URL</label>
+          <input type="url" id="setupScriptUrl" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" value="https://script.google.com/macros/s/AKfycbyqnIeQLzOAD8MtyNAeUeDShzmNoaJx8XJpQLCx8vcOEtK5duZqvGdWfON1KMkCxOIL/exec" />
+          <div class="sf-note">In your sheet: Extensions → Apps Script → Deploy → New deployment → Web App → Execute as: Me · Access: Anyone → copy the URL.</div>
+        </div>
+        <button class="btn-test" id="testBtn" onclick="testConnection()">Test</button>
+      </div>
+
+      <div class="sf-row">
+        <div class="sf">
+          <label>Secret key</label>
+          <input type="password" id="setupSecretKey" placeholder="e.g. tpss-2026-awais" value="tpss-2026-awais" />
+          <div class="sf-note">Must match the SECRET_KEY in your Apps Script exactly.</div>
+        </div>
+        <div class="sf">
+          <label>Sheet tab name</label>
+          <input type="text" id="setupSheetName" placeholder="Sheet1" value="Sheet1" />
+          <div class="sf-note">Exact name of the tab with applicant data.</div>
+        </div>
+      </div>
+
+      <div class="sf">
+        <label>Gemini API Key (for AI draft review)</label>
+        <input type="password" id="setupGeminiKey" placeholder="AIza..." />
+        <div class="sf-note">Free at <a href="https://aistudio.google.com" target="_blank" style="color:var(--cyan)">aistudio.google.com</a> → Get API key. Used only in your browser to prepare draft scores and rationales for reviewers.</div>
+      </div>
+
+      <div class="sf">
+        <label>Current reviewer</label>
+        <select id="setupCurrentReviewer"></select>
+        <div class="sf-note">Select who is currently reviewing. Your scores, notes, and submission state are kept separate from the second reviewer.</div>
+      </div>
+
+      <div class="test-result" id="testResult"></div>
+
+      <div class="setup-actions">
+        <button class="btn-setup" id="startBtnNoAi" onclick="startApp('no-ai')">
+          Load without AI →
+        </button>
+        <button class="btn-setup" id="startBtnWithAi" onclick="startApp('missing-ai')">
+          Load + review unreviewed →
+        </button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title"><div class="section-num">2</div>Apps Script — paste this into Extensions → Apps Script</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Replace all existing code in the script editor with the template below. Set <strong>GEMINI_KEY</strong> only if you want Apps Script itself to support the optional <code>screen</code> action for testing or fallback. The normal app flow uses the Gemini API key entered above in the browser. After saving, click Deploy → New deployment → Web App → Execute as: Me · Who has access: Anyone → Deploy → copy the URL above.</p>
+
+      <span class="script-toggle" onclick="toggleScript()">Show script template →</span>
+      <div class="script-box" id="scriptBox">
+        <div class="script-header">
+          <span>CODE.GS — REPLACE ALL EXISTING CODE WITH THIS</span>
+          <button class="copy-btn" onclick="copyScript()">Copy</button>
+        </div>
+        <pre class="script" id="scriptCode">// ─────────────────────────────────────────────────────────────
+// TPSS Stage 1 Reviewer System — Apps Script
+// Deploy: Web App · Execute as: Me · Access: Anyone
+// ─────────────────────────────────────────────────────────────
+
+const SECRET_KEY = "tpss-2026-awais";
+const GEMINI_KEY = "";
+const RESULTS_SHEET = "Stage 1 Reviews";
+const ASSIGNMENTS_SHEET = "Stage 1 Assignments";
+const RESOLUTIONS_SHEET = "Stage 1 Resolutions";
+const AI_DRAFTS_SHEET = "Stage 1 AI Drafts";
+const SPREADSHEET_ID = "1gnAEeQ10k4hguzYCGZ-wi_GwnDZTDOwbxvjo0x_gArE";
+
+const ASSIGNMENT_HEADERS = ["Application ID", "Reviewer 1", "Reviewer 2", "Updated At"];
+const AI_DRAFT_HEADERS = ["Application ID", "Updated At", "Venture Name", "Applicant", "AI Draft JSON"];
+const RESOLUTION_HEADERS = [
+  "Application ID", "Resolution State", "Resolution Verdict", "Resolution Notes",
+  "Resolved By", "Resolved At", "Reviewer Pair"
+];
+const REVIEW_HEADERS = [
+  "Review Key", "Application ID", "Reviewer", "Reviewer Slot", "Submitted At",
+  "Conflict Of Interest", "Venture Name", "Applicant", "Stream", "Country",
+  "Sector", "App Stage", "Assigned Reviewer 1", "Assigned Reviewer 2",
+  "Eligibility JSON", "Ratings JSON", "Category Comments JSON",
+  "Edited Gates", "Edited Ratings", "Score", "Verdict", "Notes"
+];
+
+function doGet(e) {
+  if (!e || !e.parameter) {
+    return respond({ ok: false, error: "No request parameters received." }, null);
+  }
+
+  const p = e.parameter;
+  const key = p.key;
+  const cb = p.callback;
+  if (key !== SECRET_KEY) return respond({ error: "Unauthorized" }, cb);
+
+  const action = p.action || "loadApplicants";
+  try {
+    if (action === "loadApplicants" || action === "load") {
+      return respond(loadApplicants_(p.sheet || "Sheet1"), cb);
+    }
+    if (action === "screen") {
+      return respond(screenWithGemini_(p.prompt || ""), cb);
+    }
+    if (action === "saveAssignment" || action === "assign") {
+      return respond(saveAssignment_({
+        applicationId: p.applicationId || p.ventureId || "",
+        reviewer1: p.reviewer1 || "",
+        reviewer2: p.reviewer2 || ""
+      }), cb);
+    }
+    if (action === "saveAiDraft") {
+      return respond(saveAiDraft_({
+        applicationId: p.applicationId || "",
+        ventureName: p.ventureName || "",
+        applicantName: p.applicantName || "",
+        draft: safeJsonParse_(p.draft, {})
+      }), cb);
+    }
+    if (action === "saveReview" || action === "save") {
+      return respond(saveReview_(parseReviewPayload_(p)), cb);
+    }
+    if (action === "saveResolution") {
+      return respond(saveResolution_({
+        applicationId: p.applicationId || "",
+        resolutionState: p.resolutionState || "required",
+        resolutionVerdict: p.resolutionVerdict || "",
+        resolutionNotes: p.resolutionNotes || "",
+        resolvedBy: p.resolvedBy || "",
+        resolvedAt: p.resolvedAt || "",
+        reviewerPair: p.reviewerPair || ""
+      }), cb);
+    }
+    return respond({ error: "Unknown action" }, cb);
+  } catch (err) {
+    return respond({ error: err.toString() }, cb);
+  }
+}
+
+function doPost(e) {
+  try {
+    const payload = safeJsonParse_(e.postData && e.postData.contents, {});
+    if (payload.key !== SECRET_KEY) {
+      return respond({ error: "Unauthorized" });
+    }
+
+    if (payload.action === "loadApplicants" || payload.action === "load" || !payload.action) {
+      return respond(loadApplicants_(payload.sheet || "Sheet1"));
+    }
+    if (payload.action === "screen") {
+      return respond(screenWithGemini_(payload.prompt || ""));
+    }
+    if (payload.action === "saveAssignment" || payload.action === "assign") {
+      return respond(saveAssignment_({
+        applicationId: payload.applicationId || "",
+        reviewer1: payload.reviewer1 || "",
+        reviewer2: payload.reviewer2 || ""
+      }));
+    }
+    if (payload.action === "saveAiDraft") {
+      return respond(saveAiDraft_({
+        applicationId: payload.applicationId || "",
+        ventureName: payload.ventureName || "",
+        applicantName: payload.applicantName || "",
+        draft: payload.draft || {}
+      }));
+    }
+    if (payload.action === "saveReview" || payload.action === "save") {
+      return respond(saveReview_(parseReviewPayload_(payload)));
+    }
+    if (payload.action === "saveResolution") {
+      return respond(saveResolution_({
+        applicationId: payload.applicationId || "",
+        resolutionState: payload.resolutionState || "required",
+        resolutionVerdict: payload.resolutionVerdict || "",
+        resolutionNotes: payload.resolutionNotes || "",
+        resolvedBy: payload.resolvedBy || "",
+        resolvedAt: payload.resolvedAt || "",
+        reviewerPair: payload.reviewerPair || ""
+      }));
+    }
+
+    return respond({ error: "Unknown action" });
+  } catch (err) {
+    return respond({ error: err.toString() });
+  }
+}
+
+function doOptions() {
+  return ContentService
+    .createTextOutput("")
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
+function loadApplicants_(sheetName) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(sheetName);
+  if (!sheet) throw new Error("Sheet '" + sheetName + "' not found");
+
+  const raw = sheet.getDataRange().getValues();
+  if (raw.length < 4) {
+    return { ok: true, rows: [], assignments: getAssignments_(), savedReviews: getSavedReviews_(), resolutions: getResolutions_(), aiDrafts: getAiDrafts_(), total: 0 };
+  }
+
+  const headers = raw[2].map(v => String(v).trim());
+  const rows = raw.slice(3)
+    .filter(r => r.some(c => c !== "" && c !== null && c !== undefined))
+    .map(r => {
+      const obj = {};
+      headers.forEach((header, idx) => {
+        obj[header] = r[idx] !== null && r[idx] !== undefined ? String(r[idx]).trim() : "";
+      });
+      return obj;
+    });
+
+  return {
+    ok: true,
+    rows: rows,
+    assignments: getAssignments_(),
+    savedReviews: getSavedReviews_(),
+    resolutions: getResolutions_(),
+    aiDrafts: getAiDrafts_(),
+    total: rows.length
+  };
+}
+
+function saveAiDraft_(d) {
+  if (!d.applicationId) throw new Error("Application ID is required");
+  const sh = ensureSheet_(AI_DRAFTS_SHEET, AI_DRAFT_HEADERS);
+  const data = sh.getDataRange().getValues();
+  const row = [
+    d.applicationId,
+    new Date().toISOString(),
+    d.ventureName || "",
+    d.applicantName || "",
+    JSON.stringify(d.draft || {})
+  ];
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0] || "").toLowerCase().trim() === d.applicationId.toLowerCase().trim()) {
+      sh.getRange(i + 1, 1, 1, row.length).setValues([row]);
+      return { ok: true, mode: "updated" };
+    }
+  }
+
+  sh.appendRow(row);
+  return { ok: true, mode: "created" };
+}
+
+function saveAssignment_(d) {
+  if (!d.applicationId) throw new Error("Application ID is required");
+  const sh = ensureSheet_(ASSIGNMENTS_SHEET, ASSIGNMENT_HEADERS);
+  const data = sh.getDataRange().getValues();
+  const row = [
+    d.applicationId,
+    d.reviewer1 || "",
+    d.reviewer2 || "",
+    new Date().toISOString()
+  ];
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0] || "").toLowerCase().trim() === d.applicationId.toLowerCase().trim()) {
+      sh.getRange(i + 1, 1, 1, row.length).setValues([row]);
+      return { ok: true };
+    }
+  }
+
+  sh.appendRow(row);
+  return { ok: true };
+}
+
+function saveReview_(d) {
+  if (!d.reviewKey || !d.applicationId || !d.reviewer) {
+    throw new Error("Review Key, Application ID, and Reviewer are required");
+  }
+  const sh = ensureSheet_(RESULTS_SHEET, REVIEW_HEADERS);
+  const data = sh.getDataRange().getValues();
+  const row = [
+    d.reviewKey,
+    d.applicationId,
+    d.reviewer,
+    d.reviewerSlot || "",
+    d.submittedAt || new Date().toISOString(),
+    d.conflictOfInterest || "",
+    d.ventureName || "",
+    d.applicantName || "",
+    d.stream || "",
+    d.country || "",
+    d.sector || "",
+    d.ventureStage || "",
+    d.assignedReviewer1 || "",
+    d.assignedReviewer2 || "",
+    JSON.stringify(d.eligibility || {}),
+    JSON.stringify(d.ratings || {}),
+    JSON.stringify(d.categoryComments || {}),
+    Array.isArray(d.editedGates) ? d.editedGates.join(", ") : "",
+    Array.isArray(d.editedRatings) ? d.editedRatings.join(", ") : "",
+    Number(d.score || 0),
+    d.verdict || "",
+    d.notes || ""
+  ];
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0] || "").toLowerCase().trim() === d.reviewKey.toLowerCase().trim()) {
+      sh.getRange(i + 1, 1, 1, row.length).setValues([row]);
+      return { ok: true, mode: "updated" };
+    }
+  }
+
+  sh.appendRow(row);
+  return { ok: true, mode: "created" };
+}
+
+function saveResolution_(d) {
+  if (!d.applicationId) throw new Error("Application ID is required");
+  const sh = ensureSheet_(RESOLUTIONS_SHEET, RESOLUTION_HEADERS);
+  const data = sh.getDataRange().getValues();
+  const row = [
+    d.applicationId,
+    d.resolutionState || "required",
+    d.resolutionVerdict || "",
+    d.resolutionNotes || "",
+    d.resolvedBy || "",
+    d.resolvedAt || "",
+    d.reviewerPair || ""
+  ];
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0] || "").toLowerCase().trim() === d.applicationId.toLowerCase().trim()) {
+      sh.getRange(i + 1, 1, 1, row.length).setValues([row]);
+      return { ok: true, mode: "updated" };
+    }
+  }
+
+  sh.appendRow(row);
+  return { ok: true, mode: "created" };
+}
+
+function parseReviewPayload_(payload) {
+  return {
+    reviewKey: payload.reviewKey || "",
+    applicationId: payload.applicationId || "",
+    reviewer: payload.reviewer || "",
+    reviewerSlot: payload.reviewerSlot || "",
+    submittedAt: payload.submittedAt || new Date().toISOString(),
+    conflictOfInterest: payload.conflictOfInterest || "",
+    ventureName: payload.ventureName || "",
+    applicantName: payload.applicantName || "",
+    stream: payload.stream || "",
+    country: payload.country || "",
+    sector: payload.sector || "",
+    ventureStage: payload.ventureStage || "",
+    assignedReviewer1: payload.assignedReviewer1 || "",
+    assignedReviewer2: payload.assignedReviewer2 || "",
+    eligibility: safeJsonParse_(payload.eligibility, payload.eligibility || {}),
+    ratings: safeJsonParse_(payload.ratings, payload.ratings || {}),
+    categoryComments: safeJsonParse_(payload.categoryComments, payload.categoryComments || {}),
+    editedGates: safeJsonParse_(payload.editedGates, payload.editedGates || []),
+    editedRatings: safeJsonParse_(payload.editedRatings, payload.editedRatings || []),
+    score: Number(payload.score || 0),
+    verdict: payload.verdict || "",
+    notes: payload.notes || ""
+  };
+}
+
+function screenWithGemini_(prompt) {
+  try {
+    if (!GEMINI_KEY) {
+      return { ok: false, error: "Gemini API key is missing in Apps Script. Set GEMINI_KEY or use browser-side Gemini." };
+    }
+
+    const response = UrlFetchApp.fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(GEMINI_KEY),
+      {
+        method: "post",
+        contentType: "application/json",
+        payload: JSON.stringify({
+          contents: [{ parts: [{ text: prompt || "" }] }],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 2048,
+            responseMimeType: "application/json"
+          }
+        }),
+        muteHttpExceptions: true
+      }
+    );
+
+    const data = safeJsonParse_(response.getContentText(), null);
+    if (!data) throw new Error("Gemini returned invalid JSON.");
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+
+    const raw = data.candidates &&
+      data.candidates[0] &&
+      data.candidates[0].content &&
+      data.candidates[0].content.parts &&
+      data.candidates[0].content.parts[0] &&
+      data.candidates[0].content.parts[0].text
+        ? data.candidates[0].content.parts[0].text
+        : "";
+
+    const cleaned = String(raw || "").replace(/```json|```/g, "").trim();
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start === -1 || end === -1) throw new Error("Gemini response did not contain a JSON object.");
+
+    const parsed = safeJsonParse_(cleaned.slice(start, end + 1), null);
+    if (!parsed) throw new Error("Gemini JSON could not be parsed.");
+
+    return { ok: true, result: parsed };
+  } catch (err) {
+    return { ok: false, error: err.toString() };
+  }
+}
+
+function ensureSheet_(name, headers) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sh = ss.getSheetByName(name);
+  if (!sh) {
+    sh = ss.insertSheet(name);
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]);
+    styleHeader_(sh, headers.length);
+    return sh;
+  }
+
+  const current = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0].map(String);
+  let changed = false;
+  headers.forEach((header, idx) => {
+    if (current[idx] !== header) {
+      sh.getRange(1, idx + 1).setValue(header);
+      changed = true;
+    }
+  });
+  if (changed) styleHeader_(sh, headers.length);
+  if (sh.getFrozenRows() !== 1) sh.setFrozenRows(1);
+  return sh;
+}
+
+function styleHeader_(sheet, count) {
+  sheet.getRange(1, 1, 1, count)
+    .setBackground("#1a2e5a")
+    .setFontColor("#ffffff")
+    .setFontWeight("bold");
+  sheet.setFrozenRows(1);
+}
+
+function getAssignments_() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sh = ss.getSheetByName(ASSIGNMENTS_SHEET);
+  if (!sh || sh.getLastRow() < 2) return {};
+  const values = sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(sh.getLastColumn(), 4)).getValues();
+  const map = {};
+  values.forEach(row => {
+    const applicationId = String(row[0] || "").toLowerCase().trim();
+    if (!applicationId) return;
+    map[applicationId] = {
+      reviewer1: String(row[1] || "").trim(),
+      reviewer2: String(row[2] || "").trim(),
+      updatedAt: String(row[3] || "").trim()
+    };
+  });
+  return map;
+}
+
+function getAiDrafts_() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sh = ss.getSheetByName(AI_DRAFTS_SHEET);
+  if (!sh || sh.getLastRow() < 2) return {};
+  const values = sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(sh.getLastColumn(), 5)).getValues();
+  const map = {};
+  values.forEach(row => {
+    const applicationId = String(row[0] || "").toLowerCase().trim();
+    if (!applicationId) return;
+    map[applicationId] = safeJsonParse_(row[4], {});
+  });
+  return map;
+}
+
+function getSavedReviews_() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sh = ss.getSheetByName(RESULTS_SHEET);
+  if (!sh || sh.getLastRow() < 2) return {};
+
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+  const idx = indexMap_(headers);
+  if (idx["Review Key"] === undefined || idx["Application ID"] === undefined || idx["Reviewer"] === undefined) {
+    return {};
+  }
+
+  const values = sh.getRange(2, 1, sh.getLastRow() - 1, sh.getLastColumn()).getValues();
+  const out = {};
+  values.forEach(row => {
+    const applicationId = String(row[idx["Application ID"]] || "").toLowerCase().trim();
+    const reviewer = String(row[idx["Reviewer"]] || "").trim();
+    if (!applicationId || !reviewer) return;
+
+    if (!out[applicationId]) out[applicationId] = {};
+    const eligibility = safeJsonParse_(row[idx["Eligibility JSON"]], {});
+    out[applicationId][reviewer] = {
+      reviewer: reviewer,
+      reviewerSlot: idx["Reviewer Slot"] !== undefined ? String(row[idx["Reviewer Slot"]] || "").trim() : "",
+      gates: eligibility.gates || {},
+      eligibility: eligibility,
+      ratings: safeJsonParse_(row[idx["Ratings JSON"]], {}),
+      categoryComments: safeJsonParse_(row[idx["Category Comments JSON"]], {}),
+      editedGates: splitList_(idx["Edited Gates"] !== undefined ? row[idx["Edited Gates"]] : ""),
+      editedRatings: splitList_(idx["Edited Ratings"] !== undefined ? row[idx["Edited Ratings"]] : ""),
+      conflictOfInterest: idx["Conflict Of Interest"] !== undefined ? String(row[idx["Conflict Of Interest"]] || "").trim() : "",
+      score: Number(idx["Score"] !== undefined ? row[idx["Score"]] : 0),
+      verdict: mapVerdictLabel_(String(idx["Verdict"] !== undefined ? row[idx["Verdict"]] : "").trim()),
+      notes: idx["Notes"] !== undefined ? String(row[idx["Notes"]] || "") : "",
+      submitted: true,
+      submittedAt: idx["Submitted At"] !== undefined ? String(row[idx["Submitted At"]] || "") : "",
+      assignedReviewer1: idx["Assigned Reviewer 1"] !== undefined ? String(row[idx["Assigned Reviewer 1"]] || "").trim() : "",
+      assignedReviewer2: idx["Assigned Reviewer 2"] !== undefined ? String(row[idx["Assigned Reviewer 2"]] || "").trim() : ""
+    };
+  });
+  return out;
+}
+
+function getResolutions_() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sh = ss.getSheetByName(RESOLUTIONS_SHEET);
+  if (!sh || sh.getLastRow() < 2) return {};
+  const values = sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(sh.getLastColumn(), 7)).getValues();
+  const out = {};
+  values.forEach(row => {
+    const applicationId = String(row[0] || "").toLowerCase().trim();
+    if (!applicationId) return;
+    out[applicationId] = {
+      resolutionState: String(row[1] || "").trim() || "required",
+      resolutionVerdict: mapVerdictLabel_(String(row[2] || "").trim()),
+      resolutionNotes: String(row[3] || ""),
+      resolvedBy: String(row[4] || "").trim(),
+      resolvedAt: String(row[5] || "").trim(),
+      reviewerPair: String(row[6] || "").trim()
+    };
+  });
+  return out;
+}
+
+function splitList_(value) {
+  const str = String(value || "").trim();
+  return str ? str.split(/\s*,\s*/) : [];
+}
+
+function safeJsonParse_(value, fallback) {
+  try {
+    if (value === null || value === undefined || value === "") return fallback;
+    return JSON.parse(String(value));
+  } catch (err) {
+    return fallback;
+  }
+}
+
+function indexMap_(headers) {
+  const out = {};
+  headers.forEach((header, idx) => out[String(header || "").trim()] = idx);
+  return out;
+}
+
+function mapVerdictLabel_(label) {
+  if (label === "Advance to interviews") return "advance";
+  // Legacy verdict label intentionally disabled during Stage 1 sheet migration.
+  // if (label === "Advance to Stage 1") return "advance";
+  if (label === "Needs panel review") return "review";
+  // Legacy verdict label intentionally disabled during Stage 1 sheet migration.
+  // if (label === "Needs review") return "review";
+  if (label === "Do not advance") return "reject";
+  return "";
+}
+
+function respond(obj, callbackName) {
+  const json = JSON.stringify(obj);
+  if (callbackName) {
+    return ContentService
+      .createTextOutput(callbackName + "(" + json + ");")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService
+    .createTextOutput(json)
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell" style="display:none">
+  <div class="config-bar">
+    <span class="config-label">Connected:</span>
+    <span id="cfgUrlDisplay" style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:340px;flex:1"></span>
+    <span id="cfgStatus"></span>
+    <button class="btn btn-sec" onclick="checkForUpdates()">Check for new entries</button>
+    <button class="btn btn-sec" style="margin-left:auto" onclick="goToSetup()">Settings</button>
+  </div>
+  <div class="summary">
+    <div class="sstat"><div class="val" id="stTotal">0</div><div class="lbl">Applicants</div></div>
+    <div class="sstat adv"><div class="val" id="stAdv">0</div><div class="lbl">Advance</div></div>
+    <div class="sstat rev"><div class="val" id="stRev">0</div><div class="lbl">Panel review</div></div>
+    <div class="sstat rej"><div class="val" id="stRej">0</div><div class="lbl">Do not advance</div></div>
+    <div class="sstat sub"><div class="val" id="stSub">0</div><div class="lbl">Submitted</div></div>
+  </div>
+  <div class="filter-bar">
+    <span class="flbl">Filter:</span>
+    <button class="fpill on" onclick="setFilter('all',this)">All</button>
+    <button class="fpill" onclick="setFilter('advance',this)">Advance</button>
+    <button class="fpill" onclick="setFilter('review',this)">Panel review</button>
+    <button class="fpill" onclick="setFilter('reject',this)">Do not advance</button>
+    <button class="fpill" onclick="setFilter('edited',this)">Edited</button>
+    <button class="fpill" onclick="setFilter('unassigned',this)">Unassigned</button>
+    <button class="fpill" onclick="setFilter('submitted',this)">Submitted</button>
+    <select class="sort-sel" onchange="doSort(this.value)">
+      <option value="score-desc">Score: high → low</option>
+      <option value="score-asc">Score: low → high</option>
+      <option value="alpha">Alphabetical</option>
+      <option value="date">Date applied</option>
+    </select>
+    <button class="refresh-btn" id="refreshBtn" onclick="checkForUpdates()">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 7A6 6 0 0 1 12.5 4M13 7A6 6 0 0 1 1.5 10"/>
+        <path d="M11 1l1.5 3-3 .5M3 13L1.5 10l3-.5"/>
+      </svg>
+      Refresh
+      <span class="new-badge" id="newBadge" style="display:none">0</span>
+    </button>
+  </div>
+  <div class="main" id="cards"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TEAM=['Salah','Ismail','Fawwaz','Awais','Sahil','Cassandra','Faisal'];
+const LOCAL_DRAFT_KEY='tpss_stage1_local_drafts';
+// Stage 1 eligibility checks (pass/fail/flag)
+const GATES=[
+  {id:'maqasid',    label:'Maqasid alignment'},
+  {id:'compliance', label:'Islamic compliance'},
+  {id:'stage',      label:'Venture stage'},
+  {id:'type',       label:'Venture type'},
+  {id:'availability',label:'Finals availability'}
+];
+
+// TPSS 100-point rubric categories (scored 1-5, weighted to 100)
+const RATINGS=[
+  {id:'mission_alignment', label:'Mission alignment',  weight:20},
+  {id:'ummah_impact',      label:'Ummah impact',       weight:15},
+  {id:'problem_solution',  label:'Problem & solution', weight:10},
+  {id:'team',              label:'Team & execution',   weight:15},
+  {id:'traction',          label:'Traction & evidence',weight:10},
+  {id:'viability',         label:'Viability & finance',weight:20},
+  {id:'scalability',       label:'Scalability',        weight:5},
+  {id:'risk_governance',   label:'Risk & governance',  weight:5}
+];
+
+let apps=[], appFilter='all', sortBy='score-desc';
+let scriptUrl='https://script.google.com/macros/s/AKfycbyqnIeQLzOAD8MtyNAeUeDShzmNoaJx8XJpQLCx8vcOEtK5duZqvGdWfON1KMkCxOIL/exec', secretKey='tpss-2026-awais', sheetName='Sheet1', geminiKey='', currentReviewer=TEAM[0];
+let launchMode='missing-ai';
+let assignmentSaveState={};
+initReviewerSelect();
+
+// Reads still use JSONP because the app may be launched from a local file or simple local preview.
+// Writes use POST so larger review payloads are not forced through query strings.
+function jsonpFetch(url, timeoutMs) {
+  timeoutMs = timeoutMs || 30000;
+  return new Promise(function(resolve, reject) {
+    var cbName = 'tpss_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    var script = document.createElement('script');
+    var timer = null;
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = function(data) {
+      cleanup();
+      if (data && data.error) {
+        reject(new Error(data.error));
+      } else {
+        resolve(data);
+      }
+    };
+
+    script.onerror = function() {
+      cleanup();
+      reject(new Error(
+        'Script load failed. Possible causes:\n' +
+        '• Apps Script not deployed (needs a deployment, not just a save)\n' +
+        '• Wrong URL — must end in /exec, not /dev\n' +
+        '• Access set to "Only myself" — must be "Anyone"\n' +
+        '• Script has a syntax error preventing execution'
+      ));
+    };
+
+    timer = setTimeout(function() {
+      cleanup();
+      reject(new Error('Request timed out after ' + (timeoutMs/1000) + 's — script may be too slow or URL is unreachable'));
+    }, timeoutMs);
+
+    var sep = url.indexOf('?') === -1 ? '?' : '&';
+    script.src = url + sep + 'callback=' + cbName;
+    document.head.appendChild(script);
+  });
+}
+
+async function postScript(action, payload, timeoutMs) {
+  timeoutMs = timeoutMs || 20000;
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+  try {
+    await fetch(scriptUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ key: secretKey, action: action }, payload || {})),
+      signal: controller.signal
+    });
+    return { ok: true };
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      throw new Error('POST request timed out after ' + (timeoutMs / 1000) + 's');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function initReviewerSelect() {
+  var sel=document.getElementById('setupCurrentReviewer');
+  if (!sel) return;
+  sel.innerHTML=TEAM.map(function(name){return '<option value="'+name+'">'+name+'</option>';}).join('');
+  sel.value=currentReviewer;
+}
+
+// ── SETUP ──────────────────────────────────────────────────────
+function goToSetup() {
+  document.getElementById('setupScreen').style.display='block';
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('phaseBar').style.display='none';
+  document.getElementById('setupScriptUrl').value=scriptUrl;
+  document.getElementById('setupSecretKey').value=secretKey;
+  document.getElementById('setupSheetName').value=sheetName;
+  document.getElementById('setupGeminiKey').value=geminiKey;
+  document.getElementById('setupCurrentReviewer').value=currentReviewer;
+  document.getElementById('testResult').className='test-result';
+  document.getElementById('startBtnNoAi').innerHTML='Load without AI →';
+  document.getElementById('startBtnWithAi').innerHTML='Load + review unreviewed →';
+  document.getElementById('startBtnNoAi').disabled=false;
+  document.getElementById('startBtnWithAi').disabled=false;
+}
+
+function toggleScript() {
+  var box=document.getElementById('scriptBox');
+  var tog=document.querySelector('.script-toggle');
+  var open=box.style.display==='block';
+  box.style.display=open?'none':'block';
+  tog.textContent=open?'Show script template →':'Hide script template ↑';
+}
+
+function copyScript() {
+  var code=document.getElementById('scriptCode').textContent;
+  navigator.clipboard.writeText(code).then(function(){
+    var btn=document.querySelector('.copy-btn');
+    btn.textContent='Copied ✓';
+    setTimeout(function(){btn.textContent='Copy';},2000);
+  }).catch(function(){toast('Select the code and copy manually','error');});
+}
+
+async function testConnection() {
+  var url=document.getElementById('setupScriptUrl').value.trim();
+  var key=document.getElementById('setupSecretKey').value.trim();
+  var sheet=document.getElementById('setupSheetName').value.trim()||'Sheet1';
+  var res=document.getElementById('testResult');
+  var btn=document.getElementById('testBtn');
+
+  if (!url||!key) {
+    res.className='test-result err';
+    res.textContent='Enter both the Script URL and secret key first.';
+    return;
+  }
+
+  res.className='test-result chk';
+  res.textContent='Testing connection…';
+  btn.disabled=true;
+
+  try {
+    var fullUrl=url+'?key='+encodeURIComponent(key)+'&sheet='+encodeURIComponent(sheet);
+    var data=await jsonpFetch(fullUrl, 20000);
+    res.className='test-result ok';
+    res.textContent='Connected — '+data.total+' applicant row(s) found in "'+sheet+'"';
+  } catch(e) {
+    res.className='test-result err';
+    res.textContent='Failed: '+e.message;
+  } finally {
+    btn.disabled=false;
+  }
+}
+
+async function startApp(mode) {
+  var url=document.getElementById('setupScriptUrl').value.trim();
+  var key=document.getElementById('setupSecretKey').value.trim();
+  var sheet=document.getElementById('setupSheetName').value.trim()||'Sheet1';
+  var gKey=document.getElementById('setupGeminiKey').value.trim();
+  var reviewer=document.getElementById('setupCurrentReviewer').value.trim()||TEAM[0];
+  var res=document.getElementById('testResult');
+
+  if (!url||!key) {
+    res.className='test-result err';
+    res.textContent='Please enter the Script URL and secret key.';
+    return;
+  }
+
+  scriptUrl=url; secretKey=key; sheetName=sheet; geminiKey=gKey; currentReviewer=reviewer; launchMode=mode||'missing-ai';
+
+  var btn=document.getElementById(launchMode==='no-ai'?'startBtnNoAi':'startBtnWithAi');
+  var otherBtn=document.getElementById(launchMode==='no-ai'?'startBtnWithAi':'startBtnNoAi');
+  btn.innerHTML='<span class="mini-spin"></span> Loading applicants…';
+  btn.disabled=true;
+  if (otherBtn) otherBtn.disabled=true;
+
+  var data=await fetchApplicants();
+  if (!data) {
+    document.getElementById('startBtnNoAi').innerHTML='Load without AI →';
+    document.getElementById('startBtnWithAi').innerHTML='Load + review unreviewed →';
+    document.getElementById('startBtnNoAi').disabled=false;
+    document.getElementById('startBtnWithAi').disabled=false;
+    btn.disabled=false;
+    return;
+  }
+
+  var rows=dedup(data.rows||[]);
+  var savedAssignments=data.assignments||{};
+  var savedReviews=data.savedReviews||{};
+  var savedResolutions=data.resolutions||{};
+  var aiDrafts=data.aiDrafts||{};
+
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('appShell').style.display='block';
+  document.getElementById('phaseBar').style.display='flex';
+  var disp=document.getElementById('cfgUrlDisplay');
+  if (disp) disp.textContent=url+' · '+currentReviewer+' · '+(launchMode==='no-ai'?'No AI draft':'Draft missing only');
+
+  await batchScreen(rows, savedAssignments, savedReviews, savedResolutions, aiDrafts, launchMode);
+}
+
+async function fetchApplicants() {
+  try {
+    var url=scriptUrl+'?key='+encodeURIComponent(secretKey)+'&action=loadApplicants&sheet='+encodeURIComponent(sheetName);
+    var data=await jsonpFetch(url, 45000);
+    return data;
+  } catch(e) {
+    toast('Could not load applicants: '+e.message, 'error');
+    return null;
+  }
+}
+
+function applicationIdFromRow(row){
+  return ((row['Email']||row['Venture Name']||'').toLowerCase().trim());
+}
+
+function dedup(rows) {
+  var seen=new Map();
+  for (var i=0;i<rows.length;i++) {
+    var row=rows[i];
+    var email=(row['Email']||'').toLowerCase().trim();
+    var vn=(row['Venture Name']||'').toLowerCase().trim();
+    var key=email||vn||('row_'+i);
+    if (!seen.has(key)) { seen.set(key,row); }
+    else if (JSON.stringify(row).length>JSON.stringify(seen.get(key)).length) { seen.set(key,row); }
+  }
+  return Array.from(seen.values());
+}
+
+async function batchScreen(rows, savedAssignments, savedReviews, savedResolutions, aiDrafts, mode) {
+  savedAssignments = savedAssignments || {};
+  savedReviews = savedReviews || {};
+  savedResolutions = savedResolutions || {};
+  aiDrafts = aiDrafts || {};
+  mode = mode || 'missing-ai';
+  document.getElementById('cards').innerHTML=
+    '<div class="loading-wrap">'+
+    '<div class="spin-lg"></div>'+
+    '<h2>'+(mode==='no-ai'?'Loading reviewer workspace':'Preparing AI draft reviews')+'</h2>'+
+    '<p>'+(mode==='no-ai'?'Loading applicants without new AI calls…':'Drafting Stage 1 reviewer assessments only for applicants without saved AI drafts…')+'</p>'+
+    '<div class="prog-bar"><div class="prog-fill" id="pf"></div></div>'+
+    '<div class="prog-lbl" id="pl">Starting…</div>'+
+    '</div>';
+
+  var results=[];
+  var draftedCount=0;
+  if (rows.length > 0) {
+    console.log('[TPSS] Column names from sheet:', Object.keys(rows[0]));
+    console.log('[TPSS] Preparing', rows.length, 'applicant(s)');
+  } else {
+    console.warn('[TPSS] WARNING: 0 rows after dedup. Check column names in your sheet match exactly (including spacing around /)');
+  }
+  for (var i=0;i<rows.length;i++) {
+    var vn=rows[i]['Venture Name']||'Unknown';
+    var applicationId=applicationIdFromRow(rows[i]);
+    var existingAiDraft=aiDrafts[applicationId]||null;
+    var pf=document.getElementById('pf'), pl=document.getElementById('pl');
+    if (pf) pf.style.width=Math.round(((i+1)/rows.length)*100)+'%';
+    if (pl) pl.textContent=(mode==='no-ai'?'Loading: ':'Preparing: ')+vn+' ('+(i+1)+'/'+rows.length+')';
+    var screened;
+    if (existingAiDraft) {
+      screened=createAppFromRow(rows[i], normalizeAiDraft(existingAiDraft));
+    } else if (mode==='missing-ai') {
+      screened=await screenOne(rows[i]);
+      draftedCount++;
+    } else {
+      screened=createAppFromRow(rows[i], conservativeAiDraft('AI draft not requested at launch. Review manually or run AI draft for this application.','ai_skipped'));
+    }
+    hydrateReviewData(screened, savedAssignments[screened.applicationId], savedReviews[screened.applicationId], savedResolutions[screened.applicationId]);
+    if (mode==='missing-ai' && i < rows.length - 1 && !existingAiDraft) await new Promise(function(r){setTimeout(r, 2000);});
+    results.push(screened);
+  }
+
+  apps=results;
+  setTimeout(function(){
+    renderAll(); updateSummary();
+    toast(mode==='missing-ai' ? ('AI draft review complete — '+draftedCount+' new AI draft(s) prepared') : ('Workspace loaded — no new AI drafts requested'),'success');
+    document.getElementById('ph1').className='phase done';
+    document.getElementById('ph2').className='phase active';
+  },400);
+}
+
+async function requestBrowserAiDraft(prompt, ventureName) {
+  if (!geminiKey) throw new Error('No browser Gemini API key configured');
+
+  var resp, data, lastErr;
+  for (var attempt=0; attempt<3; attempt++) {
+    if (attempt > 0) {
+      var waitMs = attempt * 8000;
+      var pl=document.getElementById('pl');
+      if (pl) pl.textContent='Gemini busy — retrying '+ventureName+' in '+(waitMs/1000)+'s… (attempt '+(attempt+1)+'/3)';
+      await new Promise(function(r){setTimeout(r, waitMs);});
+    }
+    resp = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(geminiKey),
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 2048, responseMimeType: 'application/json' }
+        })
+      }
+    );
+    data = await resp.json();
+    if (resp.status === 503 || resp.status === 429 || (data.error && (data.error.code === 503 || data.error.code === 429))) {
+      lastErr = new Error(data.error ? data.error.message : 'Service unavailable');
+      continue;
+    }
+    lastErr = null;
+    break;
+  }
+  if (lastErr) throw lastErr;
+  if (data.error) throw new Error(data.error.message);
+  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+    throw new Error('Gemini returned no candidate content');
+  }
+
+  var raw = data.candidates[0].content.parts[0].text || '';
+  var cleaned = raw.replace(/```json|```/g, '').trim();
+  var start = cleaned.indexOf('{');
+  var end = cleaned.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON object found in response');
+  cleaned = cleaned.slice(start, end + 1);
+  cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
+  console.log('[TPSS] Raw browser Gemini JSON for', ventureName, ':', cleaned);
+  return normalizeAiDraft(JSON.parse(cleaned));
+}
+
+async function requestAppsScriptAiDraft(prompt, ventureName) {
+  if (!scriptUrl || !secretKey) throw new Error('Apps Script fallback is not configured');
+  var url=scriptUrl+
+    '?key='+encodeURIComponent(secretKey)+
+    '&action=screen'+
+    '&prompt='+encodeURIComponent(prompt);
+  var data=await jsonpFetch(url, 45000);
+  if (!data || data.ok === false || !data.result) {
+    throw new Error((data && data.error) || 'Apps Script returned no AI result');
+  }
+  console.log('[TPSS] Apps Script Gemini fallback used for', ventureName);
+  return normalizeAiDraft(data.result);
+}
+
+async function screenOne(row) {
+  function g(k){ return (row[k]||'').toString().trim().replace(/[\r\n]+/g,' ').replace(/"/g,"'"); }
+  var vName=g('Venture Name')||'Unknown';
+  var aName=(g('First Name')+' '+g('Last Name')).trim();
+
+  var prompt='You are a TPSS Accelerator Stage 1 review draft assistant. Prepare a draft assessment for human reviewers using the official TPSS scoring method. Return ONLY valid JSON with no markdown.\n\n'+
+    'STRICT RULES:\n'+
+    '- Use only facts explicitly present in the application text below.\n'+
+    '- Do not invent traction, team strength, governance, compliance, availability, metrics, partnerships, registrations, market size, or financial details.\n'+
+    '- If evidence is missing or unclear, say so explicitly in the note or category comment using the phrase "Insufficient evidence in application".\n'+
+    '- When evidence is missing, score conservatively.\n'+
+    '- Do not infer a pass on eligibility from silence; use flag when information is missing.\n\n'+
+    'VENTURE:'+vName+' APPLICANT:'+aName+' COUNTRY:'+g('Country')+'\n'+
+    'SECTOR:'+g('Venture Sector')+' STAGE:'+g('Venture Stage')+' TYPE:'+g('Venture Type')+'\n'+
+    'DESC:'+g('Venture Description').slice(0,500)+'\n'+
+    'MISSION:'+g('Venture Mission').slice(0,400)+'\n'+
+    'MAQASID:'+g('Maqasid Alignment')+'\n'+
+    'PROBLEM:'+g('Problem Statement').slice(0,350)+'\n'+
+    'SOLUTION:'+g('Venture Solution').slice(0,350)+'\n'+
+    'TRACTION:'+g('Current Traction')+' '+g('Traction Examples').slice(0,300)+'\n'+
+    'TEAM:'+(g('Cofounders')||g('Cofounder Details')).slice(0,300)+'\n'+
+    'FUNDING:'+g('Funding Source')+' ASK:'+g('Funding Amount')+' USE:'+g('Funds Use').slice(0,220)+'\n'+
+    'IMPACT:'+g('Venture Impact').slice(0,300)+'\n'+
+    'COMMIT:'+g('Commit')+'\n\n'+
+    'ELIGIBILITY CHECKS (pass/fail/flag each):\n'+
+    '1. maqasid: Mission fit with TPSS principles and Maqasid al-Shariah. Screens out non-permissible activities.\n'+
+    '2. compliance: No prohibited sectors, no riba-dependent revenue, Islamic governance integrity.\n'+
+    '3. stage: Proof-of-concept or stronger (small reserve for exceptional concept-stage). Pass if PoC+, flag if concept-only but strong.\n'+
+    '4. type: For-profit or nonprofit accepted, tech or non-tech accepted.\n'+
+    '5. availability: Able to participate in finals and coaching windows per TPSS 2026 calendar.\n\n'+
+    'TPSS STAGE 1 100-POINT RUBRIC - score each 1-5 (1=poor,3=adequate,5=excellent):\n'+
+    '1. mission_alignment (20pts): TPSS mission fit, Maqasid alignment, service to Ummah, ethical governance.\n'+
+    '2. ummah_impact (15pts): Theory of change, beneficiary scale, concrete outcome metrics, measurement plan.\n'+
+    '3. problem_solution (10pts): Problem clarity, solution differentiation, innovation edge over alternatives.\n'+
+    '4. team (15pts): Founder-market fit, track record, ability to recruit and deliver.\n'+
+    '5. traction (10pts): PoC, pilots, users, revenue, donations, letters of support.\n'+
+    '6. viability (20pts): For-profits: unit economics, market size, path to profitability, capital efficiency. Nonprofits: multi-year funding and sustainability plan. Preference for Islamic instruments.\n'+
+    '7. scalability (5pts): Ability to scale across markets, build generational institutions.\n'+
+    '8. risk_governance (5pts): Risk register, governance, safeguarding, data protection, Shariah readiness.\n\n'+
+    'Return this exact JSON shape:\n'+
+    '{"eligibility":{"maqasid":{"verdict":"pass","note":"one sentence"},"compliance":{"verdict":"pass","note":"one sentence"},"stage":{"verdict":"pass","note":"one sentence"},"type":{"verdict":"pass","note":"one sentence"},"availability":{"verdict":"pass","note":"one sentence"}},"scores":{"mission_alignment":3,"ummah_impact":3,"problem_solution":3,"team":3,"traction":3,"viability":3,"scalability":3,"risk_governance":3},"category_comments":{"mission_alignment":"one sentence","ummah_impact":"one sentence","problem_solution":"one sentence","team":"one sentence","traction":"one sentence","viability":"one sentence","scalability":"one sentence","risk_governance":"one sentence"},"summary":"two sentence plain text assessment"}';
+
+  var ai;
+  var browserErr=null;
+  var fallbackErr=null;
+  try {
+    ai = await requestBrowserAiDraft(prompt, vName);
+  } catch (err) {
+    browserErr = err;
+    console.warn('[TPSS] Browser Gemini failed for', vName + ':', err.message);
+  }
+
+  if (!ai) {
+    try {
+      ai = await requestAppsScriptAiDraft(prompt, vName);
+    } catch (err) {
+      fallbackErr = err;
+      console.error('[TPSS] Apps Script Gemini fallback failed for', vName + ':', err.message);
+    }
+  }
+
+  if (!ai) {
+    var reasons=[];
+    if (browserErr) reasons.push('Browser Gemini: ' + browserErr.message);
+    if (fallbackErr) reasons.push('Apps Script fallback: ' + fallbackErr.message);
+    ai=normalizeAiDraft({
+      eligibility:{
+        maqasid:{verdict:'flag',note:'AI analysis failed — review manually.'},
+        compliance:{verdict:'flag',note:'AI analysis failed — review manually.'},
+        stage:{verdict:'flag',note:'AI analysis failed — review manually.'},
+        type:{verdict:'flag',note:'AI analysis failed — review manually.'},
+        availability:{verdict:'flag',note:'AI analysis failed — review manually.'}
+      },
+      scores:{
+        mission_alignment:3,ummah_impact:3,problem_solution:3,team:3,
+        traction:3,viability:3,scalability:3,risk_governance:3
+      },
+      category_comments:{},
+      summary:'AI draft failed. ' + (reasons.join(' | ') || 'Please review manually.')
+    }, ['gemini_error']);
+  }
+
+  var normalizedGates=ai.gates;
+  var humanGates={};
+  GATES.forEach(function(g2){humanGates[g2.id]=normalizedGates[g2.id].verdict||'flag';});
+  var aiScores=ai.scores;
+  var aiCategoryComments=ai.categoryComments;
+  var aiScore=calcScore(humanGates,aiScores);
+  var draftVerdict=computeVerdict(humanGates,aiScores);
+
+  var app=createAppFromRow(row, ai);
+  await persistAiDraft(app, ai);
+  return app;
+}
+
+function createAppFromRow(row, ai){
+  function g(k){ return (row[k]||'').toString().trim().replace(/[\r\n]+/g,' ').replace(/"/g,"'"); }
+  var vName=g('Venture Name')||'Unknown';
+  var aName=(g('First Name')+' '+g('Last Name')).trim();
+  var applicationId=(g('Email')||vName).toLowerCase().trim();
+  var normalizedGates=ai.gates||normalizeAiGates(ai.eligibility||{});
+  var humanGates={};
+  GATES.forEach(function(g2){humanGates[g2.id]=normalizedGates[g2.id].verdict||'flag';});
+  var aiScores=ai.scores||ai.ratings||{};
+  var aiCategoryComments=ai.categoryComments||ai.category_comments||{};
+  var aiScore=calcScore(humanGates,aiScores);
+  var draftVerdict=computeVerdict(humanGates,aiScores);
+  return {
+    id:applicationId,
+    applicationId:applicationId,
+    baseReviewKey:applicationId,
+    email:g('Email'),
+    applicantName:aName, ventureName:vName,
+    country:g('Country'),
+    sector:g('Venture Sector'),
+    ventureStage:g('Venture Stage'),
+    stream:g('Stream'),
+    dateApplied:g('Date Applied'),
+    rawFields:{
+      'Description': row['Venture Description']||'',
+      'Mission': row['Venture Mission']||'',
+      'Maqasid Alignment': row['Maqasid Alignment']||'',
+      'Problem Statement': row['Problem Statement']||'',
+      'Solution': row['Venture Solution']||'',
+      'Differentiation': row['Venture Difference']||'',
+      'Current Traction': row['Current Traction']||'',
+      'Traction Examples': row['Traction Examples']||'',
+      'Team / Cofounders': (row['Cofounders']||row['Cofounder Details']||''),
+      'Funding Source': row['Funding Source']||'',
+      'Funding Ask': row['Funding Amount']||'',
+      'Use of Funds': row['Funds Use']||'',
+      'Impact': row['Venture Impact']||'',
+      'Commit to Finals': row['Commit']||'',
+      'Pitch Deck': row['Pitch Deck']||''
+    },
+    application:{
+      id:applicationId,
+      applicantName:aName,
+      ventureName:vName,
+      email:g('Email'),
+      country:g('Country'),
+      sector:g('Venture Sector'),
+      ventureStage:g('Venture Stage'),
+      stream:g('Stream'),
+      dateApplied:g('Date Applied')
+    },
+    assignments:{reviewer1:'',reviewer2:'',updatedAt:''},
+    eligibility:{ai:JSON.parse(JSON.stringify(normalizedGates)),status:'pending'},
+    aiSeed:{
+      gates:JSON.parse(JSON.stringify(normalizedGates)),
+      ratings:Object.assign({},aiScores),
+      categoryComments:Object.assign({},aiCategoryComments),
+      summary:ai.summary||'',
+      score:aiScore,
+      verdict:draftVerdict,
+      valid:ai.valid,
+      issues:ai.issues||[]
+    },
+    reviewsByReviewer:{},
+    comparison:{pair:[],flags:{},has:false,hasTwoSubmittedReviews:false},
+    workflow:{
+      status:'draft',
+      resolutionState:'not-needed',
+      resolutionVerdict:'',
+      resolutionNotes:'',
+      resolvedBy:'',
+      resolvedAt:'',
+      reviewerPair:'',
+      localDraftRestored:false,
+      localDraftSavedAt:'',
+      aiStatus:'pending'
+    },
+    progression:{eligibilityStatus:'pending',reviewStatus:'draft'},
+    aiGates:JSON.parse(JSON.stringify(normalizedGates)),
+    humanGates:Object.assign({},humanGates),
+    editedGates:new Set(),
+    aiRatings:Object.assign({},aiScores),
+    humanRatings:Object.assign({},aiScores),
+    aiCategoryComments:Object.assign({},aiCategoryComments),
+    categoryComments:Object.assign({},aiCategoryComments),
+    editedRatings:new Set(),
+    aiScore:aiScore, humanScore:aiScore,
+    aiSummary:ai.summary||'',
+    assignedReviewer1:'',
+    assignedReviewer2:'',
+    conflictOfInterest:'None disclosed',
+    notes:'',
+    verdict:draftVerdict,
+    submitted:false,
+    submittedAt:'',
+    expanded:false,
+    activeReviewer:currentReviewer,
+    sourceRow:JSON.parse(JSON.stringify(row))
+  };
+}
+
+async function persistAiDraft(app, aiDraft){
+  if (!scriptUrl || !secretKey) return;
+  try {
+    await postScript('saveAiDraft', {
+      applicationId:app.applicationId,
+      ventureName:app.ventureName,
+      applicantName:app.applicantName,
+      draft:aiDraft
+    }, 20000);
+  } catch (err) {
+    console.warn('[TPSS] Could not persist AI draft for', app.applicationId, err.message);
+  }
+}
+
+function normalizeAiGates(gates){
+  var out={};
+  GATES.forEach(function(g){
+    out[g.id]={
+      verdict:(gates[g.id]&&['pass','fail','flag'].indexOf(gates[g.id].verdict)>=0)?gates[g.id].verdict:'flag',
+      note:sanitizeAiText((gates[g.id]&&gates[g.id].note)||'')
+    };
+  });
+  return out;
+}
+
+function normalizeAiScores(scores, issues){
+  var out={};
+  RATINGS.forEach(function(r){
+    var val=parseFloat(scores[r.id]);
+    if (val>=1&&val<=5) out[r.id]=Math.round(val);
+    else {
+      out[r.id]=3;
+      if (issues) issues.push('missing_score:'+r.id);
+    }
+  });
+  return out;
+}
+
+function normalizeCategoryComments(comments, issues){
+  var out={};
+  comments = comments || {};
+  RATINGS.forEach(function(r){
+    out[r.id]=sanitizeAiText(comments[r.id]||'');
+    if (!out[r.id] && issues) issues.push('missing_comment:'+r.id);
+  });
+  return out;
+}
+
+function sanitizeAiText(value){
+  return String(value||'')
+    .replace(/[\x00-\x1F\x7F]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function conservativeAiDraft(reason, issueCode){
+  var gates={}, scores={}, comments={};
+  GATES.forEach(function(g){
+    gates[g.id]={verdict:'flag',note:'Insufficient evidence in application. Review manually.'};
+  });
+  RATINGS.forEach(function(r){
+    scores[r.id]=3;
+    comments[r.id]='Insufficient evidence in application.';
+  });
+  return {
+    gates:gates,
+    scores:scores,
+    categoryComments:comments,
+    summary:reason || 'AI draft incomplete. Review manually against the application.',
+    valid:false,
+    issues:[issueCode || 'conservative_fallback']
+  };
+}
+
+function normalizeAiDraft(ai, presetIssues){
+  var issues=(presetIssues||[]).slice();
+  var sourceGates=ai.eligibility||ai.gates||{};
+  var gates=normalizeAiGates(sourceGates);
+  var scores=normalizeAiScores(ai.scores||ai.ratings||{}, issues);
+  var categoryComments=normalizeCategoryComments(ai.category_comments||ai.categoryComments||{}, issues);
+  var summary=sanitizeAiText(ai.summary||'');
+  GATES.forEach(function(g){
+    if (!sourceGates[g.id] || ['pass','fail','flag'].indexOf(sourceGates[g.id].verdict)===-1) issues.push('missing_gate:'+g.id);
+  });
+  if (!summary) {
+    summary='AI draft incomplete — verify manually against the application.';
+    issues.push('missing_summary');
+  }
+  var criticalIssues=issues.filter(function(issue){
+    return issue.indexOf('missing_gate:')===0 || issue.indexOf('missing_score:')===0 || issue==='gemini_error';
+  });
+  if (criticalIssues.length) {
+    var fallback=conservativeAiDraft('AI draft incomplete — verify manually. '+summary, 'schema_incomplete');
+    fallback.issues=['schema_incomplete'].concat(issues.slice());
+    return fallback;
+  }
+  if (issues.length) summary='AI draft incomplete — verify manually. '+summary;
+  return { gates:gates, scores:scores, categoryComments:categoryComments, summary:summary, valid:issues.length===0, issues:issues };
+}
+
+function buildReviewRecord(a, reviewer){
+  var gates={};
+  GATES.forEach(function(g){
+    gates[g.id]=(a.aiSeed.gates[g.id]&&a.aiSeed.gates[g.id].verdict)||'flag';
+  });
+  var ratings=Object.assign({},a.aiSeed.ratings);
+  var comments=Object.assign({},a.aiSeed.categoryComments);
+  return {
+    reviewer:reviewer||currentReviewer,
+    reviewerSlot:'',
+    gates:gates,
+    ratings:ratings,
+    categoryComments:comments,
+    editedGates:[],
+    editedRatings:[],
+    conflictOfInterest:'None disclosed',
+    notes:a.notes||'',
+    score:calcScore(gates,ratings),
+    verdict:computeVerdict(gates,ratings),
+    submitted:false,
+    submittedAt:'',
+    eligibility:buildEligibilityPayload(a,gates)
+  };
+}
+
+function normalizeSavedReview(record, a, reviewer){
+  record = record || {};
+  var base=buildReviewRecord(a, reviewer);
+  var gates=record.gates||{};
+  // Legacy `record.humanGates` support intentionally disabled during the workbook migration.
+  // var gates=record.gates||record.humanGates||{};
+  GATES.forEach(function(g){
+    if (['pass','fail','flag'].indexOf(gates[g.id])>=0) base.gates[g.id]=gates[g.id];
+    else if (gates[g.id] && ['pass','fail','flag'].indexOf(gates[g.id].verdict)>=0) base.gates[g.id]=gates[g.id].verdict;
+  });
+  base.ratings=normalizeAiScores(record.ratings||base.ratings);
+  // Legacy `record.humanRatings` support intentionally disabled during the workbook migration.
+  // base.ratings=normalizeAiScores(record.ratings||record.humanRatings||base.ratings);
+  base.categoryComments=normalizeCategoryComments(record.categoryComments||base.categoryComments);
+  // Legacy `record.comments` support intentionally disabled during the workbook migration.
+  // base.categoryComments=normalizeCategoryComments(record.categoryComments||record.comments||base.categoryComments);
+  base.editedGates=(record.editedGates||[]).slice();
+  base.editedRatings=(record.editedRatings||[]).slice();
+  base.conflictOfInterest=String(record.conflictOfInterest||'').trim()||'None disclosed';
+  base.notes=String(record.notes||'');
+  base.submitted=!!record.submitted;
+  base.submittedAt=record.submittedAt||'';
+  base.reviewerSlot=record.reviewerSlot||'';
+  base.score=record.score!=null?Number(record.score):calcScore(base.gates,base.ratings);
+  base.verdict=record.verdict||computeVerdict(base.gates,base.ratings);
+  base.eligibility=record.eligibility||buildEligibilityPayload(a,base.gates);
+  return base;
+}
+
+function buildReviewerState(a){
+  return {
+    reviewer:currentReviewer,
+    reviewerSlot:getReviewerSlot(a,currentReviewer),
+    gates:JSON.parse(JSON.stringify(a.humanGates)),
+    categoryComments:Object.assign({},a.categoryComments||{}),
+    conflictOfInterest:a.conflictOfInterest||'None disclosed',
+    editedGates:Array.from(a.editedGates),
+    editedRatings:Array.from(a.editedRatings),
+    ratings:Object.assign({},a.humanRatings),
+    score:a.humanScore,
+    verdict:a.verdict,
+    notes:a.notes||'',
+    submitted:!!a.submitted,
+    submittedAt:a.submittedAt||'',
+    eligibility:buildEligibilityPayload(a,a.humanGates)
+  };
+}
+
+function applyReviewerState(a, state){
+  state = state || buildReviewRecord(a, currentReviewer);
+  a.humanGates=Object.assign({},state.gates||a.humanGates);
+  a.editedGates=new Set(state.editedGates||[]);
+  a.humanRatings=Object.assign({},state.ratings||a.humanRatings);
+  a.categoryComments=normalizeCategoryComments(state.categoryComments||a.categoryComments);
+  a.conflictOfInterest=state.conflictOfInterest||'None disclosed';
+  a.editedRatings=new Set(state.editedRatings||[]);
+  a.humanScore=state.score!=null?Number(state.score):calcScore(a.humanGates,a.humanRatings);
+  a.verdict=state.verdict||computeVerdict(a.humanGates,a.humanRatings);
+  a.notes=state.notes||'';
+  a.submitted=!!state.submitted;
+  a.submittedAt=state.submittedAt||'';
+}
+
+function buildEligibilityPayload(a, gates){
+  var out={gates:{}};
+  GATES.forEach(function(g){
+    out.gates[g.id]={ verdict:gates[g.id]||'flag', note:(a.aiGates[g.id]&&a.aiGates[g.id].note)||'' };
+  });
+  return out;
+}
+
+function defaultWorkflowState(){
+  return {
+    status:'draft',
+    resolutionState:'not-needed',
+    resolutionVerdict:'',
+    resolutionNotes:'',
+    resolvedBy:'',
+    resolvedAt:'',
+    reviewerPair:'',
+    localDraftRestored:false,
+    localDraftSavedAt:'',
+    aiStatus:'pending'
+  };
+}
+
+function ensureWorkflowState(a){
+  a.workflow=Object.assign(defaultWorkflowState(), a.workflow||{});
+}
+
+function normalizeResolutionRecord(record){
+  record=record||{};
+  return {
+    resolutionState:['not-needed','required','resolved'].indexOf(record.resolutionState)>=0?record.resolutionState:'required',
+    resolutionVerdict:['advance','review','reject'].indexOf(record.resolutionVerdict)>=0?record.resolutionVerdict:'',
+    resolutionNotes:String(record.resolutionNotes||''),
+    resolvedBy:String(record.resolvedBy||'').trim(),
+    resolvedAt:String(record.resolvedAt||''),
+    reviewerPair:String(record.reviewerPair||'').trim()
+  };
+}
+
+function normalizeAssignmentData(assignmentData){
+  if (!assignmentData) return { reviewer1:'', reviewer2:'', updatedAt:'' };
+  if (typeof assignmentData === 'string') {
+    return { reviewer1:String(assignmentData).trim(), reviewer2:'', updatedAt:'' };
+  }
+  return {
+    reviewer1:String(assignmentData.reviewer1||'').trim(),
+    reviewer2:String(assignmentData.reviewer2||'').trim(),
+    updatedAt:String(assignmentData.updatedAt||'').trim()
+  };
+}
+
+function syncAssignmentState(a){
+  a.assignedReviewer1=a.assignments.reviewer1||'';
+  a.assignedReviewer2=a.assignments.reviewer2||'';
+}
+
+function buildReviewKey(a, reviewer){
+  return (a.applicationId+'|'+(reviewer||currentReviewer)).toLowerCase().trim();
+}
+
+function getReviewerSlot(a, reviewer){
+  if ((a.assignments.reviewer1||a.assignedReviewer1)===reviewer) return 'reviewer1';
+  if ((a.assignments.reviewer2||a.assignedReviewer2)===reviewer) return 'reviewer2';
+  return '';
+}
+
+function ensureReviewerState(a, reviewer){
+  reviewer = reviewer || currentReviewer;
+  ensureWorkflowState(a);
+  if (!a.reviewsByReviewer) a.reviewsByReviewer={};
+  if (!a.reviewsByReviewer[reviewer]) {
+    a.reviewsByReviewer[reviewer]=buildReviewRecord(a, reviewer);
+  }
+  return a.reviewsByReviewer[reviewer];
+}
+
+function storeCurrentReviewerState(a){
+  ensureReviewerState(a, currentReviewer);
+  var existing=a.reviewsByReviewer[currentReviewer];
+  var snapshot=buildReviewerState(a);
+  snapshot.submitted=existing?existing.submitted:snapshot.submitted;
+  snapshot.submittedAt=existing?existing.submittedAt:snapshot.submittedAt;
+  a.reviewsByReviewer[currentReviewer]=snapshot;
+  syncDerivedState(a);
+}
+
+function loadCurrentReviewerState(a){
+  ensureReviewerState(a, currentReviewer);
+  applyReviewerState(a, a.reviewsByReviewer[currentReviewer]);
+  syncDerivedState(a);
+}
+
+function getDraftStore(){
+  try { return JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY)||'{}'); }
+  catch (err) { return {}; }
+}
+
+function setDraftStore(store){
+  localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(store||{}));
+}
+
+function restoreLocalDraft(a){
+  ensureWorkflowState(a);
+  a.workflow.localDraftRestored=false;
+  a.workflow.localDraftSavedAt='';
+  if (a.submitted) return;
+  var draftStore=getDraftStore();
+  var stored=draftStore[a.id] && draftStore[a.id][currentReviewer];
+  if (!stored || !stored.review) return;
+  var restored=normalizeSavedReview(stored.review, a, currentReviewer);
+  restored.submitted=false;
+  restored.submittedAt='';
+  a.reviewsByReviewer[currentReviewer]=restored;
+  applyReviewerState(a, restored);
+  a.workflow.localDraftRestored=true;
+  a.workflow.localDraftSavedAt=stored.savedAt||'';
+}
+
+function hydrateReviewData(a, assignmentData, savedReviewData, resolutionData){
+  ensureWorkflowState(a);
+  a.assignments=normalizeAssignmentData(assignmentData);
+  syncAssignmentState(a);
+  a.reviewsByReviewer={};
+  if (savedReviewData) {
+    Object.keys(savedReviewData).forEach(function(reviewer){
+      a.reviewsByReviewer[reviewer]=normalizeSavedReview(savedReviewData[reviewer], a, reviewer);
+      if (savedReviewData[reviewer].assignedReviewer1 || savedReviewData[reviewer].assignedReviewer2) {
+        a.assignments.reviewer1=savedReviewData[reviewer].assignedReviewer1||a.assignments.reviewer1;
+        a.assignments.reviewer2=savedReviewData[reviewer].assignedReviewer2||a.assignments.reviewer2;
+      }
+    });
+  }
+  if (resolutionData) {
+    a.workflow=Object.assign(a.workflow, normalizeResolutionRecord(resolutionData));
+  }
+  syncAssignmentState(a);
+  loadCurrentReviewerState(a);
+  restoreLocalDraft(a);
+  syncDerivedState(a);
+}
+
+function getComparisonInfo(a){
+  var states=a.reviewsByReviewer||{};
+  var preferred=[a.assignments.reviewer1,a.assignments.reviewer2].filter(Boolean);
+  var pair=[];
+  preferred.forEach(function(name){
+    if (states[name] && states[name].submitted) pair.push({reviewer:name,state:states[name]});
+  });
+  if (pair.length<2) {
+    Object.keys(states).forEach(function(name){
+      if (pair.length>=2) return;
+      if (states[name] && states[name].submitted && !pair.some(function(p){return p.reviewer===name;})) {
+        pair.push({reviewer:name,state:states[name]});
+      }
+    });
+  }
+  var flags={}, has=false;
+  if (pair.length===2) {
+    RATINGS.forEach(function(r){
+      var aVal=parseInt(pair[0].state.ratings[r.id],10)||3;
+      var bVal=parseInt(pair[1].state.ratings[r.id],10)||3;
+      flags[r.id]=Math.abs(aVal-bVal)>=3;
+      if (flags[r.id]) has=true;
+    });
+  }
+  return {pair:pair, flags:flags, has:has, hasTwoSubmittedReviews:pair.length===2};
+}
+
+function getOtherSubmittedReview(a){
+  var states=a.reviewsByReviewer||{};
+  var other=null;
+  Object.keys(states).some(function(name){
+    if (name!==currentReviewer && states[name] && states[name].submitted) {
+      other={reviewer:name,state:states[name]};
+      return true;
+    }
+    return false;
+  });
+  return other;
+}
+
+function recomputeEditedState(a){
+  a.editedGates=new Set();
+  GATES.forEach(function(g){
+    if (a.humanGates[g.id] !== ((a.aiGates[g.id]&&a.aiGates[g.id].verdict)||'flag')) a.editedGates.add(g.id);
+  });
+  a.editedRatings=new Set();
+  RATINGS.forEach(function(r){
+    if ((parseFloat(a.humanRatings[r.id])||3) !== (parseFloat(a.aiRatings[r.id])||3)) a.editedRatings.add(r.id);
+  });
+}
+
+function hasMeaningfulHumanReview(a){
+  return a.submitted || a.editedGates.size>0 || a.editedRatings.size>0 || String(a.notes||'').trim()!=='' || String(a.conflictOfInterest||'None disclosed').trim()!=='None disclosed';
+}
+
+function applyAiDraftToApp(a, aiDraft, preserveHuman){
+  ensureWorkflowState(a);
+  var temp=createAppFromRow(a.sourceRow||{}, aiDraft);
+  a.aiSeed=temp.aiSeed;
+  a.aiGates=temp.aiGates;
+  a.aiRatings=temp.aiRatings;
+  a.aiCategoryComments=temp.aiCategoryComments;
+  a.aiSummary=temp.aiSummary;
+  a.aiScore=temp.aiScore;
+  a.eligibility.ai=temp.eligibility.ai;
+  if (!preserveHuman) {
+    a.humanGates=Object.assign({},temp.humanGates);
+    a.humanRatings=Object.assign({},temp.humanRatings);
+    a.categoryComments=Object.assign({},temp.categoryComments);
+    a.humanScore=temp.humanScore;
+    a.verdict=temp.verdict;
+    a.notes='';
+    a.conflictOfInterest='None disclosed';
+  }
+  recomputeEditedState(a);
+  storeCurrentReviewerState(a);
+}
+
+function getDisplayScore(a){
+  var comparison=getComparisonInfo(a);
+  if (comparison.pair.length===2) {
+    return Math.round(((comparison.pair[0].state.score||0)+(comparison.pair[1].state.score||0))/2);
+  }
+  return a.humanScore;
+}
+
+function getAiStatus(a){
+  ensureWorkflowState(a);
+  var issues=(a.aiSeed&&a.aiSeed.issues)||[];
+  if (issues.indexOf('ai_skipped')>=0) return { tone:'manual', label:'Manual review draft', detail:'AI draft was skipped at launch.' };
+  if (issues.indexOf('gemini_error')>=0) return { tone:'warn', label:'AI retry needed', detail:'Gemini failed. Review manually or re-run the AI draft.' };
+  if (issues.indexOf('schema_incomplete')>=0 || !a.aiSeed.valid) return { tone:'warn', label:'AI draft incomplete', detail:'The AI draft is partial and should be checked manually.' };
+  return { tone:'ok', label:'AI ready', detail:'Draft scores and rationale are available.' };
+}
+
+function buildReviewerPairLabel(comparison){
+  comparison = comparison || { pair: [] };
+  return comparison.pair.map(function(entry){ return entry.reviewer; }).join(' | ');
+}
+
+function getWorkflowStatus(a){
+  ensureWorkflowState(a);
+  return a.workflow.status || 'draft';
+}
+
+function getWorkflowStatusLabel(a){
+  var status=getWorkflowStatus(a);
+  if (status==='submitted') return 'Submitted';
+  if (status==='double-reviewed') return 'Double reviewed';
+  if (status==='needs-resolution') return 'Needs resolution';
+  if (status==='resolved') return 'Resolution saved';
+  return 'Draft';
+}
+
+function getEffectiveDecisionVerdict(a){
+  ensureWorkflowState(a);
+  var comparison=a.comparison||getComparisonInfo(a);
+  if (comparison.has && a.workflow.resolutionState==='resolved' && a.workflow.resolutionVerdict) {
+    return a.workflow.resolutionVerdict;
+  }
+  if (comparison.has) return 'review';
+  return a.verdict;
+}
+
+function syncDerivedState(a){
+  ensureWorkflowState(a);
+  syncAssignmentState(a);
+  a.comparison=getComparisonInfo(a);
+  a.displayScore=getDisplayScore(a);
+  a.activeReviewer=currentReviewer;
+  a.workflow.aiStatus=getAiStatus(a).label;
+  if (a.comparison.has) {
+    if (a.workflow.resolutionState!=='resolved') a.workflow.resolutionState='required';
+    a.workflow.status=a.workflow.resolutionState==='resolved'?'resolved':'needs-resolution';
+  } else if (a.comparison.hasTwoSubmittedReviews) {
+    if (a.workflow.resolutionState!=='resolved') a.workflow.resolutionState='not-needed';
+    a.workflow.status='double-reviewed';
+  } else if (a.submitted) {
+    if (a.workflow.resolutionState!=='resolved') a.workflow.resolutionState='not-needed';
+    a.workflow.status='submitted';
+  } else {
+    if (a.workflow.resolutionState!=='resolved') a.workflow.resolutionState='not-needed';
+    a.workflow.status='draft';
+  }
+  a.workflow.reviewerPair=buildReviewerPairLabel(a.comparison);
+  if (!a.progression) a.progression={eligibilityStatus:'pending',reviewStatus:'draft'};
+  a.progression.reviewStatus=a.workflow.status;
+}
+
+function formatAssignmentSelectors(a, scope){
+  var eid=escId(a.id);
+  function optionHtml(current){ return TEAM.map(function(m){return '<option value="'+m+'"'+(current===m?' selected':'')+'>'+m+'</option>';}).join(''); }
+  return '<div class="assign-inline">'+
+    '<span class="assign-inline-lbl">Assign:</span>'+
+    '<div class="assign-pair">'+
+    '<span class="assign-slot-label">R1</span><select class="assign-sel'+(a.assignedReviewer1?' assigned':'')+'" id="'+scope+'-r1-'+eid+'" data-id="'+eid+'" data-slot="reviewer1" onchange="assignToCard(this)"><option value="">—</option>'+optionHtml(a.assignedReviewer1)+'</select>'+
+    '<span class="assign-slot-label">R2</span><select class="assign-sel'+(a.assignedReviewer2?' assigned':'')+'" id="'+scope+'-r2-'+eid+'" data-id="'+eid+'" data-slot="reviewer2" onchange="assignToCard(this)"><option value="">—</option>'+optionHtml(a.assignedReviewer2)+'</select>'+
+    '</div>'+
+    (scope==='as'?'<span class="assign-saving" id="asv-'+eid+'"></span>':'')+
+    '</div>';
+}
+
+function calcScore(gates,ratings){
+  var rubricScore=0;
+  RATINGS.forEach(function(r){
+    var val=parseFloat(ratings[r.id]);
+    if (!(val>=1&&val<=5)) val=3;
+    rubricScore+=Math.round((val/5)*r.weight);
+  });
+  return Math.min(100,rubricScore);
+}
+function computeVerdict(gates, ratings){
+  var score=calcScore(gates,ratings||{});
+  var vs=Object.values(gates);
+  if (vs.some(function(v){return v==='fail';})) return'reject';
+  if (!vs.some(function(v){return v==='flag';}) && score>=75) return'advance';
+  return'review';
+}
+
+function verdictLabel(verdict){
+  if (verdict==='advance') return 'Advance to interviews';
+  if (verdict==='review') return 'Needs panel review';
+  return 'Do not advance';
+}
+
+function renderAll(){
+  var container=document.getElementById('cards');
+  var list=apps.filter(function(a){
+    var decisionVerdict=getEffectiveDecisionVerdict(a);
+    if (appFilter==='all') return true;
+    if (appFilter==='advance') return decisionVerdict==='advance'&&!a.submitted;
+    if (appFilter==='review') return decisionVerdict==='review'&&!a.submitted;
+    if (appFilter==='reject') return decisionVerdict==='reject'&&!a.submitted;
+    if (appFilter==='edited') return a.editedGates.size>0||a.editedRatings.size>0;
+    if (appFilter==='unassigned') return !a.assignedReviewer1&&!a.assignedReviewer2&&!a.submitted;
+    if (appFilter==='submitted') return a.submitted;
+    return true;
+  });
+  list=list.slice().sort(function(a,b){
+    if (sortBy==='score-desc') return getDisplayScore(b)-getDisplayScore(a);
+    if (sortBy==='score-asc') return getDisplayScore(a)-getDisplayScore(b);
+    if (sortBy==='alpha') return a.ventureName.localeCompare(b.ventureName);
+    if (sortBy==='date') return new Date(a.dateApplied)-new Date(b.dateApplied);
+    return 0;
+  });
+  if (!list.length){
+    container.innerHTML='<div class="empty-state"><h3>No applicants match this filter</h3><p>Try a different filter or check for new entries.</p></div>';
+    return;
+  }
+  container.innerHTML=list.map(function(a){return cardHTML(a);}).join('');
+}
+
+function cardHTML(a){
+  var comparison=getComparisonInfo(a);
+  var aiStatus=getAiStatus(a);
+  var workflowStatus=getWorkflowStatus(a);
+  var decisionVerdict=getEffectiveDecisionVerdict(a);
+  var eid=escId(a.id);
+  var ini=a.ventureName.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase()||'??';
+  var avCls=['av-b','av-t','av-p','av-c','av-g'][Math.abs(hash(a.id))%5];
+  var displayScore=getDisplayScore(a);
+  var sc=displayScore>=75?'hi':displayScore>=60?'md':'lo';
+  var vBadge=decisionVerdict==='advance'?'vb-adv':decisionVerdict==='review'?'vb-rev':'vb-rej';
+  var vTxt=verdictLabel(decisionVerdict);
+  var wfBadge=(workflowStatus==='needs-resolution'?'vb-rev':workflowStatus==='resolved'?'vb-sub':workflowStatus==='double-reviewed'?'vb-sub':workflowStatus==='submitted'?'vb-sub':'');
+  var assignSel=formatAssignmentSelectors(a,'as');
+  var chips=GATES.map(function(g){
+    var v=a.humanGates[g.id];var bc=v==='pass'?'p':v==='fail'?'f':'fl';var bl=v==='pass'?'Pass':v==='fail'?'Fail':'Flag';
+    return '<div class="gate-chip"><div class="gc-top"><span class="gc-name">'+g.label+'</span><span class="gbadge '+bc+'">'+bl+'</span></div><div class="gc-note">'+(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div></div>';
+  }).join('');
+  var tags=[];
+  if (a.sector) tags.push('<span class="tag t-edu">'+a.sector.split(',')[0].trim()+'</span>');
+  var stCls=a.ventureStage&&a.ventureStage.toLowerCase().indexOf('non')>=0?'t-npo':a.ventureStage&&a.ventureStage.toLowerCase().indexOf('profit')>=0?'t-fp':'t-sec';
+  if (a.ventureStage) tags.push('<span class="tag '+stCls+'">'+a.ventureStage+'</span>');
+  if (a.country) tags.push('<span class="tag t-sec">'+a.country.replace(/\+\d+/,'').trim()+'</span>');
+  var subBanner=a.submitted?'<div class="sub-banner">'+(comparison.has?'⚠ ':'✓ ')+'Review submitted · '+getWorkflowStatusLabel(a)+' · '+(a.submittedAt&&a.submittedAt.toString().indexOf('Previously')>=0?a.submittedAt:new Date(a.submittedAt).toLocaleString())+'</div>':'';
+  var diffBadge=comparison.has?'<span class="diff-badge">Reviewer difference flagged</span>':'';
+  var draftBadge=(a.workflow&&a.workflow.localDraftRestored)?'<span class="draft-badge">Local draft restored</span>':'';
+  return '<div class="app-card'+(a.submitted?' submitted':'')+'" id="card-'+eid+'">'+
+    '<div class="card-top">'+
+    '<div class="row1">'+
+    '<div class="avatar '+avCls+'">'+ini+'</div>'+
+    '<div class="app-info">'+
+    '<div class="app-name">'+a.ventureName+'</div>'+
+    '<div class="app-sub">'+a.applicantName+' · '+a.country+' · '+a.stream+'</div>'+
+    '<div class="tags">'+tags.join('')+'</div>'+
+    '</div></div>'+
+    '<div class="score-row">'+
+    '<div class="gates-grid" id="gg-'+eid+'">'+chips+'</div>'+
+    '<div class="score-col">'+
+    '<div class="cscore '+sc+'" id="sc-'+eid+'">'+displayScore+'</div>'+
+    '<div class="cscore-lbl">'+(comparison.pair.length===2?'avg':'composite')+'</div>'+
+    '<div class="sbar"><div class="sfill '+sc+'" id="sf-'+eid+'" style="width:'+displayScore+'%"></div></div>'+
+    '</div></div></div>'+
+    '<div class="card-footer">'+
+    '<div class="cf-left"><div class="ai-badges"><span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>'+draftBadge+'</div><span class="ai-summary">'+a.aiSummary+'</span></div>'+
+    '<div class="cf-right">'+
+    assignSel+
+    diffBadge+
+    '<span class="workflow-badge'+(wfBadge?' '+wfBadge:'')+'" id="wf-'+eid+'">'+getWorkflowStatusLabel(a)+'</span>'+
+    '<span class="vbadge '+vBadge+'" id="vb-'+eid+'">'+vTxt+'</span>'+
+    (!a.submitted?'<button class="rev-btn'+(a.expanded?' open':'')+'" id="rb-'+eid+'" data-id="'+eid+'" onclick="toggleExpand(this)">'+(a.expanded?'Reviewing':'Review')+'</button>':'')+
+    '</div></div>'+
+    subBanner+
+    '<div id="panel-'+eid+'" style="display:'+(a.expanded?'block':'none')+'">'+(a.expanded?panelHTML(a):'')+' </div>'+
+    '</div>';
+}
+
+function panelHTML(a){
+  var eid=escId(a.id);
+  var decisionVerdict=getEffectiveDecisionVerdict(a);
+  var vc=decisionVerdict==='advance'?'adv':decisionVerdict==='review'?'rev':'rej';
+  var vt=verdictLabel(decisionVerdict);
+  var otherReview=getOtherSubmittedReview(a);
+  var comparison=getComparisonInfo(a);
+  var aiStatus=getAiStatus(a);
+  var reviewerDD=formatAssignmentSelectors(a,'rv');
+
+  var gateEds=GATES.map(function(g){
+    var v=a.humanGates[g.id]; var edited=a.editedGates.has(g.id);
+    return '<div class="ep-gate'+(edited?' edited':'')+'" id="epg-'+eid+'-'+g.id+'">'+
+      '<div class="epg-top"><span class="epg-name">'+g.label+'</span>'+
+      '<div class="pill-grp">'+
+      '<button class="epill'+(v==='pass'?' sp':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="pass" onclick="setGateBtn(this)">Pass</button>'+
+      '<button class="epill'+(v==='fail'?' sf':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="fail" onclick="setGateBtn(this)">Fail</button>'+
+      '<button class="epill'+(v==='flag'?' sfl':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="flag" onclick="setGateBtn(this)">Flag</button>'+
+      '</div></div>'+
+      '<div class="epg-note">'+(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div>'+
+      (edited?'<div class="edited-flag">Reviewer changed: '+(a.aiGates[g.id]&&a.aiGates[g.id].verdict)+' → '+v+'</div>':'')+
+      '</div>';
+  }).join('');
+
+  var ratRows=RATINGS.map(function(r){
+    var hv=a.humanRatings[r.id]||3; var av=a.aiRatings[r.id]||3; var adj=a.editedRatings.has(r.id);
+    var stars=[1,2,3,4,5].map(function(n){
+      return '<div class="star'+(hv>=n?' on':'')+'" data-id="'+eid+'" data-rid="'+r.id+'" data-val="'+n+'" onclick="setRatingBtn(this)">'+n+'</div>';
+    }).join('');
+    var otherInfo='';
+    if (otherReview) {
+      var otherVal=(otherReview.state.ratings&&otherReview.state.ratings[r.id])||3;
+      otherInfo=' <span class="reviewer-note">'+otherReview.reviewer+': '+otherVal+'/5</span>'+(comparison.flags[r.id]?' <span class="diff-badge">Diff ≥ 3</span>':'');
+    }
+    var comment=(a.categoryComments&&a.categoryComments[r.id])||'';
+    var aiComment=(a.aiCategoryComments&&a.aiCategoryComments[r.id])||'';
+    return '<div class="rat-row"><span class="rlbl">'+r.label+' <span style="color:var(--text3);font-weight:400">('+r.weight+'pts)</span></span><div class="stars" id="st-'+eid+'-'+r.id+'">'+stars+'</div><span class="rat-ai'+(adj?' adj':'')+'" id="ra-'+eid+'-'+r.id+'">AI: '+av+'/5'+(adj?' · adj':'')+'</span>'+otherInfo+'<div class="rat-comment"><div class="review-helper">AI rationale: '+escapeHtml(aiComment||'No AI rationale.')+'</div><textarea class="review-input" data-id="'+eid+'" data-rid="'+r.id+'" oninput="setCategoryCommentInput(this)" placeholder="Reviewer comment (optional)…">'+escapeHtml(comment)+'</textarea></div></div>';
+  }).join('');
+
+  var fields=a.rawFields||{};
+  var fieldRows=Object.keys(fields).filter(function(k){return fields[k];}).map(function(k){
+    var val=fields[k];
+    if (k==='Pitch Deck' && val && (val.indexOf('http')=== 0 || val.indexOf('www')===0)) {
+      val='<a href="'+val+'" target="_blank" style="color:var(--cyan);word-break:break-all">'+val+'</a>';
+    }
+    return '<div style="margin-bottom:10px">'+
+      '<div style="font-size:10px;font-weight:700;color:var(--text2);font-family:\'Montserrat\',sans-serif;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">'+k+'</div>'+
+      '<div style="font-size:12px;color:var(--text);line-height:1.6">'+(typeof val==='string' && val.indexOf('<a ')===0 ? val : escapeHtml(String(val)))+'</div>'+
+      '</div>';
+  }).join('<hr style="border:none;border-top:1px solid var(--border);margin:10px 0">');
+
+  var rawSection='<div class="ep-sec" style="margin-top:16px">Applicant responses</div>'+
+    '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;max-height:320px;overflow-y:auto">'+
+    (fieldRows||'<span style="font-size:12px;color:var(--text3)">No response data available.</span>')+
+    '</div>';
+
+  var resolutionSection='';
+  if (comparison.has || (a.workflow&&a.workflow.resolutionState==='resolved')) {
+    var resolutionState=(a.workflow&&a.workflow.resolutionState)||'required';
+    var resolutionVerdict=(a.workflow&&a.workflow.resolutionVerdict)||'';
+    var resolutionNotes=(a.workflow&&a.workflow.resolutionNotes)||'';
+    var resolutionMeta=(a.workflow&&a.workflow.resolvedAt)?('Resolved by '+(a.workflow.resolvedBy||'Unknown reviewer')+' · '+new Date(a.workflow.resolvedAt).toLocaleString()):(comparison.has?'Disagreement must be resolved before final approval.':'Resolution record kept for audit.');
+    resolutionSection=
+      '<div class="ep-sec">Disagreement resolution</div>'+
+      '<div class="resolution-box">'+
+      '<div class="resolution-grid">'+
+      '<div><div class="ep-nl">Resolution state</div><select class="review-input" id="resolution-state-'+eid+'" data-id="'+eid+'" onchange="setResolutionStateInput(this)"><option value="required"'+(resolutionState==='required'?' selected':'')+'>Needs resolution</option><option value="resolved"'+(resolutionState==='resolved'?' selected':'')+'>Resolved</option></select></div>'+
+      '<div><div class="ep-nl">Final decision</div><select class="review-input" id="resolution-verdict-'+eid+'" data-id="'+eid+'" onchange="setResolutionVerdictInput(this)"><option value="">Select final decision</option><option value="advance"'+(resolutionVerdict==='advance'?' selected':'')+'>Advance to interviews</option><option value="review"'+(resolutionVerdict==='review'?' selected':'')+'>Needs panel review</option><option value="reject"'+(resolutionVerdict==='reject'?' selected':'')+'>Do not advance</option></select></div>'+
+      '</div>'+
+      '<div class="ep-nl" style="margin-top:12px">Resolution notes</div>'+
+      '<textarea class="ep-notes" id="resolution-notes-'+eid+'" data-id="'+eid+'" oninput="setResolutionNotesInput(this)" placeholder="Record how the disagreement was resolved…">'+escapeHtml(resolutionNotes)+'</textarea>'+
+      '<div class="ep-actions" style="margin-top:12px"><span class="ep-act-l">'+resolutionMeta+'</span><div class="ep-act-r"><button class="btn-save-card" data-id="'+eid+'" onclick="saveResolutionBtn(this)">Save resolution</button></div></div>'+
+      '</div>';
+  }
+
+  return '<div class="expand-panel">'+
+    '<div class="ep-hdr">'+
+    '<span class="ep-title">Stage 1 review — '+a.ventureName+'</span>'+
+    '<div class="assign-sec"><span class="assign-lbl">Assign to:</span>'+reviewerDD+'</div>'+
+    '</div>'+
+    '<div class="ep-verdict '+vc+'" id="epv-'+eid+'">'+
+    '<span class="epv-lbl '+vc+'">Decision: '+vt+'</span>'+
+    '<span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+Object.values(a.humanGates).filter(function(v){return v==='fail';}).length+' fail · '+Object.values(a.humanGates).filter(function(v){return v==='flag';}).length+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>'+
+    '</div>'+
+    '<div class="ai-status-row"><span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span><span class="ai-status-detail">'+aiStatus.detail+'</span></div>'+
+    '<div class="ep-sec">Eligibility checks</div>'+
+    '<div class="ep-gates">'+gateEds+'</div>'+
+    '<div class="ep-sec">Stage 1 rubric</div>'+
+    '<div class="ep-ratings">'+ratRows+'</div>'+
+    '<div class="review-meta-grid"><div><div class="ep-nl">Conflict of interest</div><input class="review-input" id="coi-'+eid+'" data-id="'+eid+'" oninput="setConflictInput(this)" value="'+escapeHtml(a.conflictOfInterest||'')+'" placeholder="None disclosed"></div></div>'+
+    resolutionSection+
+    rawSection+
+    '<div class="ep-nl" style="margin-top:16px">Reviewer notes</div>'+
+    '<textarea class="ep-notes" id="notes-'+eid+'" placeholder="Add context, override rationale, or escalation notes…">'+escapeHtml(a.notes||'')+'</textarea>'+
+    '<div class="ep-actions">'+
+    '<span class="ep-act-l" id="ss-'+eid+'">'+(a.workflow&&a.workflow.localDraftRestored&&a.workflow.localDraftSavedAt?'Local draft restored · '+new Date(a.workflow.localDraftSavedAt).toLocaleString():(otherReview?'Other review visible after submission by '+otherReview.reviewer:'Changes save to your reviewer record'))+'</span>'+
+    '<div class="ep-act-r">'+
+    '<button class="btn-save-card" data-id="'+eid+'" onclick="rerunAiDraftBtn(this)">Re-run AI draft</button>'+
+    '<button class="btn-save-card" data-id="'+eid+'" onclick="saveDraftBtn(this)">Save draft</button>'+
+    '<button class="btn-submit-card" id="scb-'+eid+'" data-id="'+eid+'" onclick="submitCardBtn(this)"'+(a.submitted?' disabled':'')+'>'+(a.submitted?'Submitted':'Submit review →')+'</button>'+
+    '</div></div></div>';
+}
+
+function toggleExpand(btn){
+  var eid=btn.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  var ne=document.getElementById('notes-'+eid); if (ne) a.notes=ne.value;
+  var coi=document.getElementById('coi-'+eid); if (coi) a.conflictOfInterest=coi.value;
+  storeCurrentReviewerState(a);
+  a.expanded=!a.expanded;
+  var panel=document.getElementById('panel-'+eid);
+  var rb=document.getElementById('rb-'+eid);
+  if (a.expanded){panel.innerHTML=panelHTML(a);panel.style.display='block';if(rb){rb.textContent='Reviewing';rb.classList.add('open');}}
+  else{panel.style.display='none';panel.innerHTML='';if(rb){rb.textContent='Review';rb.classList.remove('open');}}
+}
+
+function assignToCard(sel){
+  var eid=sel.dataset.id;
+  var slot=sel.dataset.slot;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  var member=sel.value;
+  if (slot==='reviewer1') a.assignments.reviewer1=member;
+  else a.assignments.reviewer2=member;
+  syncAssignmentState(a);
+  syncAssignmentSelectors(a);
+  var savingEl=document.getElementById('asv-'+eid);
+  if (savingEl) savingEl.textContent='Saving…';
+  queueAssignmentSave(a);
+}
+
+function syncAssignmentSelectors(a){
+  var eid=escId(a.id);
+  ['as-r1-','rv-r1-','as-r2-','rv-r2-'].forEach(function(prefix){
+    var el=document.getElementById(prefix+eid);
+    if (!el) return;
+    var isR1=prefix.indexOf('r1')>=0;
+    el.value=isR1?a.assignedReviewer1:a.assignedReviewer2;
+    el.className='assign-sel'+((isR1?a.assignedReviewer1:a.assignedReviewer2)?' assigned':'');
+  });
+}
+
+function getAssignmentSaveEntry(id){
+  if (!assignmentSaveState[id]) {
+    assignmentSaveState[id]={version:0,inFlight:false,pending:false,timer:null};
+  }
+  return assignmentSaveState[id];
+}
+
+function setAssignmentSaveStatus(a, message){
+  var el=document.getElementById('asv-'+escId(a.id));
+  if (el) el.textContent=message||'';
+}
+
+async function saveAssignmentRequest(id, reviewer1, reviewer2){
+  var url=scriptUrl+
+    '?key='+encodeURIComponent(secretKey)+
+    '&action=saveAssignment'+
+    '&applicationId='+encodeURIComponent(id)+
+    '&reviewer1='+encodeURIComponent(reviewer1||'')+
+    '&reviewer2='+encodeURIComponent(reviewer2||'');
+  return jsonpFetch(url, 15000);
+}
+
+async function verifyAssignmentPersisted(id, reviewer1, reviewer2){
+  var data=await fetchApplicants();
+  if (!data) throw new Error('Could not read assignments back from Apps Script');
+  var actual=normalizeAssignmentData((data.assignments||{})[String(id||'').toLowerCase().trim()]);
+  if (actual.reviewer1 !== (reviewer1||'') || actual.reviewer2 !== (reviewer2||'')) {
+    throw new Error('readback mismatch: got [' + actual.reviewer1 + ' | ' + actual.reviewer2 + ']');
+  }
+}
+
+async function verifyReviewPersisted(payload, app){
+  var data=await fetchApplicants();
+  if (!data) throw new Error('Could not read reviews back from Apps Script');
+  var applicationId=String(payload.applicationId||'').toLowerCase().trim();
+  var reviewer=String(payload.reviewer||'').trim();
+  var saved=((data.savedReviews||{})[applicationId]||{})[reviewer];
+  if (!saved) throw new Error('review readback missing for ' + reviewer);
+  var normalized=normalizeSavedReview(saved, app, reviewer);
+  var expectedScore=Number(payload.score||0);
+  if (Number(normalized.score||0) !== expectedScore) {
+    throw new Error('review readback mismatch: expected score ' + expectedScore + ', got ' + normalized.score);
+  }
+  return normalized;
+}
+
+function queueAssignmentSave(a){
+  var entry=getAssignmentSaveEntry(a.applicationId);
+  entry.version += 1;
+  if (entry.timer) clearTimeout(entry.timer);
+  entry.timer=setTimeout(function(){
+    flushAssignmentSave(a, entry.version);
+  }, 300);
+}
+
+async function flushAssignmentSave(a, version){
+  var entry=getAssignmentSaveEntry(a.applicationId);
+  entry.timer=null;
+  if (entry.inFlight) {
+    entry.pending=true;
+    return;
+  }
+
+  entry.inFlight=true;
+  entry.pending=false;
+  try {
+    await saveAssignmentRequest(a.applicationId, a.assignedReviewer1, a.assignedReviewer2);
+    await verifyAssignmentPersisted(a.applicationId, a.assignedReviewer1, a.assignedReviewer2);
+    if (entry.version === version && !entry.pending) {
+      setAssignmentSaveStatus(a, 'Saved ✓');
+      setTimeout(function(){
+        var latest=getAssignmentSaveEntry(a.applicationId);
+        if (!latest.inFlight && latest.version === version) setAssignmentSaveStatus(a, '');
+      }, 2000);
+    }
+  } catch (err) {
+    if (entry.version === version && !entry.pending) {
+      setAssignmentSaveStatus(a, 'Save failed');
+      toast('Could not save reviewers for ' + a.ventureName + ': ' + err.message, 'error');
+    }
+  } finally {
+    entry.inFlight=false;
+    if (entry.pending || entry.version !== version) {
+      entry.pending=false;
+      flushAssignmentSave(a, entry.version);
+    }
+  }
+}
+
+function setGateBtn(btn){
+  var eid=btn.dataset.id, gid=btn.dataset.gid, val=btn.dataset.val;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  setGate(a.id, gid, val);
+}
+
+function setRatingBtn(btn){
+  var eid=btn.dataset.id, rid=btn.dataset.rid, val=parseInt(btn.dataset.val);
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  setRating(a.id, rid, val);
+}
+
+function setCategoryCommentInput(el){
+  var eid=el.dataset.id, rid=el.dataset.rid;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  a.categoryComments[rid]=el.value;
+  storeCurrentReviewerState(a);
+}
+
+function setConflictInput(el){
+  var eid=el.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  a.conflictOfInterest=el.value;
+  storeCurrentReviewerState(a);
+}
+
+function setResolutionStateInput(el){
+  var eid=el.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  ensureWorkflowState(a);
+  a.workflow.resolutionState=el.value;
+  if (el.value!=='resolved') a.workflow.resolutionVerdict='';
+  syncDerivedState(a);
+  liveUpdate(a.id, a);
+}
+
+function setResolutionVerdictInput(el){
+  var eid=el.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  ensureWorkflowState(a);
+  a.workflow.resolutionVerdict=el.value;
+  syncDerivedState(a);
+  liveUpdate(a.id, a);
+}
+
+function setResolutionNotesInput(el){
+  var eid=el.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  ensureWorkflowState(a);
+  a.workflow.resolutionNotes=el.value;
+}
+
+function saveDraftBtn(btn){
+  var eid=btn.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  saveDraft(a.id);
+}
+
+function rerunAiDraftBtn(btn){
+  var eid=btn.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  rerunAiDraft(a.id, btn);
+}
+
+function submitCardBtn(btn){
+  var eid=btn.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  submitCard(a.id);
+}
+
+function saveResolutionBtn(btn){
+  var eid=btn.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  saveResolution(a.id, btn);
+}
+
+function setGate(id,gid,val){
+  var a=getApp(id); if (!a) return;
+  a.humanGates[gid]=val;
+  (val!==( a.aiGates[gid]&&a.aiGates[gid].verdict))?a.editedGates.add(gid):a.editedGates.delete(gid);
+  a.verdict=computeVerdict(a.humanGates,a.humanRatings);
+  a.humanScore=calcScore(a.humanGates,a.humanRatings);
+  storeCurrentReviewerState(a);
+  var el=document.getElementById('epg-'+escId(id)+'-'+gid);
+  if (el){
+    el.className='ep-gate'+(a.editedGates.has(gid)?' edited':'');
+    el.innerHTML='<div class="epg-top"><span class="epg-name">'+(GATES.find(function(g){return g.id===gid;})||{label:gid}).label+'</span>'+
+      '<div class="pill-grp">'+
+      '<button class="epill'+(val==='pass'?' sp':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="pass" onclick="setGateBtn(this)">Pass</button>'+
+      '<button class="epill'+(val==='fail'?' sf':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="fail" onclick="setGateBtn(this)">Fail</button>'+
+      '<button class="epill'+(val==='flag'?' sfl':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="flag" onclick="setGateBtn(this)">Flag</button>'+
+      '</div></div>'+
+      '<div class="epg-note">'+(a.aiGates[gid]&&a.aiGates[gid].note||'')+'</div>'+
+      (a.editedGates.has(gid)?'<div class="edited-flag">Reviewer changed: '+(a.aiGates[gid]&&a.aiGates[gid].verdict)+' → '+val+'</div>':'');
+  }
+  liveUpdate(id,a); updateSummary();
+  var gg=document.getElementById('gg-'+escId(id));
+  if (gg) gg.innerHTML=GATES.map(function(g){
+    var v=a.humanGates[g.id];var bc=v==='pass'?'p':v==='fail'?'f':'fl';var bl=v==='pass'?'Pass':v==='fail'?'Fail':'Flag';
+    return '<div class="gate-chip"><div class="gc-top"><span class="gc-name">'+g.label+'</span><span class="gbadge '+bc+'">'+bl+'</span></div><div class="gc-note">'+(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div></div>';
+  }).join('');
+}
+
+function setRating(id,rid,val){
+  var a=getApp(id); if (!a) return;
+  a.humanRatings[rid]=val;
+  (val!==a.aiRatings[rid])?a.editedRatings.add(rid):a.editedRatings.delete(rid);
+  a.humanScore=calcScore(a.humanGates,a.humanRatings);
+  a.verdict=computeVerdict(a.humanGates,a.humanRatings);
+  storeCurrentReviewerState(a);
+  var st=document.getElementById('st-'+escId(id)+'-'+rid);
+  if (st) st.innerHTML=[1,2,3,4,5].map(function(n){
+    return '<div class="star'+(val>=n?' on':'')+'" data-id="'+escId(id)+'" data-rid="'+rid+'" data-val="'+n+'" onclick="setRatingBtn(this)">'+n+'</div>';
+  }).join('');
+  var ra=document.getElementById('ra-'+escId(id)+'-'+rid);
+  if (ra){var adj=a.editedRatings.has(rid);ra.className='rat-ai'+(adj?' adj':'');ra.textContent='AI: '+a.aiRatings[rid]+'/5'+(adj?' · adj':'');}
+  liveUpdate(id,a); updateSummary();
+  var panel=document.getElementById('panel-'+escId(id));
+  if (panel && panel.style.display==='block') panel.innerHTML=panelHTML(a);
+}
+
+function liveUpdate(id,a){
+  var displayScore=getDisplayScore(a);
+  var sc=displayScore>=75?'hi':displayScore>=60?'md':'lo';
+  var decisionVerdict=getEffectiveDecisionVerdict(a);
+  var sel=document.getElementById('sc-'+escId(id)); var sfl=document.getElementById('sf-'+escId(id));
+  var vb=document.getElementById('vb-'+escId(id)); var wf=document.getElementById('wf-'+escId(id)); var epv=document.getElementById('epv-'+escId(id));
+  if (sel){sel.className='cscore '+sc;sel.textContent=displayScore;}
+  if (sfl){sfl.className='sfill '+sc;sfl.style.width=displayScore+'%';}
+  if (wf){
+    var wfClass=getWorkflowStatus(a)==='needs-resolution'?' vb-rev':(getWorkflowStatus(a)==='submitted'||getWorkflowStatus(a)==='double-reviewed'||getWorkflowStatus(a)==='resolved'?' vb-sub':'');
+    wf.className='workflow-badge'+wfClass;
+    wf.textContent=getWorkflowStatusLabel(a);
+  }
+  if (vb){
+    var vc2=decisionVerdict==='advance'?'vb-adv':decisionVerdict==='review'?'vb-rev':'vb-rej';
+    vb.className='vbadge '+vc2; vb.textContent=verdictLabel(decisionVerdict);
+  }
+  if (epv){
+    var vc3=decisionVerdict==='advance'?'adv':decisionVerdict==='review'?'rev':'rej';
+    epv.className='ep-verdict '+vc3;
+    epv.innerHTML='<span class="epv-lbl '+vc3+'">Decision: '+verdictLabel(decisionVerdict)+'</span><span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+Object.values(a.humanGates).filter(function(v){return v==='fail';}).length+' fail · '+Object.values(a.humanGates).filter(function(v){return v==='flag';}).length+' flag'+((a.comparison||getComparisonInfo(a)).has?' · disagreement requires resolution':'')+'</span>';
+  }
+}
+
+function saveDraft(id){
+  var a=getApp(id); if (!a) return;
+  var ne=document.getElementById('notes-'+escId(id)); if (ne) a.notes=ne.value;
+  var coi=document.getElementById('coi-'+escId(id)); if (coi) a.conflictOfInterest=coi.value;
+  storeCurrentReviewerState(a);
+  try{
+    ensureWorkflowState(a);
+    var d=getDraftStore();
+    if (!d[id]) d[id]={};
+    var savedAt=new Date().toISOString();
+    d[id][currentReviewer]={
+      savedAt:savedAt,
+      review:buildReviewerState(a)
+    };
+    setDraftStore(d);
+    a.workflow.localDraftRestored=false;
+    a.workflow.localDraftSavedAt=savedAt;
+    var ss=document.getElementById('ss-'+escId(id)); if (ss) ss.textContent='Draft saved · '+new Date().toLocaleTimeString();
+    toast('Draft saved for '+a.ventureName,'info');
+  }catch(e){toast('Could not save draft','error');}
+}
+
+function validateSubmission(a){
+  if (!String(a.conflictOfInterest||'').trim()){
+    toast('Record the conflict of interest status before submitting.','error');
+    return false;
+  }
+  return true;
+}
+
+async function rerunAiDraft(id, btn){
+  var a=getApp(id); if (!a || !a.sourceRow) return;
+  if (!geminiKey) { toast('No Gemini API key configured. Go to Settings.','error'); return; }
+  var originalText=btn?btn.textContent:'Re-run AI draft';
+  if (btn){btn.disabled=true;btn.textContent='Re-running…';}
+  try {
+    var fresh=await screenOne(a.sourceRow);
+    applyAiDraftToApp(a, {
+      gates:fresh.aiGates,
+      scores:fresh.aiRatings,
+      categoryComments:fresh.aiCategoryComments,
+      summary:fresh.aiSummary,
+      valid:fresh.aiSeed && fresh.aiSeed.valid,
+      issues:(fresh.aiSeed && fresh.aiSeed.issues) || []
+    }, hasMeaningfulHumanReview(a));
+    a.expanded=true;
+    var cardEl=document.getElementById('card-'+escId(id));
+    if (cardEl) cardEl.outerHTML=cardHTML(a);
+    toast('AI draft refreshed for '+a.ventureName,'success');
+  } catch (err) {
+    toast('Could not re-run AI draft: '+err.message,'error');
+  } finally {
+    if (btn){btn.disabled=false;btn.textContent=originalText;}
+  }
+}
+
+async function submitCard(id){
+  var a=getApp(id); if (!a) return;
+  var ne=document.getElementById('notes-'+escId(id)); if (ne) a.notes=ne.value;
+  var coi=document.getElementById('coi-'+escId(id)); if (coi) a.conflictOfInterest=coi.value;
+  if (!scriptUrl||!secretKey){toast('No connection configured. Go to Settings.','error');return;}
+  storeCurrentReviewerState(a);
+  if (!validateSubmission(a)) return;
+  var btn=document.getElementById('scb-'+escId(id));
+  if (btn){btn.disabled=true;btn.innerHTML='<span class="mini-spin"></span> Submitting…';}
+  var payload={
+    reviewKey:buildReviewKey(a,currentReviewer),
+    applicationId:a.applicationId,
+    reviewer:currentReviewer,
+    reviewerSlot:getReviewerSlot(a,currentReviewer),
+    ventureName:a.ventureName, applicantName:a.applicantName, country:a.country,
+    sector:a.sector, ventureStage:a.ventureStage, stream:a.stream,
+    assignedReviewer1:a.assignedReviewer1||'', assignedReviewer2:a.assignedReviewer2||'',
+    eligibility:buildEligibilityPayload(a,a.humanGates),
+    ratings:a.humanRatings,
+    categoryComments:a.categoryComments,
+    score:a.humanScore,
+    conflictOfInterest:a.conflictOfInterest,
+    verdict:verdictLabel(a.verdict),
+    notes:a.notes, submittedAt:new Date().toISOString(),
+    editedGates:Array.from(a.editedGates), editedRatings:Array.from(a.editedRatings)
+  };
+  try{
+    await postScript('saveReview', payload, 20000);
+    var persisted=await verifyReviewPersisted(payload, a);
+    a.reviewsByReviewer[currentReviewer]=persisted;
+    a.submitted=true; a.submittedAt=persisted.submittedAt||payload.submittedAt; a.expanded=false;
+    applyReviewerState(a, persisted);
+    storeCurrentReviewerState(a);
+    var cardEl=document.getElementById('card-'+escId(id));
+    if (cardEl) cardEl.outerHTML=cardHTML(a);
+    updateSummary();
+    toast(a.ventureName+' review submitted ✓','success');
+  }catch(err){
+    if (btn){btn.disabled=false;btn.innerHTML='Submit review →';}
+    toast('Submission failed: '+err.message,'error');
+  }
+}
+
+function validateResolution(a){
+  ensureWorkflowState(a);
+  if (!(a.comparison&&a.comparison.hasTwoSubmittedReviews)) {
+    toast('Two submitted reviews are required before saving a resolution.','error');
+    return false;
+  }
+  if (a.workflow.resolutionState==='resolved' && !a.workflow.resolutionVerdict) {
+    toast('Pick the final decision before marking the disagreement resolved.','error');
+    return false;
+  }
+  return true;
+}
+
+async function saveResolution(id, btn){
+  var a=getApp(id); if (!a) return;
+  ensureWorkflowState(a);
+  var notesEl=document.getElementById('resolution-notes-'+escId(id));
+  var stateEl=document.getElementById('resolution-state-'+escId(id));
+  var verdictEl=document.getElementById('resolution-verdict-'+escId(id));
+  if (notesEl) a.workflow.resolutionNotes=notesEl.value;
+  if (stateEl) a.workflow.resolutionState=stateEl.value;
+  if (verdictEl) a.workflow.resolutionVerdict=verdictEl.value;
+  if (!validateResolution(a)) return;
+  var originalText=btn?btn.textContent:'Save resolution';
+  if (btn){btn.disabled=true;btn.textContent='Saving…';}
+  try {
+    var resolvedAt=a.workflow.resolutionState==='resolved'?new Date().toISOString():'';
+    var resolvedBy=a.workflow.resolutionState==='resolved'?currentReviewer:'';
+    await postScript('saveResolution', {
+      applicationId:a.applicationId,
+      resolutionState:a.workflow.resolutionState,
+      resolutionVerdict:a.workflow.resolutionVerdict||'',
+      resolutionNotes:a.workflow.resolutionNotes||'',
+      resolvedBy:resolvedBy,
+      resolvedAt:resolvedAt,
+      reviewerPair:(a.comparison&&a.comparison.pair&&a.comparison.pair.length)?buildReviewerPairLabel(a.comparison):''
+    }, 15000);
+    a.workflow.resolvedBy=resolvedBy;
+    a.workflow.resolvedAt=resolvedAt;
+    syncDerivedState(a);
+    renderAll();
+    updateSummary();
+    toast('Resolution saved for '+a.ventureName,'success');
+  } catch (err) {
+    toast('Could not save resolution: '+err.message,'error');
+  } finally {
+    if (btn){btn.disabled=false;btn.textContent=originalText;}
+  }
+}
+
+async function checkForUpdates(){
+  var btn=document.getElementById('refreshBtn'); btn.classList.add('spinning');
+  var st=document.getElementById('cfgStatus');
+  if (st){st.textContent='Checking…';st.className='conn-chk';}
+  var data=await fetchApplicants();
+  btn.classList.remove('spinning');
+  if (!data) return;
+  var rows=dedup(data.rows||[]);
+  var savedAssignments=data.assignments||{};
+  var savedReviews=data.savedReviews||{};
+  var savedResolutions=data.resolutions||{};
+  var aiDrafts=data.aiDrafts||{};
+  apps.forEach(function(a){
+    if (savedAssignments[a.applicationId]) {
+      a.assignments=normalizeAssignmentData(savedAssignments[a.applicationId]);
+      syncAssignmentState(a);
+    }
+    if (aiDrafts[a.applicationId]) {
+      applyAiDraftToApp(a, normalizeAiDraft(aiDrafts[a.applicationId]), true);
+    }
+    if (savedReviews[a.applicationId]) {
+      Object.keys(savedReviews[a.applicationId]).forEach(function(reviewer){
+        a.reviewsByReviewer[reviewer]=normalizeSavedReview(savedReviews[a.applicationId][reviewer], a, reviewer);
+      });
+      loadCurrentReviewerState(a);
+    }
+    if (savedResolutions[a.applicationId]) {
+      ensureWorkflowState(a);
+      a.workflow=Object.assign(a.workflow, normalizeResolutionRecord(savedResolutions[a.applicationId]));
+      syncDerivedState(a);
+    }
+  });
+  var existing=new Set(apps.map(function(a){return a.applicationId;}));
+  var newRows=rows.filter(function(row){
+    var email=(row['Email']||'').toLowerCase().trim();
+    var vn=(row['Venture Name']||'').toLowerCase().trim();
+    return (email||vn)&&!existing.has(email||vn);
+  });
+  if (!newRows.length){
+    if (st){st.textContent='Up to date · '+apps.length+' applicants';st.className='conn-ok';}
+    renderAll(); updateSummary();
+    toast('No new applicants — sheet is up to date','info'); return;
+  }
+  var badge=document.getElementById('newBadge');
+  if (badge){badge.style.display='inline';badge.textContent=newRows.length;}
+  if (st){st.textContent=newRows.length+' new found';st.className='conn-ok';}
+  toast('Found '+newRows.length+' new applicant(s) — '+(launchMode==='missing-ai'?'drafting missing AI reviews now…':'loading without AI reviews…'),'warning');
+  for (var i=0;i<newRows.length;i++){
+    var applicationId=applicationIdFromRow(newRows[i]);
+    var screened;
+    if (aiDrafts[applicationId]) screened=createAppFromRow(newRows[i], normalizeAiDraft(aiDrafts[applicationId]));
+    else if (launchMode==='missing-ai') screened=await screenOne(newRows[i]);
+    else screened=createAppFromRow(newRows[i], conservativeAiDraft('AI draft not requested at launch. Review manually or run AI draft for this application.','ai_skipped'));
+    hydrateReviewData(screened, savedAssignments[screened.applicationId], savedReviews[screened.applicationId], savedResolutions[screened.applicationId]);
+    apps.push(screened);
+  }
+  if (badge) badge.style.display='none';
+  renderAll(); updateSummary();
+  toast(newRows.length+' new applicant(s) added','success');
+}
+
+function updateSummary(){
+  function byDecision(verdict){
+    return apps.filter(function(a){return getEffectiveDecisionVerdict(a)===verdict&&!a.submitted;}).length;
+  }
+  document.getElementById('stTotal').textContent=apps.length;
+  document.getElementById('stAdv').textContent=byDecision('advance');
+  document.getElementById('stRev').textContent=byDecision('review');
+  document.getElementById('stRej').textContent=byDecision('reject');
+  document.getElementById('stSub').textContent=apps.filter(function(a){return a.submitted;}).length;
+}
+function setFilter(f,btn){appFilter=f;document.querySelectorAll('.fpill').forEach(function(p){p.classList.remove('on');});btn.classList.add('on');renderAll();}
+function doSort(v){sortBy=v;renderAll();}
+
+function getApp(id){return apps.find(function(a){return a.id===id;});}
+function escId(id){return id.replace(/[^a-zA-Z0-9_-]/g,'_');}
+function escapeHtml(value){
+  return String(value==null?'':value)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+function J(v){return JSON.stringify(v);}
+function hash(s){var h=0;for(var i=0;i<s.length;i++){h=Math.imul(31,h)+s.charCodeAt(i)|0;}return h;}
+function toast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type+' show';
+  clearTimeout(t._t); t._t=setTimeout(function(){t.classList.remove('show');},3800);
+}
+</script>
+</body>
+</html>
