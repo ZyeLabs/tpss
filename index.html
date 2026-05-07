@@ -18,7 +18,11 @@
   --flag-text:#633806;--flag-bg:#fffbeb;--flag-border:#fcd34d;
   --r:10px;--r-sm:6px;--r-lg:14px;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:
+  radial-gradient(circle at top left, rgba(0,174,239,.12), transparent 26%),
+  radial-gradient(circle at top right, rgba(26,46,90,.08), transparent 24%),
+  linear-gradient(180deg, #f7f9fd 0%, var(--bg) 42%, #edf1f8 100%);
+color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .hdr{background:var(--navy-deep);padding:0 20px;display:flex;align-items:center;gap:14px;height:54px;border-bottom:2px solid var(--cyan);position:sticky;top:0;z-index:200}
 .hdr-logo{width:32px;height:32px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hdr-logo svg{width:18px;height:18px}
@@ -119,7 +123,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .ai-tag.ok{background:var(--pass-bg);border-color:var(--pass-border);color:var(--pass-text)}
 .ai-tag.warn{background:var(--flag-bg);border-color:var(--flag-border);color:var(--flag-text)}
 .ai-tag.manual{background:var(--surface);border-color:var(--border2);color:var(--text2)}
-.draft-badge{font-size:10px;background:#edf2ff;color:#31447d;border:1px solid #c7d2fe;padding:2px 8px;border-radius:20px;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
 .ai-summary{font-size:11px;color:var(--text2);font-style:italic;line-height:1.5;flex:1}
 .cf-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .assign-disp{font-size:11px;color:var(--text3)}
@@ -214,45 +217,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .toast.info{background:var(--navy);color:#fff}
 .toast.warning{background:var(--flag-text);color:#fff}
 .mini-spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
-.setup-wrap{max-width:600px;margin:40px auto}
-.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px}
-.setup-logo{width:52px;height:52px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.setup-wrap{max-width:560px;margin:54px auto 46px}
+.setup-card{position:relative;background:rgba(255,255,255,.94);border:1px solid rgba(197,208,230,.8);border-radius:22px;padding:34px 30px 30px;box-shadow:0 24px 60px rgba(15,30,61,.10),0 8px 18px rgba(15,30,61,.05);backdrop-filter:blur(8px);overflow:hidden}
+.setup-logo{width:54px;height:54px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 10px 20px rgba(0,174,239,.16)}
 .setup-logo svg{width:28px;height:28px}
-.setup-card h2{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-bottom:6px;text-align:center}
-.setup-card .sub{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6;text-align:center}
-.sf{margin-bottom:16px}
-.sf label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;font-family:'Montserrat',sans-serif}
-.sf input{width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
-.sf select{width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
-.sf input:focus,.sf select:focus{border-color:var(--cyan)}
+.setup-card h2{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:8px;text-align:center;letter-spacing:-.02em}
+.setup-card .sub{font-size:13px;color:var(--text2);margin:0 auto 26px;line-height:1.7;text-align:center;max-width:430px}
+.sf{margin-bottom:18px}
+.sf label{display:block;font-size:12px;font-weight:800;color:var(--text2);margin-bottom:8px;line-height:1.2;text-transform:uppercase;letter-spacing:.05em;font-family:'Montserrat',sans-serif}
+.field-head{margin-bottom:8px}
+.field-head label{margin-bottom:0}
+.field-input-row{display:flex;align-items:center;gap:10px}
+.sf input,.sf select{width:100%;height:46px;font-size:13px;padding:0 14px;border:1px solid rgba(197,208,230,.95);border-radius:12px;background:linear-gradient(180deg,#fbfcff 0%, #f5f8fe 100%);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s, box-shadow .15s, transform .15s}
+.sf input::placeholder{color:#8da0bf;letter-spacing:0}
+.sf input:hover,.sf select:hover{border-color:#aebcdc}
+.sf input:focus,.sf select:focus{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(0,174,239,.13);transform:translateY(-1px)}
 .sf input[type=password]{letter-spacing:.1em}
-.sf-note{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.5}
-.sf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.btn-setup{width:100%;font-size:13px;font-weight:700;padding:11px;border-radius:var(--r-sm);border:none;background:var(--navy);color:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.04em;margin-top:4px;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-setup:hover{background:var(--navy-mid)}
+.btn-setup{width:100%;min-height:48px;font-size:13px;font-weight:700;padding:12px 16px;border-radius:12px;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.04em;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-setup:disabled{opacity:.5;cursor:not-allowed}
-.setup-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
-.test-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:4px}
-.test-row .sf{flex:1;margin:0}
-.btn-test{font-size:12px;font-weight:600;padding:9px 16px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap}
-.btn-test:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-setup-primary{border:none;background:linear-gradient(135deg,var(--navy-deep) 0%, var(--navy) 100%);color:#fff;box-shadow:0 14px 26px rgba(26,46,90,.18)}
+.btn-setup-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 18px 30px rgba(26,46,90,.22)}
+.btn-setup-secondary{border:1px solid rgba(197,208,230,.95);background:rgba(246,248,253,.9);color:var(--text2)}
+.btn-setup-secondary:hover:not(:disabled){border-color:var(--navy);color:var(--navy);background:#fff;transform:translateY(-1px)}
+.btn-setup-secondary:disabled{background:var(--surface2);color:var(--text3);border-color:var(--border)}
+.setup-actions{display:grid;grid-template-columns:1.2fr .9fr;gap:12px;margin-top:10px;padding-top:14px;border-top:1px solid rgba(220,227,240,.85)}
+.setup-actions-note{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5}
+.test-row .sf{margin:0}
+.field-input-row .field-control{flex:1;min-width:0}
+.btn-test{height:46px;font-size:11px;font-weight:800;padding:0 16px;border-radius:12px;border:1px solid rgba(197,208,230,.95);background:#fff;color:var(--navy);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s;white-space:nowrap;letter-spacing:.06em;box-shadow:0 4px 10px rgba(15,30,61,.05)}
+.btn-test:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 8px 16px rgba(0,174,239,.12)}
 .btn-test:disabled{opacity:.5;cursor:not-allowed}
-.test-result{font-size:12px;font-weight:500;margin-top:8px;margin-bottom:16px;min-height:18px;padding:6px 10px;border-radius:var(--r-sm);display:none}
+.test-result{font-size:12px;font-weight:600;margin-top:10px;margin-bottom:18px;min-height:18px;padding:9px 12px;border-radius:12px;display:none}
 .test-result.ok{color:var(--pass-text);background:var(--pass-bg);border:1px solid var(--pass-border);display:block}
 .test-result.err{color:var(--fail-text);background:var(--fail-bg);border:1px solid var(--fail-border);display:block}
 .test-result.chk{color:var(--text2);background:var(--surface2);border:1px solid var(--border);display:block}
-.divider{height:1px;background:var(--border);margin:24px 0}
-.section-title{font-size:13px;font-weight:700;color:var(--navy);font-family:'Montserrat',sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-num{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Montserrat',sans-serif}
-.security-note{background:var(--cyan-pale);border:1px solid var(--cyan-mid);border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:#185fa5;line-height:1.6;margin-bottom:16px}
-.security-note strong{font-weight:700}
-.script-toggle{font-size:12px;color:var(--cyan);cursor:pointer;font-weight:600;display:inline-block;margin-top:8px}
-.script-box{display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden}
-.script-header{padding:8px 12px;background:var(--navy-deep);display:flex;align-items:center;justify-content:space-between}
-.script-header span{font-size:11px;color:rgba(255,255,255,.7);font-family:'Montserrat',sans-serif;font-weight:600;letter-spacing:.04em}
-.copy-btn{font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.8);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s}
-.copy-btn:hover{background:rgba(255,255,255,.1);color:#fff}
-pre.script{font-size:11px;padding:14px;overflow-x:auto;line-height:1.7;color:var(--text2);white-space:pre;margin:0}
+@media (max-width:640px){
+  .hdr{padding:0 14px;gap:10px}
+  .hdr-title{display:none}
+  .main{padding:14px}
+  .setup-wrap{margin:24px auto 30px}
+  .setup-card{padding:24px 18px 22px;border-radius:18px}
+  .setup-card h2{font-size:20px}
+  .setup-actions{display:grid;grid-template-columns:1fr}
+  .field-input-row{flex-direction:column;align-items:stretch}
+  .btn-test{width:100%}
+}
 </style>
 </head>
 <body>
@@ -285,76 +294,62 @@ pre.script{font-size:11px;padding:14px;overflow-x:auto;line-height:1.7;color:var
         </svg>
       </div>
       <h2>TPSS Stage 1 Reviewer System</h2>
-      <p class="sub">Applications load from your Google Sheet through your Apps Script. Gemini is used only to prepare draft reviewer assessments in your browser.</p>
+      <p class="sub">Connect your Apps Script, add your secret, and optionally enable Gemini for browser-side draft reviews.</p>
 
-      <div class="security-note">
-        <strong>Secure by design:</strong> Your sheet is never made public. The Apps Script acts as a private API — requests without your secret key are rejected immediately. Applicant data is read from your sheet, and any AI draft scoring is sent to Gemini using your browser key.
-      </div>
-
-      <div class="section-title"><div class="section-num">1</div>Connect your Apps Script</div>
-
-      <div class="test-row">
-        <div class="sf">
+      <div class="sf test-row">
+        <div class="field-head">
           <label>Apps Script Web App URL</label>
-          <input type="url" id="setupScriptUrl" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" value="https://script.google.com/macros/s/AKfycbyqnIeQLzOAD8MtyNAeUeDShzmNoaJx8XJpQLCx8vcOEtK5duZqvGdWfON1KMkCxOIL/exec" />
-          <div class="sf-note">In your sheet: Extensions → Apps Script → Deploy → New deployment → Web App → Execute as: Me · Access: Anyone → copy the URL.</div>
         </div>
-        <button class="btn-test" id="testBtn" onclick="testConnection()">Test</button>
-      </div>
-
-      <div class="sf-row">
-        <div class="sf">
-          <label>Secret key</label>
-          <input type="password" id="setupSecretKey" placeholder="e.g. tpss-2026-awais" value="tpss-2026-awais" />
-          <div class="sf-note">Must match the SECRET_KEY in your Apps Script exactly.</div>
-        </div>
-        <div class="sf">
-          <label>Sheet tab name</label>
-          <input type="text" id="setupSheetName" placeholder="Sheet1" value="Sheet1" />
-          <div class="sf-note">Exact name of the tab with applicant data.</div>
+        <div class="field-input-row">
+          <input class="field-control" type="url" id="setupScriptUrl" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" />
+          <button class="btn-test" id="testBtn" onclick="testConnection()">Test</button>
         </div>
       </div>
 
       <div class="sf">
-        <label>Gemini API Key (for AI draft review)</label>
-        <input type="password" id="setupGeminiKey" placeholder="AIza..." />
-        <div class="sf-note">Free at <a href="https://aistudio.google.com" target="_blank" style="color:var(--cyan)">aistudio.google.com</a> → Get API key. Used only in your browser to prepare draft scores and rationales for reviewers.</div>
+        <label>Secret key</label>
+        <input type="password" id="setupSecretKey" placeholder="Enter the Apps Script secret key" autocomplete="off" />
+      </div>
+
+      <div class="sf">
+        <label>Gemini API key</label>
+        <input type="password" id="setupGeminiKey" placeholder="Add a Gemini API key to enable AI Review" />
       </div>
 
       <div class="sf">
         <label>Current reviewer</label>
         <select id="setupCurrentReviewer"></select>
-        <div class="sf-note">Select who is currently reviewing. Your scores, notes, and submission state are kept separate from the second reviewer.</div>
       </div>
 
       <div class="test-result" id="testResult"></div>
 
       <div class="setup-actions">
-        <button class="btn-setup" id="startBtnNoAi" onclick="startApp('no-ai')">
-          Load without AI →
+        <button class="btn-setup btn-setup-primary" id="startBtnNoAi" onclick="startApp('no-ai')">
+          Load →
         </button>
-        <button class="btn-setup" id="startBtnWithAi" onclick="startApp('missing-ai')">
-          Load + review unreviewed →
+        <button class="btn-setup btn-setup-secondary" id="startBtnWithAi" onclick="startApp('missing-ai')">
+          AI Review →
         </button>
       </div>
+      <div class="setup-actions-note" id="setupActionsNote" hidden></div>
 
-      <div class="divider"></div>
+      <div class="divider" hidden></div>
 
-      <div class="section-title"><div class="section-num">2</div>Apps Script — paste this into Extensions → Apps Script</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Replace all existing code in the script editor with the template below. Set <strong>GEMINI_KEY</strong> only if you want Apps Script itself to support the optional <code>screen</code> action for testing or fallback. The normal app flow uses the Gemini API key entered above in the browser. After saving, click Deploy → New deployment → Web App → Execute as: Me · Who has access: Anyone → Deploy → copy the URL above.</p>
+      <div class="section-title" hidden><div class="section-num">2</div>Apps Script — paste this into Extensions → Apps Script</div>
+      <p hidden style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Replace all existing code in the script editor with the template below. Set <strong>GEMINI_KEY</strong> only if you want Apps Script itself to support the optional <code>screen</code> action for testing or fallback. The normal app flow uses the Gemini API key entered above in the browser. After saving, click Deploy → New deployment → Web App → Execute as: Me · Who has access: Anyone → Deploy → copy the URL above.</p>
 
-      <span class="script-toggle" onclick="toggleScript()">Show script template →</span>
-      <div class="script-box" id="scriptBox">
+      <span class="script-toggle" hidden>Show script template →</span>
+      <div class="script-box" id="scriptBox" hidden>
         <div class="script-header">
           <span>CODE.GS — REPLACE ALL EXISTING CODE WITH THIS</span>
-          <button class="copy-btn" onclick="copyScript()">Copy</button>
+          <button class="copy-btn" type="button">Copy</button>
         </div>
         <pre class="script" id="scriptCode">// ─────────────────────────────────────────────────────────────
 // TPSS Stage 1 Reviewer System — Apps Script
 // Deploy: Web App · Execute as: Me · Access: Anyone
 // ─────────────────────────────────────────────────────────────
 
-const SECRET_KEY = "tpss-2026-awais";
+const SECRET_KEY = "YOUR_SECRET_KEY";
 const GEMINI_KEY = "";
 const RESULTS_SHEET = "Stage 1 Reviews";
 const ASSIGNMENTS_SHEET = "Stage 1 Assignments";
@@ -1020,7 +1015,7 @@ function mapVerdictLabel_(label) {
   if (label === "Advance to interviews") return "advance";
   // Legacy verdict label intentionally disabled during Stage 1 sheet migration.
   // if (label === "Advance to Stage 1") return "advance";
-  if (label === "Needs panel review") return "review";
+  if (label === "Needs review") return "review";
   // Legacy verdict label intentionally disabled during Stage 1 sheet migration.
   // if (label === "Needs review") return "review";
   if (label === "Do not advance") return "reject";
@@ -1091,6 +1086,9 @@ function respond(obj, callbackName) {
 <script>
 const TEAM=['Salah','Ismail','Fawwaz','Awais','Sahil','Cassandra','Faisal'];
 const LOCAL_DRAFT_KEY='tpss_stage1_local_drafts';
+const SETUP_CONFIG_KEY='tpss_stage1_setup_config';
+const DEFAULT_SHEET_NAME='Sheet1';
+const DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwDUq6asLTV4Dy9K56mR0BYgcg0avyJwzbl1yUhXgZSc5R6K9ybOWsbbF2L5P6yQhw/exec';
 // Stage 1 eligibility checks (pass/fail/flag)
 const GATES=[
   {id:'maqasid',    label:'Maqasid alignment'},
@@ -1116,10 +1114,12 @@ const AI_DRAFT_JSON_SCHEMA=createAiDraftJsonSchema();
 const GEMINI_MODELS=['gemini-2.5-flash','gemini-2.5-flash-lite'];
 
 let apps=[], appFilter='all', sortBy='score-desc';
-let scriptUrl='https://script.google.com/macros/s/AKfycbyqnIeQLzOAD8MtyNAeUeDShzmNoaJx8XJpQLCx8vcOEtK5duZqvGdWfON1KMkCxOIL/exec', secretKey='tpss-2026-awais', sheetName='Sheet1', geminiKey='', currentReviewer=TEAM[0];
+let scriptUrl=DEFAULT_SCRIPT_URL, secretKey='', sheetName=DEFAULT_SHEET_NAME, geminiKey='', currentReviewer=TEAM[0];
 let launchMode='missing-ai';
 let assignmentSaveState={};
+restoreSetupConfig();
 initReviewerSelect();
+setupSetupScreen();
 
 function createAiDraftJsonSchema() {
   var gateProperties={}, gateRequired=[], scoreProperties={}, scoreRequired=[], commentProperties={}, commentRequired=[], i, gateId, ratingId;
@@ -1322,44 +1322,93 @@ function initReviewerSelect() {
   sel.value=currentReviewer;
 }
 
+function loadSetupConfig() {
+  try {
+    return JSON.parse(localStorage.getItem(SETUP_CONFIG_KEY) || '{}');
+  } catch (err) {
+    return {};
+  }
+}
+
+function saveSetupConfig() {
+  try {
+    localStorage.setItem(SETUP_CONFIG_KEY, JSON.stringify({
+      scriptUrl:scriptUrl || '',
+      geminiKey:geminiKey || '',
+      currentReviewer:currentReviewer || TEAM[0]
+    }));
+  } catch (err) {}
+}
+
+function restoreSetupConfig() {
+  var config=loadSetupConfig();
+  scriptUrl=String(config.scriptUrl || DEFAULT_SCRIPT_URL).trim();
+  geminiKey=String(config.geminiKey || '').trim();
+  currentReviewer=TEAM.indexOf(config.currentReviewer) >= 0 ? config.currentReviewer : TEAM[0];
+  sheetName=DEFAULT_SHEET_NAME;
+}
+
+function resetSetupButtons() {
+  var loadBtn=document.getElementById('startBtnNoAi');
+  var aiBtn=document.getElementById('startBtnWithAi');
+  if (loadBtn) {
+    loadBtn.innerHTML='Load →';
+    loadBtn.disabled=false;
+  }
+  if (aiBtn) aiBtn.innerHTML='AI Review →';
+  updateAiReviewAvailability();
+}
+
+function updateAiReviewAvailability() {
+  var aiBtn=document.getElementById('startBtnWithAi');
+  var note=document.getElementById('setupActionsNote');
+  var gKey=document.getElementById('setupGeminiKey');
+  var hasGemini=!!(gKey && gKey.value.trim());
+  if (aiBtn) aiBtn.disabled=!hasGemini;
+  if (note) note.textContent=hasGemini
+    ? 'AI Review prepares missing or incomplete drafts.'
+    : 'Add a Gemini API key to enable AI Review.';
+}
+
+function syncSetupConfigFromInputs() {
+  var scriptInput=document.getElementById('setupScriptUrl');
+  var geminiInput=document.getElementById('setupGeminiKey');
+  var reviewerInput=document.getElementById('setupCurrentReviewer');
+  scriptUrl=scriptInput ? scriptInput.value.trim() : scriptUrl;
+  geminiKey=geminiInput ? geminiInput.value.trim() : geminiKey;
+  currentReviewer=reviewerInput && TEAM.indexOf(reviewerInput.value) >= 0 ? reviewerInput.value : TEAM[0];
+  saveSetupConfig();
+  updateAiReviewAvailability();
+}
+
+function setupSetupScreen() {
+  var scriptInput=document.getElementById('setupScriptUrl');
+  var geminiInput=document.getElementById('setupGeminiKey');
+  var reviewerInput=document.getElementById('setupCurrentReviewer');
+  if (scriptInput) scriptInput.addEventListener('input', syncSetupConfigFromInputs);
+  if (geminiInput) geminiInput.addEventListener('input', syncSetupConfigFromInputs);
+  if (reviewerInput) reviewerInput.addEventListener('change', syncSetupConfigFromInputs);
+  goToSetup();
+}
+
 // ── SETUP ──────────────────────────────────────────────────────
 function goToSetup() {
   document.getElementById('setupScreen').style.display='block';
   document.getElementById('appShell').style.display='none';
   document.getElementById('phaseBar').style.display='none';
   document.getElementById('setupScriptUrl').value=scriptUrl;
-  document.getElementById('setupSecretKey').value=secretKey;
-  document.getElementById('setupSheetName').value=sheetName;
+  document.getElementById('setupSecretKey').value='';
   document.getElementById('setupGeminiKey').value=geminiKey;
   document.getElementById('setupCurrentReviewer').value=currentReviewer;
   document.getElementById('testResult').className='test-result';
-  document.getElementById('startBtnNoAi').innerHTML='Load without AI →';
-  document.getElementById('startBtnWithAi').innerHTML='Load + review unreviewed →';
-  document.getElementById('startBtnNoAi').disabled=false;
-  document.getElementById('startBtnWithAi').disabled=false;
-}
-
-function toggleScript() {
-  var box=document.getElementById('scriptBox');
-  var tog=document.querySelector('.script-toggle');
-  var open=box.style.display==='block';
-  box.style.display=open?'none':'block';
-  tog.textContent=open?'Show script template →':'Hide script template ↑';
-}
-
-function copyScript() {
-  var code=document.getElementById('scriptCode').textContent;
-  navigator.clipboard.writeText(code).then(function(){
-    var btn=document.querySelector('.copy-btn');
-    btn.textContent='Copied ✓';
-    setTimeout(function(){btn.textContent='Copy';},2000);
-  }).catch(function(){toast('Select the code and copy manually','error');});
+  document.getElementById('testResult').textContent='';
+  resetSetupButtons();
 }
 
 async function testConnection() {
   var url=document.getElementById('setupScriptUrl').value.trim();
   var key=document.getElementById('setupSecretKey').value.trim();
-  var sheet=document.getElementById('setupSheetName').value.trim()||'Sheet1';
+  var sheet=DEFAULT_SHEET_NAME;
   var res=document.getElementById('testResult');
   var btn=document.getElementById('testBtn');
 
@@ -1389,7 +1438,7 @@ async function testConnection() {
 async function startApp(mode) {
   var url=document.getElementById('setupScriptUrl').value.trim();
   var key=document.getElementById('setupSecretKey').value.trim();
-  var sheet=document.getElementById('setupSheetName').value.trim()||'Sheet1';
+  var sheet=DEFAULT_SHEET_NAME;
   var gKey=document.getElementById('setupGeminiKey').value.trim();
   var reviewer=document.getElementById('setupCurrentReviewer').value.trim()||TEAM[0];
   var res=document.getElementById('testResult');
@@ -1400,7 +1449,15 @@ async function startApp(mode) {
     return;
   }
 
+  if ((mode||'missing-ai')==='missing-ai' && !gKey) {
+    res.className='test-result err';
+    res.textContent='Add a Gemini API key to use AI Review.';
+    updateAiReviewAvailability();
+    return;
+  }
+
   scriptUrl=url; secretKey=key; sheetName=sheet; geminiKey=gKey; currentReviewer=reviewer; launchMode=mode||'missing-ai';
+  saveSetupConfig();
 
   var btn=document.getElementById(launchMode==='no-ai'?'startBtnNoAi':'startBtnWithAi');
   var otherBtn=document.getElementById(launchMode==='no-ai'?'startBtnWithAi':'startBtnNoAi');
@@ -1410,11 +1467,7 @@ async function startApp(mode) {
 
   var data=await fetchApplicants();
   if (!data) {
-    document.getElementById('startBtnNoAi').innerHTML='Load without AI →';
-    document.getElementById('startBtnWithAi').innerHTML='Load + review unreviewed →';
-    document.getElementById('startBtnNoAi').disabled=false;
-    document.getElementById('startBtnWithAi').disabled=false;
-    btn.disabled=false;
+    resetSetupButtons();
     return;
   }
 
@@ -1428,7 +1481,7 @@ async function startApp(mode) {
   document.getElementById('appShell').style.display='block';
   document.getElementById('phaseBar').style.display='flex';
   var disp=document.getElementById('cfgUrlDisplay');
-  if (disp) disp.textContent=url+' · '+currentReviewer+' · '+(launchMode==='no-ai'?'No AI draft':'Draft missing only');
+  if (disp) disp.textContent=url+' · '+currentReviewer+' · '+(launchMode==='no-ai'?'No AI draft':'Draft missing/incomplete');
 
   await batchScreen(rows, savedAssignments, savedReviews, savedResolutions, aiDrafts, launchMode);
 }
@@ -1471,7 +1524,7 @@ async function batchScreen(rows, savedAssignments, savedReviews, savedResolution
     '<div class="loading-wrap">'+
     '<div class="spin-lg"></div>'+
     '<h2>'+(mode==='no-ai'?'Loading reviewer workspace':'Preparing AI draft reviews')+'</h2>'+
-    '<p>'+(mode==='no-ai'?'Loading applicants without new AI calls…':'Drafting Stage 1 reviewer assessments only for applicants without saved AI drafts…')+'</p>'+
+    '<p>'+(mode==='no-ai'?'Loading applicants without new AI calls…':'Drafting Stage 1 reviewer assessments for applicants with missing or incomplete AI drafts…')+'</p>'+
     '<div class="prog-bar"><div class="prog-fill" id="pf"></div></div>'+
     '<div class="prog-lbl" id="pl">Starting…</div>'+
     '</div>';
@@ -1488,27 +1541,28 @@ async function batchScreen(rows, savedAssignments, savedReviews, savedResolution
     var vn=rows[i]['Venture Name']||'Unknown';
     var applicationId=applicationIdFromRow(rows[i]);
     var existingAiDraft=aiDrafts[applicationId]||null;
+    var normalizedExistingAiDraft=existingAiDraft?normalizeAiDraft(existingAiDraft):null;
     var pf=document.getElementById('pf'), pl=document.getElementById('pl');
     if (pf) pf.style.width=Math.round(((i+1)/rows.length)*100)+'%';
     if (pl) pl.textContent=(mode==='no-ai'?'Loading: ':'Preparing: ')+vn+' ('+(i+1)+'/'+rows.length+')';
     var screened;
-    if (existingAiDraft) {
-      screened=createAppFromRow(rows[i], normalizeAiDraft(existingAiDraft));
-    } else if (mode==='missing-ai') {
+    if (mode==='missing-ai' && shouldRetryAiDraft(normalizedExistingAiDraft)) {
       screened=await screenOne(rows[i]);
       draftedCount++;
+    } else if (normalizedExistingAiDraft) {
+      screened=createAppFromRow(rows[i], normalizedExistingAiDraft);
     } else {
       screened=createAppFromRow(rows[i], conservativeAiDraft('AI draft not requested at launch. Review manually or run AI draft for this application.','ai_skipped'));
     }
     hydrateReviewData(screened, savedAssignments[screened.applicationId], savedReviews[screened.applicationId], savedResolutions[screened.applicationId]);
-    if (mode==='missing-ai' && i < rows.length - 1 && !existingAiDraft) await new Promise(function(r){setTimeout(r, 2000);});
+    if (mode==='missing-ai' && i < rows.length - 1 && shouldRetryAiDraft(normalizedExistingAiDraft)) await new Promise(function(r){setTimeout(r, 2000);});
     results.push(screened);
   }
 
   apps=results;
   setTimeout(function(){
     renderAll(); updateSummary();
-    toast(mode==='missing-ai' ? ('AI draft review complete — '+draftedCount+' new AI draft(s) prepared') : ('Workspace loaded — no new AI drafts requested'),'success');
+    toast(mode==='missing-ai' ? ('AI draft review complete — '+draftedCount+' missing/incomplete draft(s) prepared') : ('Workspace loaded — no new AI drafts requested'),'success');
     document.getElementById('ph1').className='phase done';
     document.getElementById('ph2').className='phase active';
   },400);
@@ -1854,6 +1908,21 @@ function normalizeAiDraft(ai, presetIssues){
   return { gates:gates, scores:scores, categoryComments:categoryComments, summary:summary, valid:issues.length===0, issues:issues };
 }
 
+function shouldRetryAiDraft(aiDraft){
+  if (!aiDraft) return true;
+  var issues=Array.isArray(aiDraft.issues)?aiDraft.issues:[];
+  if (!aiDraft.valid) return true;
+  return issues.some(function(issue){
+    return issue==='ai_skipped' ||
+      issue==='gemini_error' ||
+      issue==='schema_incomplete' ||
+      issue==='missing_summary' ||
+      issue.indexOf('missing_gate:')===0 ||
+      issue.indexOf('missing_score:')===0 ||
+      issue.indexOf('missing_comment:')===0;
+  });
+}
+
 function buildReviewRecord(a, reviewer){
   var gates={};
   GATES.forEach(function(g){
@@ -2172,7 +2241,7 @@ function getDisplayScore(a){
 function getAiStatus(a){
   ensureWorkflowState(a);
   var issues=(a.aiSeed&&a.aiSeed.issues)||[];
-  if (issues.indexOf('ai_skipped')>=0) return { tone:'manual', label:'Manual review draft', detail:'AI draft was skipped at launch.' };
+  if (issues.indexOf('ai_skipped')>=0) return { tone:'manual', label:'', detail:'' };
   if (issues.indexOf('gemini_error')>=0) return { tone:'warn', label:'AI retry needed', detail:'Gemini failed. Review manually or re-run the AI draft.' };
   if (issues.indexOf('schema_incomplete')>=0 || !a.aiSeed.valid) return { tone:'warn', label:'AI draft incomplete', detail:'The AI draft is partial and should be checked manually.' };
   return { tone:'ok', label:'AI ready', detail:'Draft scores and rationale are available.' };
@@ -2264,7 +2333,7 @@ function computeVerdict(gates, ratings){
 
 function verdictLabel(verdict){
   if (verdict==='advance') return 'Advance to interviews';
-  if (verdict==='review') return 'Needs panel review';
+  if (verdict==='review') return 'Needs review';
   return 'Do not advance';
 }
 
@@ -2320,7 +2389,7 @@ function cardHTML(a){
   if (a.country) tags.push('<span class="tag t-sec">'+a.country.replace(/\+\d+/,'').trim()+'</span>');
   var subBanner=a.submitted?'<div class="sub-banner">'+(comparison.has?'⚠ ':'✓ ')+'Review submitted · '+getWorkflowStatusLabel(a)+' · '+(a.submittedAt&&a.submittedAt.toString().indexOf('Previously')>=0?a.submittedAt:new Date(a.submittedAt).toLocaleString())+'</div>':'';
   var diffBadge=comparison.has?'<span class="diff-badge">Reviewer difference flagged</span>':'';
-  var draftBadge=(a.workflow&&a.workflow.localDraftRestored)?'<span class="draft-badge">Local draft restored</span>':'';
+  var aiBadge=aiStatus.label?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'';
   return '<div class="app-card'+(a.submitted?' submitted':'')+'" id="card-'+eid+'">'+
     '<div class="card-top">'+
     '<div class="row1">'+
@@ -2338,7 +2407,7 @@ function cardHTML(a){
     '<div class="sbar"><div class="sfill '+sc+'" id="sf-'+eid+'" style="width:'+displayScore+'%"></div></div>'+
     '</div></div></div>'+
     '<div class="card-footer">'+
-    '<div class="cf-left"><div class="ai-badges"><span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>'+draftBadge+'</div><span class="ai-summary">'+a.aiSummary+'</span></div>'+
+    '<div class="cf-left"><div class="ai-badges">'+aiBadge+'</div><span class="ai-summary">'+a.aiSummary+'</span></div>'+
     '<div class="cf-right">'+
     assignSel+
     diffBadge+
@@ -2418,7 +2487,7 @@ function panelHTML(a){
       '<div class="resolution-box">'+
       '<div class="resolution-grid">'+
       '<div><div class="ep-nl">Resolution state</div><select class="review-input" id="resolution-state-'+eid+'" data-id="'+eid+'" onchange="setResolutionStateInput(this)"><option value="required"'+(resolutionState==='required'?' selected':'')+'>Needs resolution</option><option value="resolved"'+(resolutionState==='resolved'?' selected':'')+'>Resolved</option></select></div>'+
-      '<div><div class="ep-nl">Final decision</div><select class="review-input" id="resolution-verdict-'+eid+'" data-id="'+eid+'" onchange="setResolutionVerdictInput(this)"><option value="">Select final decision</option><option value="advance"'+(resolutionVerdict==='advance'?' selected':'')+'>Advance to interviews</option><option value="review"'+(resolutionVerdict==='review'?' selected':'')+'>Needs panel review</option><option value="reject"'+(resolutionVerdict==='reject'?' selected':'')+'>Do not advance</option></select></div>'+
+      '<div><div class="ep-nl">Final decision</div><select class="review-input" id="resolution-verdict-'+eid+'" data-id="'+eid+'" onchange="setResolutionVerdictInput(this)"><option value="">Select final decision</option><option value="advance"'+(resolutionVerdict==='advance'?' selected':'')+'>Advance to interviews</option><option value="review"'+(resolutionVerdict==='review'?' selected':'')+'>Needs review</option><option value="reject"'+(resolutionVerdict==='reject'?' selected':'')+'>Do not advance</option></select></div>'+
       '</div>'+
       '<div class="ep-nl" style="margin-top:12px">Resolution notes</div>'+
       '<textarea class="ep-notes" id="resolution-notes-'+eid+'" data-id="'+eid+'" oninput="setResolutionNotesInput(this)" placeholder="Record how the disagreement was resolved…">'+escapeHtml(resolutionNotes)+'</textarea>'+
@@ -2435,7 +2504,7 @@ function panelHTML(a){
     '<span class="epv-lbl '+vc+'">Decision: '+vt+'</span>'+
     '<span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+Object.values(a.humanGates).filter(function(v){return v==='fail';}).length+' fail · '+Object.values(a.humanGates).filter(function(v){return v==='flag';}).length+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>'+
     '</div>'+
-    '<div class="ai-status-row"><span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span><span class="ai-status-detail">'+aiStatus.detail+'</span></div>'+
+    '<div class="ai-status-row">'+(aiStatus.label?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'')+(aiStatus.detail?'<span class="ai-status-detail">'+aiStatus.detail+'</span>':'')+'</div>'+
     '<div class="ep-sec">Eligibility checks</div>'+
     '<div class="ep-gates">'+gateEds+'</div>'+
     '<div class="ep-sec">Stage 1 rubric</div>'+
@@ -2446,7 +2515,7 @@ function panelHTML(a){
     '<div class="ep-nl" style="margin-top:16px">Reviewer notes</div>'+
     '<textarea class="ep-notes" id="notes-'+eid+'" placeholder="Add context, override rationale, or escalation notes…">'+escapeHtml(a.notes||'')+'</textarea>'+
     '<div class="ep-actions">'+
-    '<span class="ep-act-l" id="ss-'+eid+'">'+(a.workflow&&a.workflow.localDraftRestored&&a.workflow.localDraftSavedAt?'Local draft restored · '+new Date(a.workflow.localDraftSavedAt).toLocaleString():(otherReview?'Other review visible after submission by '+otherReview.reviewer:'Changes save to your reviewer record'))+'</span>'+
+    '<span class="ep-act-l" id="ss-'+eid+'">'+(otherReview?'Other review visible after submission by '+otherReview.reviewer:'Changes save to your reviewer record')+'</span>'+
     '<div class="ep-act-r">'+
     '<button class="btn-save-card" data-id="'+eid+'" onclick="rerunAiDraftBtn(this)">Re-run AI draft</button>'+
     '<button class="btn-save-card" data-id="'+eid+'" onclick="saveDraftBtn(this)">Save draft</button>'+
@@ -2921,12 +2990,13 @@ async function checkForUpdates(){
   var badge=document.getElementById('newBadge');
   if (badge){badge.style.display='inline';badge.textContent=newRows.length;}
   if (st){st.textContent=newRows.length+' new found';st.className='conn-ok';}
-  toast('Found '+newRows.length+' new applicant(s) — '+(launchMode==='missing-ai'?'drafting missing AI reviews now…':'loading without AI reviews…'),'warning');
+  toast('Found '+newRows.length+' new applicant(s) — '+(launchMode==='missing-ai'?'drafting missing/incomplete AI reviews now…':'loading without AI reviews…'),'warning');
   for (var i=0;i<newRows.length;i++){
     var applicationId=applicationIdFromRow(newRows[i]);
+    var existingDraft=aiDrafts[applicationId]?normalizeAiDraft(aiDrafts[applicationId]):null;
     var screened;
-    if (aiDrafts[applicationId]) screened=createAppFromRow(newRows[i], normalizeAiDraft(aiDrafts[applicationId]));
-    else if (launchMode==='missing-ai') screened=await screenOne(newRows[i]);
+    if (launchMode==='missing-ai' && shouldRetryAiDraft(existingDraft)) screened=await screenOne(newRows[i]);
+    else if (existingDraft) screened=createAppFromRow(newRows[i], existingDraft);
     else screened=createAppFromRow(newRows[i], conservativeAiDraft('AI draft not requested at launch. Review manually or run AI draft for this application.','ai_skipped'));
     hydrateReviewData(screened, savedAssignments[screened.applicationId], savedReviews[screened.applicationId], savedResolutions[screened.applicationId]);
     apps.push(screened);
