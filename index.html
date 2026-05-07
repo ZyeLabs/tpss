@@ -78,75 +78,87 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;transition:box-shadow .2s}
 .app-card:hover{box-shadow:0 4px 16px rgba(26,46,90,.08)}
 .app-card.submitted{border-color:var(--pass-border)}
-.card-top{padding:14px 16px}
-.row1{display:flex;align-items:flex-start;gap:12px;margin-bottom:11px}
-.avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'Montserrat',sans-serif}
+.card-top{padding:16px 16px 14px;display:flex;flex-direction:column;gap:14px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.row1{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0;margin-bottom:0}
+.avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'Montserrat',sans-serif}
 .av-b{background:#e6f1fb;color:#0c447c}
 .av-t{background:#e1f5ee;color:#085041}
 .av-p{background:#eeedfe;color:#3c3489}
 .av-c{background:#faece7;color:#712b13}
 .av-g{background:#f1efea;color:#444441}
 .app-info{flex:1;min-width:0}
-.app-name{font-size:15px;font-weight:500;color:var(--text)}
-.app-sub{font-size:12px;color:var(--text2);margin-top:1px}
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.app-name{font-size:16px;font-weight:600;color:var(--text);line-height:1.25}
+.app-sub{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.45}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
 .t-edu{background:#e6f1fb;color:#185fa5}
 .t-npo{background:#e1f5ee;color:#0f6e56}
 .t-fp{background:#faeeda;color:#854f0b}
 .t-sec{background:#f1efea;color:#5f5e5a}
-.score-row{display:flex;gap:10px;align-items:flex-start}
-.gates-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.gate-chip{padding:6px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2)}
-.gc-top{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:3px}
-.gc-name{font-size:10px;color:var(--text2);font-weight:600;font-family:'Montserrat',sans-serif;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
-.gbadge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;flex-shrink:0;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.t-muted{background:#f4f6fb;color:var(--text3)}
+.card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.state-badges{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.score-row{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:12px;align-items:end}
+.gates-wrap{display:flex;flex-direction:column;gap:8px;min-width:0}
+.gates-summary{font-size:12px;color:var(--text2);font-weight:800;font-family:'Montserrat',sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.gates-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;grid-auto-rows:1fr}
+.gate-chip{padding:10px;border-radius:14px;border:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;justify-content:flex-start;gap:8px;min-width:0;height:100%}
+.gc-top{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;margin-bottom:0}
+.gc-name{font-size:12px;color:var(--text);font-weight:800;font-family:'Montserrat',sans-serif;letter-spacing:.02em;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25}
+.gbadge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;font-family:'Montserrat',sans-serif;letter-spacing:.03em}
 .gbadge.p{background:var(--pass-bg);color:var(--pass-text)}
 .gbadge.f{background:var(--fail-bg);color:var(--fail-text)}
 .gbadge.fl{background:var(--flag-bg);color:var(--flag-text)}
-.gc-note{font-size:10px;color:var(--text3);line-height:1.4;font-style:italic}
-.score-col{width:70px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:3px}
-.cscore{font-size:32px;font-weight:700;line-height:1;font-family:'Montserrat',sans-serif}
+.gc-note{display:block;font-size:10px;color:var(--text2);line-height:1.5;margin-top:0}
+.score-col{width:auto;min-width:96px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border-radius:14px;border:1px solid var(--border);background:var(--surface2);align-self:stretch}
+.cscore{font-size:34px;font-weight:700;line-height:1;font-family:'Montserrat',sans-serif}
 .cscore.hi{color:var(--pass-text)}
 .cscore.md{color:var(--flag-text)}
 .cscore.lo{color:var(--fail-text)}
-.cscore-lbl{font-size:10px;color:var(--text3);text-align:center;font-weight:500}
+.cscore-lbl{font-size:10px;color:var(--text3);text-align:center;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.score-kicker{font-size:10px;color:var(--text2);text-align:center;line-height:1.35;font-family:'Montserrat',sans-serif}
 .sbar{width:58px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .sfill{height:100%;border-radius:3px;transition:width .4s}
 .sfill.hi{background:#639922}
 .sfill.md{background:#d97706}
 .sfill.lo{background:#dc2626}
-.card-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-top:1px solid var(--border);background:var(--surface2);gap:10px;flex-wrap:wrap}
-.cf-left{display:flex;align-items:center;gap:7px;flex:1;min-width:0;flex-wrap:wrap}
+.ai-strip{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border:1px solid var(--border);background:linear-gradient(180deg,#fbfcff 0%, #f5f8fe 100%);border-radius:14px}
+.ai-strip.warn{border-color:var(--flag-border);background:#fffaf0}
+.ai-strip.manual{background:var(--surface2)}
+.card-footer{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;padding:0 16px 16px;gap:12px}
+.cf-left{min-width:0}
+.cf-center{display:flex;align-items:center;justify-content:center;min-width:0}
+.cf-right{display:flex;align-items:center;justify-content:flex-end;gap:10px}
 .ai-badges{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap}
 .ai-tag{font-size:10px;background:var(--cyan-pale);color:#185fa5;padding:2px 8px;border-radius:20px;font-weight:700;font-family:'Montserrat',sans-serif;flex-shrink:0;border:1px solid transparent}
 .ai-tag.ok{background:var(--pass-bg);border-color:var(--pass-border);color:var(--pass-text)}
 .ai-tag.warn{background:var(--flag-bg);border-color:var(--flag-border);color:var(--flag-text)}
 .ai-tag.manual{background:var(--surface);border-color:var(--border2);color:var(--text2)}
-.ai-summary{font-size:11px;color:var(--text2);font-style:italic;line-height:1.5;flex:1}
-.cf-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ai-summary{font-size:12px;color:var(--text2);line-height:1.55;flex:1}
 .assign-disp{font-size:11px;color:var(--text3)}
 .assign-disp strong{color:var(--text);font-weight:500}
-.assign-inline{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.assign-pair{display:flex;gap:4px;flex-wrap:wrap}
-.assign-slot-label{font-size:10px;color:var(--text3);font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.03em}
-.assign-inline-lbl{font-size:11px;color:var(--text3);white-space:nowrap}
-.assign-sel{font-size:11px;padding:3px 8px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;max-width:140px}
+.assign-inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0;border:0;border-radius:0;background:transparent}
+.assign-inline.panel{padding:0;border:0;background:transparent}
+.assign-pair{display:flex;gap:6px;flex-wrap:wrap}
+.assign-slot-label{font-size:9px;color:var(--text3);font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.05em}
+.assign-inline-lbl{font-size:10px;color:var(--text3);white-space:nowrap;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.assign-sel{font-size:11px;min-height:32px;padding:5px 8px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;max-width:140px}
 .assign-sel.assigned{border-color:var(--cyan);color:var(--navy);font-weight:600}
-.assign-saving{font-size:10px;color:var(--text3);font-style:italic}
-.diff-badge{font-size:10px;background:var(--flag-bg);color:var(--flag-text);border:1px solid var(--flag-border);padding:2px 8px;border-radius:20px;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.assign-saving{font-size:10px;color:var(--text3);font-style:italic;width:100%}
+.diff-badge{font-size:10px;background:var(--flag-bg);color:var(--flag-text);border:1px solid var(--flag-border);padding:4px 10px;border-radius:20px;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.02em;display:inline-flex;align-items:center}
 .workflow-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.02em;background:var(--surface);color:var(--text2);border:1px solid var(--border2)}
-.vbadge{font-size:11px;font-weight:700;padding:4px 13px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.vbadge{font-size:10px;font-weight:700;padding:4px 13px;border-radius:20px;font-family:'Montserrat',sans-serif;letter-spacing:.03em}
 .vb-adv{background:var(--pass-bg);color:var(--pass-text);border:1px solid var(--pass-border)}
 .vb-rev{background:var(--flag-bg);color:var(--flag-text);border:1px solid var(--flag-border)}
 .vb-rej{background:var(--fail-bg);color:var(--fail-text);border:1px solid var(--fail-border)}
 .vb-sub{background:var(--cyan-pale);color:#185fa5;border:1px solid var(--cyan-mid)}
-.rev-btn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
-.rev-btn:hover{border-color:var(--navy);color:var(--navy)}
+.rev-btn{font-size:11px;font-weight:700;min-height:38px;min-width:112px;padding:8px 18px;border-radius:10px;border:1px solid var(--navy);background:var(--navy);color:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.03em;transition:all .12s}
+.rev-btn:hover{background:var(--navy-deep);border-color:var(--navy-deep);color:#fff}
 .rev-btn.open{border-color:var(--navy);color:var(--navy);background:#f0f4fc}
 .sub-banner{background:var(--pass-bg);border-top:1px solid var(--pass-border);padding:7px 16px;font-size:11px;font-weight:600;color:var(--pass-text);font-family:'Montserrat',sans-serif;letter-spacing:.03em}
-.expand-panel{border-top:1px solid var(--border);padding:16px}
-.ep-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.expand-panel{border-top:1px solid var(--border);padding:18px 18px 20px}
+.ep-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
 .ep-title{font-size:13px;font-weight:700;color:var(--navy);font-family:'Montserrat',sans-serif}
 .assign-sec{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .assign-lbl{font-size:11px;color:var(--text2);font-weight:500}
@@ -154,7 +166,7 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .mchip{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
 .mchip:hover{border-color:var(--navy);color:var(--navy)}
 .mchip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
-.ep-verdict{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-sm);margin-bottom:14px;flex-wrap:wrap}
+.ep-verdict{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:var(--r-sm);margin-bottom:16px;flex-wrap:wrap}
 .ep-verdict.adv{background:var(--pass-bg);border:1px solid var(--pass-border)}
 .ep-verdict.rev{background:var(--flag-bg);border:1px solid var(--flag-border)}
 .ep-verdict.rej{background:var(--fail-bg);border:1px solid var(--fail-border)}
@@ -162,14 +174,15 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .epv-lbl.adv{color:var(--pass-text)}
 .epv-lbl.rev{color:var(--flag-text)}
 .epv-lbl.rej{color:var(--fail-text)}
-.epv-score{font-size:11px;color:var(--text2);margin-left:auto}
-.ai-status-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 14px}
-.ai-status-detail{font-size:11px;color:var(--text3)}
+.epv-score{font-size:11px;color:var(--text2);margin-left:auto;line-height:1.5;min-width:240px;text-align:right}
+.ai-status-row{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin:-2px 0 8px}
+.ep-ai-summary{font-size:12px;color:var(--text2);line-height:1.6;margin:0 0 16px}
+.ai-status-detail{font-size:11px;color:var(--text2);line-height:1.55}
 .ep-sec{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-family:'Montserrat',sans-serif;margin-bottom:9px}
-.ep-gates{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.ep-gate{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
+.ep-gates{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.ep-gate{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .ep-gate.edited{border-color:var(--flag-border)}
-.epg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px;flex-wrap:wrap}
+.epg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;gap:8px;flex-wrap:wrap}
 .epg-name{font-size:12px;font-weight:600;color:var(--text);font-family:'Montserrat',sans-serif}
 .pill-grp{display:flex;gap:3px}
 .epill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
@@ -177,29 +190,35 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .epill.sp{background:var(--pass-bg);border-color:var(--pass-border);color:var(--pass-text)}
 .epill.sf{background:var(--fail-bg);border-color:var(--fail-border);color:var(--fail-text)}
 .epill.sfl{background:var(--flag-bg);border-color:var(--flag-border);color:var(--flag-text)}
-.epg-note{font-size:11px;color:var(--text3);line-height:1.5;font-style:italic;margin-bottom:4px}
-.edited-flag{font-size:10px;color:var(--flag-text);font-weight:600;font-family:'Montserrat',sans-serif}
-.ep-ratings{margin-bottom:16px}
-.rat-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
-.rlbl{font-size:12px;color:var(--text2);width:130px;flex-shrink:0;font-weight:500}
-.stars{display:flex;gap:3px}
+.epg-note{font-size:11px;color:var(--text2);line-height:1.6;font-style:normal;margin:0}
+.note-prefix-blue{color:#185fa5;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
+.edited-flag{font-size:10px;color:var(--text2);font-weight:600;line-height:1.5}
+.ep-ratings{display:grid;gap:12px;margin-bottom:20px}
+.rat-row{display:grid;grid-template-columns:minmax(0,170px) auto minmax(0,1fr);align-items:start;gap:10px 12px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);margin-bottom:0}
+.rlbl{font-size:12px;color:var(--text2);width:auto;flex-shrink:0;font-weight:500;line-height:1.45;padding-top:3px}
+.stars{display:flex;gap:3px;padding-top:2px}
 .star{width:22px;height:22px;border-radius:5px;border:1px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .1s}
 .star:hover{border-color:var(--navy);color:var(--navy)}
 .star.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.rat-ai{font-size:10px;color:var(--text3);margin-left:4px}
+.rat-ai{font-size:11px;color:#185fa5;margin-left:0;font-weight:700;line-height:1.45;padding-top:3px}
 .rat-ai.adj{color:var(--flag-text);font-weight:600}
+.rating-peer{grid-column:1 / -1;font-size:10px;color:var(--text3);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:-2px}
 .reviewer-note{font-size:10px;color:var(--text3);font-weight:600}
-.rat-comment{width:100%;margin-left:130px;margin-top:6px}
-.review-helper{font-size:10px;color:var(--text3);margin-bottom:4px;line-height:1.4}
+.rat-comment{grid-column:1 / -1;width:100%;margin:2px 0 0;display:flex;flex-direction:column;gap:8px}
+.review-helper{font-size:11px;color:var(--text2);margin-bottom:0;line-height:1.55}
+.review-helper-user{color:var(--navy)}
 .review-input{width:100%;font-size:12px;border:1px solid var(--border2);border-radius:var(--r-sm);padding:7px 9px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
 .review-input:focus{border-color:var(--cyan)}
-.review-meta-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+.review-meta-grid{display:grid;grid-template-columns:1fr;gap:14px;margin:16px 0 20px}
+.review-meta-grid .ep-nl{margin-bottom:8px}
+.review-meta-grid .review-input{max-width:420px}
+.review-input[data-rid]{min-height:72px;resize:vertical}
 .resolution-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin:0 0 16px}
 .resolution-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ep-nl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-family:'Montserrat',sans-serif;margin-bottom:6px}
-.ep-notes{width:100%;font-size:13px;min-height:60px;resize:vertical;border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 11px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.ep-notes{width:100%;font-size:13px;min-height:82px;resize:vertical;border:1px solid var(--border2);border-radius:var(--r-sm);padding:10px 11px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;line-height:1.6}
 .ep-notes:focus{border-color:var(--cyan)}
-.ep-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:10px}
+.ep-actions{display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:12px}
 .ep-act-l{font-size:11px;color:var(--text3)}
 .ep-act-r{display:flex;gap:8px}
 .btn-submit-card{font-size:12px;font-weight:700;padding:8px 20px;border-radius:var(--r-sm);border:none;background:var(--cyan);color:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.03em;transition:all .15s;display:flex;align-items:center;gap:7px}
@@ -255,6 +274,29 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
   .hdr{padding:0 14px;gap:10px}
   .hdr-title{display:none}
   .main{padding:14px}
+  .card-top{padding:14px 14px 12px}
+  .card-head{flex-direction:column;gap:12px}
+  .card-meta{align-items:flex-start}
+  .state-badges{justify-content:flex-start}
+  .score-row{grid-template-columns:1fr}
+  .gates-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .score-col{min-width:0}
+  .ai-strip{padding:10px 12px}
+  .card-footer{grid-template-columns:1fr;padding:0 14px 14px}
+  .cf-center,.cf-right{justify-content:flex-start}
+  .assign-inline{width:100%;align-items:flex-start}
+  .assign-pair{width:100%}
+  .assign-sel{flex:1;max-width:none}
+  .review-meta-grid{grid-template-columns:1fr}
+  .ep-verdict{gap:10px}
+  .epv-score{margin-left:0;min-width:0;text-align:left}
+  .ep-gates{grid-template-columns:1fr}
+  .rat-row{grid-template-columns:1fr}
+  .stars{padding-top:0}
+  .rat-ai{padding-top:0}
+  .resolution-grid{grid-template-columns:1fr}
+  .ep-actions{align-items:flex-start}
+  .ep-act-r{width:100%;flex-wrap:wrap}
   .setup-wrap{margin:24px auto 30px}
   .setup-card{padding:24px 18px 22px;border-radius:18px}
   .setup-card h2{font-size:20px}
@@ -1050,7 +1092,7 @@ function respond(obj, callbackName) {
   <div class="summary">
     <div class="sstat"><div class="val" id="stTotal">0</div><div class="lbl">Applicants</div></div>
     <div class="sstat adv"><div class="val" id="stAdv">0</div><div class="lbl">Advance</div></div>
-    <div class="sstat rev"><div class="val" id="stRev">0</div><div class="lbl">Panel review</div></div>
+    <div class="sstat rev"><div class="val" id="stRev">0</div><div class="lbl">Needs review</div></div>
     <div class="sstat rej"><div class="val" id="stRej">0</div><div class="lbl">Do not advance</div></div>
     <div class="sstat sub"><div class="val" id="stSub">0</div><div class="lbl">Submitted</div></div>
   </div>
@@ -1058,7 +1100,7 @@ function respond(obj, callbackName) {
     <span class="flbl">Filter:</span>
     <button class="fpill on" onclick="setFilter('all',this)">All</button>
     <button class="fpill" onclick="setFilter('advance',this)">Advance</button>
-    <button class="fpill" onclick="setFilter('review',this)">Panel review</button>
+    <button class="fpill" onclick="setFilter('review',this)">Needs review</button>
     <button class="fpill" onclick="setFilter('reject',this)">Do not advance</button>
     <button class="fpill" onclick="setFilter('edited',this)">Edited</button>
     <button class="fpill" onclick="setFilter('unassigned',this)">Unassigned</button>
@@ -1791,7 +1833,7 @@ function createAppFromRow(row, ai){
     aiRatings:Object.assign({},aiScores),
     humanRatings:Object.assign({},aiScores),
     aiCategoryComments:Object.assign({},aiCategoryComments),
-    categoryComments:Object.assign({},aiCategoryComments),
+    categoryComments:{},
     editedRatings:new Set(),
     aiScore:aiScore, humanScore:aiScore,
     aiSummary:ai.summary||'',
@@ -1929,7 +1971,7 @@ function buildReviewRecord(a, reviewer){
     gates[g.id]=(a.aiSeed.gates[g.id]&&a.aiSeed.gates[g.id].verdict)||'flag';
   });
   var ratings=Object.assign({},a.aiSeed.ratings);
-  var comments=Object.assign({},a.aiSeed.categoryComments);
+  var comments={};
   return {
     reviewer:reviewer||currentReviewer,
     reviewerSlot:'',
@@ -1961,7 +2003,7 @@ function normalizeSavedReview(record, a, reviewer){
   base.ratings=normalizeAiScores(record.ratings||base.ratings);
   // Legacy `record.humanRatings` support intentionally disabled during the workbook migration.
   // base.ratings=normalizeAiScores(record.ratings||record.humanRatings||base.ratings);
-  base.categoryComments=normalizeCategoryComments(record.categoryComments||base.categoryComments);
+  base.categoryComments=normalizeCategoryComments(record.categoryComments||{});
   // Legacy `record.comments` support intentionally disabled during the workbook migration.
   // base.categoryComments=normalizeCategoryComments(record.categoryComments||record.comments||base.categoryComments);
   base.editedGates=(record.editedGates||[]).slice();
@@ -2220,7 +2262,7 @@ function applyAiDraftToApp(a, aiDraft, preserveHuman){
   if (!preserveHuman) {
     a.humanGates=Object.assign({},temp.humanGates);
     a.humanRatings=Object.assign({},temp.humanRatings);
-    a.categoryComments=Object.assign({},temp.categoryComments);
+    a.categoryComments={};
     a.humanScore=temp.humanScore;
     a.verdict=temp.verdict;
     a.notes='';
@@ -2244,7 +2286,7 @@ function getAiStatus(a){
   if (issues.indexOf('ai_skipped')>=0) return { tone:'manual', label:'', detail:'' };
   if (issues.indexOf('gemini_error')>=0) return { tone:'warn', label:'AI retry needed', detail:'Gemini failed. Review manually or re-run the AI draft.' };
   if (issues.indexOf('schema_incomplete')>=0 || !a.aiSeed.valid) return { tone:'warn', label:'AI draft incomplete', detail:'The AI draft is partial and should be checked manually.' };
-  return { tone:'ok', label:'AI ready', detail:'Draft scores and rationale are available.' };
+  return { tone:'ok', label:'AI Reviewed', detail:'Draft scores and rationale are available.' };
 }
 
 function buildReviewerPairLabel(comparison){
@@ -2304,8 +2346,8 @@ function syncDerivedState(a){
 function formatAssignmentSelectors(a, scope){
   var eid=escId(a.id);
   function optionHtml(current){ return TEAM.map(function(m){return '<option value="'+m+'"'+(current===m?' selected':'')+'>'+m+'</option>';}).join(''); }
-  return '<div class="assign-inline">'+
-    '<span class="assign-inline-lbl">Assign:</span>'+
+  return '<div class="assign-inline'+(scope==='rv'?' panel':'')+'">'+
+    (scope==='as'?'<span class="assign-inline-lbl">Reviewers:</span>':'')+
     '<div class="assign-pair">'+
     '<span class="assign-slot-label">R1</span><select class="assign-sel'+(a.assignedReviewer1?' assigned':'')+'" id="'+scope+'-r1-'+eid+'" data-id="'+eid+'" data-slot="reviewer1" onchange="assignToCard(this)"><option value="">—</option>'+optionHtml(a.assignedReviewer1)+'</select>'+
     '<span class="assign-slot-label">R2</span><select class="assign-sel'+(a.assignedReviewer2?' assigned':'')+'" id="'+scope+'-r2-'+eid+'" data-id="'+eid+'" data-slot="reviewer2" onchange="assignToCard(this)"><option value="">—</option>'+optionHtml(a.assignedReviewer2)+'</select>'+
@@ -2335,6 +2377,35 @@ function verdictLabel(verdict){
   if (verdict==='advance') return 'Advance to interviews';
   if (verdict==='review') return 'Needs review';
   return 'Do not advance';
+}
+
+function getGateCounts(a){
+  var counts={pass:0,flag:0,fail:0};
+  GATES.forEach(function(g){
+    var verdict=a.humanGates[g.id];
+    if (verdict==='pass' || verdict==='flag' || verdict==='fail') counts[verdict]+=1;
+  });
+  return counts;
+}
+
+function renderCollapsedGateChips(a){
+  return GATES.map(function(g){
+    var v=a.humanGates[g.id];
+    var bc=v==='pass'?'p':v==='fail'?'f':'fl';
+    var bl=v==='pass'?'Pass':v==='fail'?'Fail':'Flag';
+    var note=(a.aiGates[g.id]&&a.aiGates[g.id].note)||'';
+    return '<div class="gate-chip"><div class="gc-top"><span class="gc-name">'+g.label+'</span><span class="gbadge '+bc+'">'+bl+'</span></div><div class="gc-note">'+formatAiNoteHtml(note)+'</div></div>';
+  }).join('');
+}
+
+function formatAiNoteHtml(note){
+  var text=String(note||'').trim();
+  if (!text) return '';
+  return '<span class="note-prefix-blue">AI:</span> "'+escapeHtml(text)+'"';
+}
+
+function formatReviewerGateChangeHtml(aiVerdict, humanVerdict){
+  return '<span class="note-prefix-blue">Reviewer:</span> changed verdict from '+escapeHtml(String(aiVerdict||'flag'))+' to '+escapeHtml(String(humanVerdict||'flag'))+'.';
 }
 
 function renderAll(){
@@ -2378,20 +2449,22 @@ function cardHTML(a){
   var vTxt=verdictLabel(decisionVerdict);
   var wfBadge=(workflowStatus==='needs-resolution'?'vb-rev':workflowStatus==='resolved'?'vb-sub':workflowStatus==='double-reviewed'?'vb-sub':workflowStatus==='submitted'?'vb-sub':'');
   var assignSel=formatAssignmentSelectors(a,'as');
-  var chips=GATES.map(function(g){
-    var v=a.humanGates[g.id];var bc=v==='pass'?'p':v==='fail'?'f':'fl';var bl=v==='pass'?'Pass':v==='fail'?'Fail':'Flag';
-    return '<div class="gate-chip"><div class="gc-top"><span class="gc-name">'+g.label+'</span><span class="gbadge '+bc+'">'+bl+'</span></div><div class="gc-note">'+(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div></div>';
-  }).join('');
-  var tags=[];
-  if (a.sector) tags.push('<span class="tag t-edu">'+a.sector.split(',')[0].trim()+'</span>');
+  var chips=renderCollapsedGateChips(a);
+  var tagData=[];
+  if (a.sector) tagData.push({ cls:'t-edu', text:a.sector.split(',')[0].trim() });
   var stCls=a.ventureStage&&a.ventureStage.toLowerCase().indexOf('non')>=0?'t-npo':a.ventureStage&&a.ventureStage.toLowerCase().indexOf('profit')>=0?'t-fp':'t-sec';
-  if (a.ventureStage) tags.push('<span class="tag '+stCls+'">'+a.ventureStage+'</span>');
-  if (a.country) tags.push('<span class="tag t-sec">'+a.country.replace(/\+\d+/,'').trim()+'</span>');
+  if (a.ventureStage) tagData.push({ cls:stCls, text:a.ventureStage });
+  var tags=tagData.slice(0,2).map(function(tag){return '<span class="tag '+tag.cls+'">'+tag.text+'</span>';});
+  if (tagData.length>2) tags.push('<span class="tag t-muted">+'+(tagData.length-2)+'</span>');
   var subBanner=a.submitted?'<div class="sub-banner">'+(comparison.has?'⚠ ':'✓ ')+'Review submitted · '+getWorkflowStatusLabel(a)+' · '+(a.submittedAt&&a.submittedAt.toString().indexOf('Previously')>=0?a.submittedAt:new Date(a.submittedAt).toLocaleString())+'</div>':'';
   var diffBadge=comparison.has?'<span class="diff-badge">Reviewer difference flagged</span>':'';
-  var aiBadge=aiStatus.label?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'';
+  var aiBadge=(aiStatus.label && aiStatus.tone!=='ok')?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'';
+  var aiStripTone=(aiStatus.tone==='warn' || aiStatus.tone==='manual')?' '+aiStatus.tone:'';
+  var aiStripLead=aiBadge?'<div class="ai-badges">'+aiBadge+'</div>':'';
+  var aiSummaryText=a.aiSummary||aiStatus.detail||'No AI summary available yet.';
   return '<div class="app-card'+(a.submitted?' submitted':'')+'" id="card-'+eid+'">'+
     '<div class="card-top">'+
+    '<div class="card-head">'+
     '<div class="row1">'+
     '<div class="avatar '+avCls+'">'+ini+'</div>'+
     '<div class="app-info">'+
@@ -2399,22 +2472,23 @@ function cardHTML(a){
     '<div class="app-sub">'+a.applicantName+' · '+a.country+' · '+a.stream+'</div>'+
     '<div class="tags">'+tags.join('')+'</div>'+
     '</div></div>'+
+    '<div class="card-meta">'+
+    '<div class="state-badges">'+
+    '<span class="vbadge '+vBadge+'" id="vb-'+eid+'">'+vTxt+'</span>'+
+    '<span class="workflow-badge'+(wfBadge?' '+wfBadge:'')+'" id="wf-'+eid+'">'+getWorkflowStatusLabel(a)+'</span>'+
+    '</div>'+
+    '</div></div>'+
     '<div class="score-row">'+
-    '<div class="gates-grid" id="gg-'+eid+'">'+chips+'</div>'+
+    '<div class="gates-wrap"><div class="gates-summary">Eligibility snapshot</div><div class="gates-grid" id="gg-'+eid+'">'+chips+'</div></div>'+
     '<div class="score-col">'+
     '<div class="cscore '+sc+'" id="sc-'+eid+'">'+displayScore+'</div>'+
-    '<div class="cscore-lbl">'+(comparison.pair.length===2?'avg':'composite')+'</div>'+
     '<div class="sbar"><div class="sfill '+sc+'" id="sf-'+eid+'" style="width:'+displayScore+'%"></div></div>'+
-    '</div></div></div>'+
-    '<div class="card-footer">'+
-    '<div class="cf-left"><div class="ai-badges">'+aiBadge+'</div><span class="ai-summary">'+a.aiSummary+'</span></div>'+
-    '<div class="cf-right">'+
-    assignSel+
-    diffBadge+
-    '<span class="workflow-badge'+(wfBadge?' '+wfBadge:'')+'" id="wf-'+eid+'">'+getWorkflowStatusLabel(a)+'</span>'+
-    '<span class="vbadge '+vBadge+'" id="vb-'+eid+'">'+vTxt+'</span>'+
-    (!a.submitted?'<button class="rev-btn'+(a.expanded?' open':'')+'" id="rb-'+eid+'" data-id="'+eid+'" onclick="toggleExpand(this)">'+(a.expanded?'Reviewing':'Review')+'</button>':'')+
     '</div></div>'+
+    '<div class="ai-strip'+aiStripTone+'">'+aiStripLead+'<span class="ai-summary">'+aiSummaryText+'</span></div></div>'+
+    '<div class="card-footer">'+
+    '<div class="cf-left">'+assignSel+'</div>'+
+    '<div class="cf-center">'+diffBadge+'</div>'+
+    '<div class="cf-right">'+(!a.submitted?'<button class="rev-btn'+(a.expanded?' open':'')+'" id="rb-'+eid+'" data-id="'+eid+'" onclick="toggleExpand(this)">'+(a.expanded?'Reviewing':'Review')+'</button>':'')+'</div></div>'+
     subBanner+
     '<div id="panel-'+eid+'" style="display:'+(a.expanded?'block':'none')+'">'+(a.expanded?panelHTML(a):'')+' </div>'+
     '</div>';
@@ -2428,10 +2502,12 @@ function panelHTML(a){
   var otherReview=getOtherSubmittedReview(a);
   var comparison=getComparisonInfo(a);
   var aiStatus=getAiStatus(a);
-  var reviewerDD=formatAssignmentSelectors(a,'rv');
+  var gateCounts=getGateCounts(a);
+  var aiSummaryText=escapeHtml(a.aiSummary||aiStatus.detail||'No AI summary available yet.');
 
   var gateEds=GATES.map(function(g){
     var v=a.humanGates[g.id]; var edited=a.editedGates.has(g.id);
+    var aiVerdict=(a.aiGates[g.id]&&a.aiGates[g.id].verdict)||'flag';
     return '<div class="ep-gate'+(edited?' edited':'')+'" id="epg-'+eid+'-'+g.id+'">'+
       '<div class="epg-top"><span class="epg-name">'+g.label+'</span>'+
       '<div class="pill-grp">'+
@@ -2439,8 +2515,8 @@ function panelHTML(a){
       '<button class="epill'+(v==='fail'?' sf':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="fail" onclick="setGateBtn(this)">Fail</button>'+
       '<button class="epill'+(v==='flag'?' sfl':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="flag" onclick="setGateBtn(this)">Flag</button>'+
       '</div></div>'+
-      '<div class="epg-note">'+(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div>'+
-      (edited?'<div class="edited-flag">Reviewer changed: '+(a.aiGates[g.id]&&a.aiGates[g.id].verdict)+' → '+v+'</div>':'')+
+      '<div class="epg-note">'+formatAiNoteHtml(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div>'+
+      (edited?'<div class="edited-flag">'+formatReviewerGateChangeHtml(aiVerdict, v)+'</div>':'')+
       '</div>';
   }).join('');
 
@@ -2452,11 +2528,12 @@ function panelHTML(a){
     var otherInfo='';
     if (otherReview) {
       var otherVal=(otherReview.state.ratings&&otherReview.state.ratings[r.id])||3;
-      otherInfo=' <span class="reviewer-note">'+otherReview.reviewer+': '+otherVal+'/5</span>'+(comparison.flags[r.id]?' <span class="diff-badge">Diff ≥ 3</span>':'');
+      otherInfo='<div class="rating-peer"><span class="reviewer-note">'+otherReview.reviewer+': '+otherVal+'/5</span>'+(comparison.flags[r.id]?' <span class="diff-badge">Diff ≥ 3</span>':'')+'</div>';
     }
     var comment=(a.categoryComments&&a.categoryComments[r.id])||'';
     var aiComment=(a.aiCategoryComments&&a.aiCategoryComments[r.id])||'';
-    return '<div class="rat-row"><span class="rlbl">'+r.label+' <span style="color:var(--text3);font-weight:400">('+r.weight+'pts)</span></span><div class="stars" id="st-'+eid+'-'+r.id+'">'+stars+'</div><span class="rat-ai'+(adj?' adj':'')+'" id="ra-'+eid+'-'+r.id+'">AI: '+av+'/5'+(adj?' · adj':'')+'</span>'+otherInfo+'<div class="rat-comment"><div class="review-helper">AI rationale: '+escapeHtml(aiComment||'No AI rationale.')+'</div><textarea class="review-input" data-id="'+eid+'" data-rid="'+r.id+'" oninput="setCategoryCommentInput(this)" placeholder="Reviewer comment (optional)…">'+escapeHtml(comment)+'</textarea></div></div>';
+    var reviewerLabel=comment?'<div class="review-helper review-helper-user"><span class="note-prefix-blue">Reviewer:</span></div>':'';
+    return '<div class="rat-row"><span class="rlbl">'+r.label+' <span style="color:var(--text3);font-weight:400">('+r.weight+'pts)</span></span><div class="stars" id="st-'+eid+'-'+r.id+'">'+stars+'</div><span class="rat-ai'+(adj?' adj':'')+'" id="ra-'+eid+'-'+r.id+'">AI: '+av+'/5'+(adj?' · adj':'')+'</span>'+otherInfo+'<div class="rat-comment"><div class="review-helper"><span class="note-prefix-blue">AI:</span> "'+escapeHtml(aiComment||'No AI rationale.')+'"</div>'+reviewerLabel+'<textarea class="review-input" data-id="'+eid+'" data-rid="'+r.id+'" oninput="setCategoryCommentInput(this)" placeholder="Reviewer comment…">'+escapeHtml(comment)+'</textarea></div></div>';
   }).join('');
 
   var fields=a.rawFields||{};
@@ -2498,22 +2575,22 @@ function panelHTML(a){
   return '<div class="expand-panel">'+
     '<div class="ep-hdr">'+
     '<span class="ep-title">Stage 1 review — '+a.ventureName+'</span>'+
-    '<div class="assign-sec"><span class="assign-lbl">Assign to:</span>'+reviewerDD+'</div>'+
     '</div>'+
     '<div class="ep-verdict '+vc+'" id="epv-'+eid+'">'+
     '<span class="epv-lbl '+vc+'">Decision: '+vt+'</span>'+
-    '<span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+Object.values(a.humanGates).filter(function(v){return v==='fail';}).length+' fail · '+Object.values(a.humanGates).filter(function(v){return v==='flag';}).length+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>'+
+    '<span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+gateCounts.fail+' fail · '+gateCounts.flag+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>'+
     '</div>'+
-    '<div class="ai-status-row">'+(aiStatus.label?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'')+(aiStatus.detail?'<span class="ai-status-detail">'+aiStatus.detail+'</span>':'')+'</div>'+
+    ((aiStatus.label||aiStatus.detail)?'<div class="ai-status-row">'+(aiStatus.label?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'')+(aiStatus.detail?'<span class="ai-status-detail">'+aiStatus.detail+'</span>':'')+'</div>':'')+
+    '<div class="ep-ai-summary">'+aiSummaryText+'</div>'+
+    '<div class="review-meta-grid"><div><div class="ep-nl">Conflict of interest</div><input class="review-input" id="coi-'+eid+'" data-id="'+eid+'" oninput="setConflictInput(this)" value="'+escapeHtml(a.conflictOfInterest||'')+'" placeholder="None disclosed"></div></div>'+
     '<div class="ep-sec">Eligibility checks</div>'+
     '<div class="ep-gates">'+gateEds+'</div>'+
     '<div class="ep-sec">Stage 1 rubric</div>'+
     '<div class="ep-ratings">'+ratRows+'</div>'+
-    '<div class="review-meta-grid"><div><div class="ep-nl">Conflict of interest</div><input class="review-input" id="coi-'+eid+'" data-id="'+eid+'" oninput="setConflictInput(this)" value="'+escapeHtml(a.conflictOfInterest||'')+'" placeholder="None disclosed"></div></div>'+
+    '<div class="ep-nl">Reviewer notes</div>'+
+    '<textarea class="ep-notes" id="notes-'+eid+'" placeholder="Add context, override rationale, or escalation notes…">'+escapeHtml(a.notes||'')+'</textarea>'+
     resolutionSection+
     rawSection+
-    '<div class="ep-nl" style="margin-top:16px">Reviewer notes</div>'+
-    '<textarea class="ep-notes" id="notes-'+eid+'" placeholder="Add context, override rationale, or escalation notes…">'+escapeHtml(a.notes||'')+'</textarea>'+
     '<div class="ep-actions">'+
     '<span class="ep-act-l" id="ss-'+eid+'">'+(otherReview?'Other review visible after submission by '+otherReview.reviewer:'Changes save to your reviewer record')+'</span>'+
     '<div class="ep-act-r">'+
@@ -2735,6 +2812,7 @@ function setGate(id,gid,val){
   storeCurrentReviewerState(a);
   var el=document.getElementById('epg-'+escId(id)+'-'+gid);
   if (el){
+    var aiVerdict=(a.aiGates[gid]&&a.aiGates[gid].verdict)||'flag';
     el.className='ep-gate'+(a.editedGates.has(gid)?' edited':'');
     el.innerHTML='<div class="epg-top"><span class="epg-name">'+(GATES.find(function(g){return g.id===gid;})||{label:gid}).label+'</span>'+
       '<div class="pill-grp">'+
@@ -2742,15 +2820,12 @@ function setGate(id,gid,val){
       '<button class="epill'+(val==='fail'?' sf':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="fail" onclick="setGateBtn(this)">Fail</button>'+
       '<button class="epill'+(val==='flag'?' sfl':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="flag" onclick="setGateBtn(this)">Flag</button>'+
       '</div></div>'+
-      '<div class="epg-note">'+(a.aiGates[gid]&&a.aiGates[gid].note||'')+'</div>'+
-      (a.editedGates.has(gid)?'<div class="edited-flag">Reviewer changed: '+(a.aiGates[gid]&&a.aiGates[gid].verdict)+' → '+val+'</div>':'');
+      '<div class="epg-note">'+formatAiNoteHtml(a.aiGates[gid]&&a.aiGates[gid].note||'')+'</div>'+
+      (a.editedGates.has(gid)?'<div class="edited-flag">'+formatReviewerGateChangeHtml(aiVerdict, val)+'</div>':'');
   }
   liveUpdate(id,a); updateSummary();
   var gg=document.getElementById('gg-'+escId(id));
-  if (gg) gg.innerHTML=GATES.map(function(g){
-    var v=a.humanGates[g.id];var bc=v==='pass'?'p':v==='fail'?'f':'fl';var bl=v==='pass'?'Pass':v==='fail'?'Fail':'Flag';
-    return '<div class="gate-chip"><div class="gc-top"><span class="gc-name">'+g.label+'</span><span class="gbadge '+bc+'">'+bl+'</span></div><div class="gc-note">'+(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div></div>';
-  }).join('');
+  if (gg) gg.innerHTML=renderCollapsedGateChips(a);
 }
 
 function setRating(id,rid,val){
@@ -2775,6 +2850,8 @@ function liveUpdate(id,a){
   var displayScore=getDisplayScore(a);
   var sc=displayScore>=75?'hi':displayScore>=60?'md':'lo';
   var decisionVerdict=getEffectiveDecisionVerdict(a);
+  var counts=getGateCounts(a);
+  var comparison=a.comparison||getComparisonInfo(a);
   var sel=document.getElementById('sc-'+escId(id)); var sfl=document.getElementById('sf-'+escId(id));
   var vb=document.getElementById('vb-'+escId(id)); var wf=document.getElementById('wf-'+escId(id)); var epv=document.getElementById('epv-'+escId(id));
   if (sel){sel.className='cscore '+sc;sel.textContent=displayScore;}
@@ -2791,7 +2868,7 @@ function liveUpdate(id,a){
   if (epv){
     var vc3=decisionVerdict==='advance'?'adv':decisionVerdict==='review'?'rev':'rej';
     epv.className='ep-verdict '+vc3;
-    epv.innerHTML='<span class="epv-lbl '+vc3+'">Decision: '+verdictLabel(decisionVerdict)+'</span><span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+Object.values(a.humanGates).filter(function(v){return v==='fail';}).length+' fail · '+Object.values(a.humanGates).filter(function(v){return v==='flag';}).length+' flag'+((a.comparison||getComparisonInfo(a)).has?' · disagreement requires resolution':'')+'</span>';
+    epv.innerHTML='<span class="epv-lbl '+vc3+'">Decision: '+verdictLabel(decisionVerdict)+'</span><span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+counts.fail+' fail · '+counts.flag+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>';
   }
 }
 
