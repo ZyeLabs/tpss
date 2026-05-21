@@ -2747,8 +2747,11 @@ function panelHTML(a){
       if (!submittedComment) return '';
       return '<div class="review-helper review-helper-user"><span class="note-prefix-blue">'+escapeHtml(entry.reviewer)+':</span> "'+escapeHtml(submittedComment)+'"</div>';
     }).join('');
+    var currentSubmittedCommentVisible=submittedCommentEntries.some(function(entry){
+      return entry.reviewer===currentReviewer && !!((entry.state.categoryComments&&entry.state.categoryComments[r.id])||'');
+    });
     var reviewerEditor=canReview
-      ? (comment?'<div class="review-helper review-helper-user"><span class="note-prefix-blue">'+escapeHtml(activeReviewerName)+':</span></div>':'')+
+      ? (comment&&!currentSubmittedCommentVisible?'<div class="review-helper review-helper-user"><span class="note-prefix-blue">'+escapeHtml(activeReviewerName)+':</span></div>':'')+
         '<textarea class="review-input" data-id="'+eid+'" data-rid="'+r.id+'" oninput="setCategoryCommentInput(this)" placeholder="'+escapeHtml(activeReviewerName)+' comment (optional)…"'+disabledAttr+'>'+escapeHtml(comment)+'</textarea>'
       : '';
     return '<div class="rat-row"><span class="rlbl">'+r.label+' <span style="color:var(--text3);font-weight:400">('+r.weight+'pts)</span></span><div class="stars" id="st-'+eid+'-'+r.id+'">'+stars+'</div><span class="rat-ai'+(adj?' adj':'')+'" id="ra-'+eid+'-'+r.id+'">AI: '+av+'/5'+(adj?' · adj':'')+'</span>'+otherInfo+'<div class="rat-comment"><div class="review-helper"><span class="note-prefix-blue">AI:</span> "'+escapeHtml(aiComment||'No AI rationale.')+'"</div>'+(submittedCommentsHtml||'')+reviewerEditor+'</div></div>';
