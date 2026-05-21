@@ -2291,11 +2291,8 @@ function getAssignedReviewerNames(a){
 function getSubmittedAssignedReviews(a){
   var assigned=getAssignedReviewerNames(a);
   var states=a.reviewsByReviewer||{};
-  if (assigned.length<2) return [];
-  if (!assigned.every(function(name){
-    return states[name] && states[name].submitted;
-  })) return [];
-  return assigned.map(function(name){
+  var names=assigned.length?assigned:Object.keys(states);
+  return names.map(function(name){
     if (!states[name] || !states[name].submitted) return null;
     return { reviewer:name, state:states[name] };
   }).filter(Boolean);
@@ -2318,6 +2315,15 @@ function getOtherSubmittedReview(a){
     return false;
   });
   return other;
+}
+
+function canViewSubmittedReviewerComments(a){
+  return !isAssignedReviewer(a, currentReviewer) || currentReviewerHasSubmitted(a);
+}
+
+function getVisibleSubmittedReviewerComments(a){
+  if (!canViewSubmittedReviewerComments(a)) return [];
+  return getSubmittedAssignedReviews(a);
 }
 
 function recomputeEditedState(a){
@@ -2559,13 +2565,25 @@ function getGateCounts(a){
   return counts;
 }
 
+function renderEligibilitySubmittedCommentLines(a, gateId){
+  return getVisibleSubmittedReviewerComments(a).map(function(entry){
+    var eligibility=entry.state.eligibility||{};
+    var gates=eligibility.gates||{};
+    var gate=gates[gateId]||{};
+    var comment=gate.reviewerComment||gate.reviewer_comment||((entry.state.eligibilityComments||{})[gateId])||'';
+    if (!String(comment||'').trim()) return '';
+    return '<div class="review-helper review-helper-user"><span class="note-prefix-blue">'+escapeHtml(entry.reviewer)+':</span> "'+escapeHtml(comment)+'"</div>';
+  }).join('');
+}
+
 function renderCollapsedGateChips(a){
   return GATES.map(function(g){
     var v=a.humanGates[g.id];
     var bc=v==='pass'?'p':v==='fail'?'f':'fl';
     var bl=v==='pass'?'Pass':v==='fail'?'Fail':'Flag';
     var note=(a.aiGates[g.id]&&a.aiGates[g.id].note)||'';
-    return '<div class="gate-chip"><div class="gc-top"><span class="gc-name">'+g.label+'</span><span class="gbadge '+bc+'">'+bl+'</span></div><div class="gc-note">'+formatAiNoteHtml(note)+'</div></div>';
+    var comments=renderEligibilitySubmittedCommentLines(a, g.id);
+    return '<div class="gate-chip"><div class="gc-top"><span class="gc-name">'+g.label+'</span><span class="gbadge '+bc+'">'+bl+'</span></div><div class="gc-note">'+formatAiNoteHtml(note)+'</div>'+comments+'</div>';
   }).join('');
 }
 
@@ -2590,6 +2608,7 @@ function renderEligibilityGateEditor(a, g, eid, disabledAttr, reviewerName, canC
   var aiVerdict=(a.aiGates[g.id]&&a.aiGates[g.id].verdict)||'flag';
   var comment=(a.eligibilityComments&&a.eligibilityComments[g.id])||'';
   var name=reviewerDisplayName(reviewerName,'Reviewer');
+  var submittedComments=renderEligibilitySubmittedCommentLines(a, g.id);
   var commentEditor=canComment
     ? '<textarea class="review-input eligibility-comment-input" data-id="'+eid+'" data-gid="'+g.id+'" oninput="setEligibilityCommentInput(this)" placeholder="'+escapeHtml(name)+' eligibility comment (optional)..."'+disabledAttr+'>'+escapeHtml(comment)+'</textarea>'
     : '';
@@ -2602,6 +2621,7 @@ function renderEligibilityGateEditor(a, g, eid, disabledAttr, reviewerName, canC
     '</div></div>'+
     '<div class="epg-note">'+formatAiNoteHtml(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div>'+
     (edited?'<div class="edited-flag">'+formatReviewerGateChangeHtml(aiVerdict, v, name)+'</div>':'')+
+    submittedComments+
     commentEditor+
     '</div>';
 }
@@ -2721,7 +2741,7 @@ function panelHTML(a){
     }
     var comment=(a.categoryComments&&a.categoryComments[r.id])||'';
     var aiComment=(a.aiCategoryComments&&a.aiCategoryComments[r.id])||'';
-    var submittedCommentEntries=getSubmittedAssignedReviews(a);
+    var submittedCommentEntries=getVisibleSubmittedReviewerComments(a);
     var submittedCommentsHtml=submittedCommentEntries.map(function(entry){
       var submittedComment=(entry.state.categoryComments&&entry.state.categoryComments[r.id])||'';
       if (!submittedComment) return '';
