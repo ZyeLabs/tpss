@@ -99,7 +99,7 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .t-muted{background:#f4f6fb;color:var(--text3)}
 .card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
 .state-badges{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
-.score-row{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:12px;align-items:end}
+.score-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,280px);gap:12px;align-items:stretch}
 .gates-wrap{display:flex;flex-direction:column;gap:8px;min-width:0}
 .gates-summary{font-size:12px;color:var(--text2);font-weight:800;font-family:'Montserrat',sans-serif;letter-spacing:.04em;text-transform:uppercase}
 .gates-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;grid-auto-rows:1fr}
@@ -111,18 +111,28 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .gbadge.f{background:var(--fail-bg);color:var(--fail-text)}
 .gbadge.fl{background:var(--flag-bg);color:var(--flag-text)}
 .gc-note{display:block;font-size:10px;color:var(--text2);line-height:1.5;margin-top:0}
-.score-col{width:auto;min-width:96px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border-radius:14px;border:1px solid var(--border);background:var(--surface2);align-self:stretch}
-.cscore{font-size:34px;font-weight:700;line-height:1;font-family:'Montserrat',sans-serif}
-.cscore.hi{color:var(--pass-text)}
-.cscore.md{color:var(--flag-text)}
-.cscore.lo{color:var(--fail-text)}
-.cscore-lbl{font-size:10px;color:var(--text3);text-align:center;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.05em;text-transform:uppercase}
 .score-kicker{font-size:10px;color:var(--text2);text-align:center;line-height:1.35;font-family:'Montserrat',sans-serif}
 .sbar{width:58px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .sfill{height:100%;border-radius:3px;transition:width .4s}
 .sfill.hi{background:#639922}
 .sfill.md{background:#d97706}
 .sfill.lo{background:#dc2626}
+.score-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-self:stretch}
+.score-tile{border:1px solid var(--border);background:var(--surface2);border-radius:10px;padding:8px 9px;min-height:72px;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.score-tile.final{min-height:72px;padding:8px 10px;border:2px solid rgba(0,169,232,.62);background:linear-gradient(180deg,#f8fcff 0%,#eaf7fd 100%);box-shadow:0 8px 18px rgba(0,82,128,.07)}
+.score-label{font-size:10px;color:var(--text2);font-weight:800;font-family:'Montserrat',sans-serif;letter-spacing:.04em;text-transform:uppercase;line-height:1.2}
+.score-tile.final .score-label{font-size:10px;color:var(--navy)}
+.score-value{font-size:23px;font-weight:800;line-height:1;font-family:'Montserrat',sans-serif;color:var(--text3)}
+.score-tile.final .score-value{font-size:32px;letter-spacing:0;color:var(--navy)}
+.score-value.hi{color:var(--pass-text)}
+.score-value.md{color:var(--flag-text)}
+.score-value.lo{color:var(--fail-text)}
+.score-tile.final .score-value.hi{color:var(--pass-text)}
+.score-tile.final .score-value.md{color:var(--flag-text)}
+.score-tile.final .score-value.lo{color:var(--fail-text)}
+.score-name{font-size:10px;color:var(--text3);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score-tile .sbar{width:100%;height:4px}
+.score-tile.final .sbar{height:5px}
 .ai-strip{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border:1px solid var(--border);background:linear-gradient(180deg,#fbfcff 0%, #f5f8fe 100%);border-radius:14px}
 .ai-strip.warn{border-color:var(--flag-border);background:#fffaf0}
 .ai-strip.manual{background:var(--surface2)}
@@ -158,8 +168,6 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .rev-btn.open{border-color:var(--navy);color:var(--navy);background:#f0f4fc}
 .sub-banner{background:var(--pass-bg);border-top:1px solid var(--pass-border);padding:7px 16px;font-size:11px;font-weight:600;color:var(--pass-text);font-family:'Montserrat',sans-serif;letter-spacing:.03em}
 .expand-panel{border-top:1px solid var(--border);padding:18px 18px 20px}
-.ep-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
-.ep-title{font-size:13px;font-weight:700;color:var(--navy);font-family:'Montserrat',sans-serif}
 .assign-sec{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .assign-lbl{font-size:11px;color:var(--text2);font-weight:500}
 .member-chips{display:flex;gap:4px;flex-wrap:wrap}
@@ -175,22 +183,21 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .epv-lbl.rev{color:var(--flag-text)}
 .epv-lbl.rej{color:var(--fail-text)}
 .epv-score{font-size:11px;color:var(--text2);margin-left:auto;line-height:1.5;min-width:240px;text-align:right}
-.ai-status-row{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin:-2px 0 8px}
-.ep-ai-summary{font-size:12px;color:var(--text2);line-height:1.6;margin:0 0 16px}
-.ai-status-detail{font-size:11px;color:var(--text2);line-height:1.55}
 .ep-sec{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-family:'Montserrat',sans-serif;margin-bottom:9px}
 .ep-gates{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .ep-gate{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .ep-gate.edited{border-color:var(--flag-border)}
 .epg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;gap:8px;flex-wrap:wrap}
 .epg-name{font-size:12px;font-weight:600;color:var(--text);font-family:'Montserrat',sans-serif}
-.pill-grp{display:flex;gap:3px}
-.epill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;transition:all .12s}
+.pill-grp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;align-items:stretch;min-width:168px}
+.epill{display:inline-flex;align-items:center;justify-content:center;width:100%;min-width:0;min-height:28px;font-size:10px;font-weight:700;padding:0 8px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.02em;line-height:1;text-align:center;white-space:nowrap;appearance:none;-webkit-appearance:none;transition:background-color .12s,border-color .12s,color .12s}
 .epill:hover{border-color:var(--navy);color:var(--navy)}
-.epill.sp{background:var(--pass-bg);border-color:var(--pass-border);color:var(--pass-text)}
-.epill.sf{background:var(--fail-bg);border-color:var(--fail-border);color:var(--fail-text)}
-.epill.sfl{background:var(--flag-bg);border-color:var(--flag-border);color:var(--flag-text)}
+.epill:focus,.epill:active{outline:none;box-shadow:none;transform:none}
+.epill.is-pass{background:var(--pass-bg);border-color:var(--pass-border);color:var(--pass-text)}
+.epill.is-fail{background:var(--fail-bg);border-color:var(--fail-border);color:var(--fail-text)}
+.epill.is-flag{background:var(--flag-bg);border-color:var(--flag-border);color:var(--flag-text)}
 .epg-note{font-size:11px;color:var(--text2);line-height:1.6;font-style:normal;margin:0}
+.eligibility-comment-input{min-height:62px;resize:vertical;margin-top:2px}
 .note-prefix-blue{color:#185fa5;font-weight:700;font-family:'Montserrat',sans-serif;letter-spacing:.02em}
 .edited-flag{font-size:10px;color:var(--text2);font-weight:600;line-height:1.5}
 .ep-ratings{display:grid;gap:12px;margin-bottom:20px}
@@ -209,10 +216,15 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
 .review-helper-user{color:var(--navy)}
 .review-input{width:100%;font-size:12px;border:1px solid var(--border2);border-radius:var(--r-sm);padding:7px 9px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
 .review-input:focus{border-color:var(--cyan)}
-.review-meta-grid{display:grid;grid-template-columns:1fr;gap:14px;margin:16px 0 20px}
+.review-meta-grid{display:grid;grid-template-columns:minmax(180px,240px) minmax(220px,420px);gap:14px;margin:16px 0 20px}
 .review-meta-grid .ep-nl{margin-bottom:8px}
 .review-meta-grid .review-input{max-width:420px}
+.review-meta-side{display:flex;align-items:flex-end;justify-content:flex-end}
 .review-input[data-rid]{min-height:72px;resize:vertical}
+.review-decision-block{margin-top:18px}
+.review-decision-block .review-input{max-width:420px}
+.review-notes-block{margin-top:18px}
+.review-notes-block .ep-nl{margin-bottom:10px}
 .resolution-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin:0 0 16px}
 .resolution-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ep-nl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-family:'Montserrat',sans-serif;margin-bottom:6px}
@@ -280,7 +292,7 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
   .state-badges{justify-content:flex-start}
   .score-row{grid-template-columns:1fr}
   .gates-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .score-col{min-width:0}
+  .score-board{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ai-strip{padding:10px 12px}
   .card-footer{grid-template-columns:1fr;padding:0 14px 14px}
   .cf-center,.cf-right{justify-content:flex-start}
@@ -288,6 +300,7 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
   .assign-pair{width:100%}
   .assign-sel{flex:1;max-width:none}
   .review-meta-grid{grid-template-columns:1fr}
+  .review-meta-side{justify-content:flex-start}
   .ep-verdict{gap:10px}
   .epv-score{margin-left:0;min-width:0;text-align:left}
   .ep-gates{grid-template-columns:1fr}
@@ -1834,6 +1847,7 @@ function createAppFromRow(row, ai){
     humanRatings:Object.assign({},aiScores),
     aiCategoryComments:Object.assign({},aiCategoryComments),
     categoryComments:{},
+    eligibilityComments:{},
     editedRatings:new Set(),
     aiScore:aiScore, humanScore:aiScore,
     aiSummary:ai.summary||'',
@@ -1894,6 +1908,20 @@ function normalizeCategoryComments(comments, issues){
   RATINGS.forEach(function(r){
     out[r.id]=sanitizeAiText(comments[r.id]||'');
     if (!out[r.id] && issues) issues.push('missing_comment:'+r.id);
+  });
+  return out;
+}
+
+function normalizeEligibilityComments(eligibility, fallback){
+  var out={};
+  var gates=(eligibility&&eligibility.gates)||{};
+  fallback=fallback||{};
+  GATES.forEach(function(g){
+    out[g.id]=String(
+      fallback[g.id] ||
+      (gates[g.id] && (gates[g.id].reviewerComment || gates[g.id].reviewer_comment)) ||
+      ''
+    );
   });
   return out;
 }
@@ -1978,8 +2006,10 @@ function buildReviewRecord(a, reviewer){
     gates:gates,
     ratings:ratings,
     categoryComments:comments,
+    eligibilityComments:{},
     editedGates:[],
     editedRatings:[],
+    decisionEdited:false,
     conflictOfInterest:'None disclosed',
     notes:a.notes||'',
     score:calcScore(gates,ratings),
@@ -2008,6 +2038,7 @@ function normalizeSavedReview(record, a, reviewer){
   // base.categoryComments=normalizeCategoryComments(record.categoryComments||record.comments||base.categoryComments);
   base.editedGates=(record.editedGates||[]).slice();
   base.editedRatings=(record.editedRatings||[]).slice();
+  base.decisionEdited=record.decisionEdited!==undefined?!!record.decisionEdited:!!record.submitted;
   base.conflictOfInterest=String(record.conflictOfInterest||'').trim()||'None disclosed';
   base.notes=String(record.notes||'');
   base.submitted=!!record.submitted;
@@ -2016,6 +2047,7 @@ function normalizeSavedReview(record, a, reviewer){
   base.score=record.score!=null?Number(record.score):calcScore(base.gates,base.ratings);
   base.verdict=record.verdict||computeVerdict(base.gates,base.ratings);
   base.eligibility=record.eligibility||buildEligibilityPayload(a,base.gates);
+  base.eligibilityComments=normalizeEligibilityComments(base.eligibility, record.eligibilityComments||{});
   return base;
 }
 
@@ -2025,9 +2057,11 @@ function buildReviewerState(a){
     reviewerSlot:getReviewerSlot(a,currentReviewer),
     gates:JSON.parse(JSON.stringify(a.humanGates)),
     categoryComments:Object.assign({},a.categoryComments||{}),
+    eligibilityComments:Object.assign({},a.eligibilityComments||{}),
     conflictOfInterest:a.conflictOfInterest||'None disclosed',
     editedGates:Array.from(a.editedGates),
     editedRatings:Array.from(a.editedRatings),
+    decisionEdited:!!a.decisionEdited,
     ratings:Object.assign({},a.humanRatings),
     score:a.humanScore,
     verdict:a.verdict,
@@ -2044,8 +2078,10 @@ function applyReviewerState(a, state){
   a.editedGates=new Set(state.editedGates||[]);
   a.humanRatings=Object.assign({},state.ratings||a.humanRatings);
   a.categoryComments=normalizeCategoryComments(state.categoryComments||a.categoryComments);
+  a.eligibilityComments=normalizeEligibilityComments(state.eligibility||{}, state.eligibilityComments||a.eligibilityComments);
   a.conflictOfInterest=state.conflictOfInterest||'None disclosed';
   a.editedRatings=new Set(state.editedRatings||[]);
+  a.decisionEdited=!!state.decisionEdited;
   a.humanScore=state.score!=null?Number(state.score):calcScore(a.humanGates,a.humanRatings);
   a.verdict=state.verdict||computeVerdict(a.humanGates,a.humanRatings);
   a.notes=state.notes||'';
@@ -2055,8 +2091,13 @@ function applyReviewerState(a, state){
 
 function buildEligibilityPayload(a, gates){
   var out={gates:{}};
+  var comments=a.eligibilityComments||{};
   GATES.forEach(function(g){
-    out.gates[g.id]={ verdict:gates[g.id]||'flag', note:(a.aiGates[g.id]&&a.aiGates[g.id].note)||'' };
+    out.gates[g.id]={
+      verdict:gates[g.id]||'flag',
+      note:(a.aiGates[g.id]&&a.aiGates[g.id].note)||'',
+      reviewerComment:String(comments[g.id]||'')
+    };
   });
   return out;
 }
@@ -2209,16 +2250,20 @@ function getComparisonInfo(a){
       }
     });
   }
-  var flags={}, has=false;
+  var flags={}, has=false, decisionDisagreement=false, scoreDisagreement=false;
   if (pair.length===2) {
     RATINGS.forEach(function(r){
       var aVal=parseInt(pair[0].state.ratings[r.id],10)||3;
       var bVal=parseInt(pair[1].state.ratings[r.id],10)||3;
       flags[r.id]=Math.abs(aVal-bVal)>=3;
-      if (flags[r.id]) has=true;
+      if (flags[r.id]) scoreDisagreement=true;
     });
+    var firstVerdict=pair[0].state.verdict||'';
+    var secondVerdict=pair[1].state.verdict||'';
+    decisionDisagreement=!!(firstVerdict && secondVerdict && firstVerdict!==secondVerdict);
+    has=decisionDisagreement;
   }
-  return {pair:pair, flags:flags, has:has, hasTwoSubmittedReviews:pair.length===2};
+  return {pair:pair, flags:flags, has:has, decisionDisagreement:decisionDisagreement, scoreDisagreement:scoreDisagreement, hasTwoSubmittedReviews:pair.length===2};
 }
 
 function isAssignedReviewer(a, reviewer){
@@ -2231,6 +2276,29 @@ function isAssignedReviewer(a, reviewer){
 
 function canReviewApp(a){
   return isAssignedReviewer(a, currentReviewer);
+}
+
+function getAssignedReviewerNames(a){
+  var names=[
+    (a.assignments&&a.assignments.reviewer1)||a.assignedReviewer1||'',
+    (a.assignments&&a.assignments.reviewer2)||a.assignedReviewer2||''
+  ].filter(Boolean);
+  return names.filter(function(name, idx){
+    return names.indexOf(name)===idx;
+  });
+}
+
+function getSubmittedAssignedReviews(a){
+  var assigned=getAssignedReviewerNames(a);
+  var states=a.reviewsByReviewer||{};
+  if (assigned.length<2) return [];
+  if (!assigned.every(function(name){
+    return states[name] && states[name].submitted;
+  })) return [];
+  return assigned.map(function(name){
+    if (!states[name] || !states[name].submitted) return null;
+    return { reviewer:name, state:states[name] };
+  }).filter(Boolean);
 }
 
 function currentReviewerHasSubmitted(a){
@@ -2264,7 +2332,8 @@ function recomputeEditedState(a){
 }
 
 function hasMeaningfulHumanReview(a){
-  return a.submitted || a.editedGates.size>0 || a.editedRatings.size>0 || String(a.notes||'').trim()!=='' || String(a.conflictOfInterest||'None disclosed').trim()!=='None disclosed';
+  var hasEligibilityComment=Object.values(a.eligibilityComments||{}).some(function(comment){return String(comment||'').trim()!=='';});
+  return a.submitted || a.editedGates.size>0 || a.editedRatings.size>0 || hasEligibilityComment || String(a.notes||'').trim()!=='' || String(a.conflictOfInterest||'None disclosed').trim()!=='None disclosed';
 }
 
 function applyAiDraftToApp(a, aiDraft, preserveHuman){
@@ -2281,8 +2350,10 @@ function applyAiDraftToApp(a, aiDraft, preserveHuman){
     a.humanGates=Object.assign({},temp.humanGates);
     a.humanRatings=Object.assign({},temp.humanRatings);
     a.categoryComments={};
+    a.eligibilityComments={};
     a.humanScore=temp.humanScore;
     a.verdict=temp.verdict;
+    a.decisionEdited=false;
     a.notes='';
     a.conflictOfInterest='None disclosed';
   }
@@ -2296,6 +2367,65 @@ function getDisplayScore(a){
     return Math.round(((comparison.pair[0].state.score||0)+(comparison.pair[1].state.score||0))/2);
   }
   return a.humanScore;
+}
+
+function scoreTone(score){
+  if (!isFiniteScore(score)) return '';
+  return score>=75?'hi':score>=60?'md':'lo';
+}
+
+function formatScore(score){
+  return isFiniteScore(score)?String(Math.round(score)):'--';
+}
+
+function isFiniteScore(score){
+  return typeof score==='number' && isFinite(score);
+}
+
+function getReviewerScoreEntry(a, slot){
+  var reviewer=slot==='reviewer1'?((a.assignments&&a.assignments.reviewer1)||a.assignedReviewer1):((a.assignments&&a.assignments.reviewer2)||a.assignedReviewer2);
+  var state=reviewer && a.reviewsByReviewer ? a.reviewsByReviewer[reviewer] : null;
+  if (state && state.submitted) {
+    return { reviewer:reviewer, score:Number(state.score||0), status:'Submitted', submitted:true };
+  }
+  if (reviewer && reviewer===currentReviewer && isAssignedReviewer(a, reviewer)) {
+    return { reviewer:reviewer, score:Number(a.humanScore||0), status:'Draft', submitted:false };
+  }
+  return { reviewer:reviewer||'', score:null, status:reviewer?'Pending':'Unassigned', submitted:false };
+}
+
+function getScoreBreakdown(a){
+  var r1=getReviewerScoreEntry(a,'reviewer1');
+  var r2=getReviewerScoreEntry(a,'reviewer2');
+  var finalScore=(r1.submitted&&r2.submitted)?Math.round((r1.score+r2.score)/2):null;
+  return {
+    final:{ label:'Final', score:finalScore, meta:isFiniteScore(finalScore)?'':'Waiting' },
+    ai:{ label:'AI', score:Number(a.aiScore||0), meta:'' },
+    r1:Object.assign({ label:reviewerDisplayName(r1.reviewer,'R1'), meta:r1.status }, r1),
+    r2:Object.assign({ label:reviewerDisplayName(r2.reviewer,'R2'), meta:r2.status }, r2)
+  };
+}
+
+function renderScoreTile(item, extraClass){
+  var score=item.score;
+  var tone=scoreTone(score);
+  var footer=item.meta||'';
+  var barWidth=isFiniteScore(score)?Math.max(0,Math.min(100,Math.round(score))):0;
+  return '<div class="score-tile'+(extraClass?' '+extraClass:'')+'">'+
+    '<div class="score-label">'+escapeHtml(item.label)+'</div>'+
+    '<div class="score-value '+tone+'">'+formatScore(score)+'</div>'+
+    '<div><div class="sbar"><div class="sfill '+tone+'" style="width:'+barWidth+'%"></div></div><div class="score-name">'+escapeHtml(footer)+'</div></div>'+
+    '</div>';
+}
+
+function renderScoreBoard(a){
+  var scores=getScoreBreakdown(a);
+  return '<div class="score-board" id="score-board-'+escId(a.id)+'">'+
+    renderScoreTile(scores.final,'final')+
+    renderScoreTile(scores.ai,'ai')+
+    renderScoreTile(scores.r1,'reviewer')+
+    renderScoreTile(scores.r2,'reviewer')+
+    '</div>';
 }
 
 function getAiStatus(a){
@@ -2326,13 +2456,29 @@ function getWorkflowStatusLabel(a){
   return 'Draft';
 }
 
+function reviewersAgreeToAdvance(comparison){
+  return !!(
+    comparison &&
+    comparison.hasTwoSubmittedReviews &&
+    comparison.pair[0] &&
+    comparison.pair[1] &&
+    comparison.pair[0].state.verdict==='advance' &&
+    comparison.pair[1].state.verdict==='advance'
+  );
+}
+
 function getEffectiveDecisionVerdict(a){
   ensureWorkflowState(a);
   var comparison=a.comparison||getComparisonInfo(a);
-  if (comparison.has && a.workflow.resolutionState==='resolved' && a.workflow.resolutionVerdict) {
+  if (a.workflow.resolutionState==='resolved' && a.workflow.resolutionVerdict) {
+    if (a.workflow.resolutionVerdict==='advance' && !reviewersAgreeToAdvance(comparison)) return 'review';
     return a.workflow.resolutionVerdict;
   }
   if (comparison.has) return 'review';
+  if (comparison.hasTwoSubmittedReviews && comparison.pair[0].state.verdict && comparison.pair[0].state.verdict===comparison.pair[1].state.verdict) {
+    return comparison.pair[0].state.verdict;
+  }
+  if (a.verdict==='advance') return 'review';
   return a.verdict;
 }
 
@@ -2397,6 +2543,13 @@ function verdictLabel(verdict){
   return 'Do not advance';
 }
 
+function verdictOptionsHtml(selected, placeholder){
+  return (placeholder?'<option value="">'+escapeHtml(placeholder)+'</option>':'')+
+    '<option value="advance"'+(selected==='advance'?' selected':'')+'>Advance to interviews</option>'+
+    '<option value="review"'+(selected==='review'?' selected':'')+'>Needs review</option>'+
+    '<option value="reject"'+(selected==='reject'?' selected':'')+'>Do not advance</option>';
+}
+
 function getGateCounts(a){
   var counts={pass:0,flag:0,fail:0};
   GATES.forEach(function(g){
@@ -2422,8 +2575,35 @@ function formatAiNoteHtml(note){
   return '<span class="note-prefix-blue">AI:</span> "'+escapeHtml(text)+'"';
 }
 
-function formatReviewerGateChangeHtml(aiVerdict, humanVerdict){
-  return '<span class="note-prefix-blue">Reviewer:</span> changed verdict from '+escapeHtml(String(aiVerdict||'flag'))+' to '+escapeHtml(String(humanVerdict||'flag'))+'.';
+function reviewerDisplayName(name, fallback){
+  var value=String(name||'').trim();
+  return value || String(fallback||'Reviewer');
+}
+
+function formatReviewerGateChangeHtml(aiVerdict, humanVerdict, reviewerName){
+  return '<span class="note-prefix-blue">'+escapeHtml(reviewerDisplayName(reviewerName,'Reviewer'))+':</span> changed verdict from '+escapeHtml(String(aiVerdict||'flag'))+' to '+escapeHtml(String(humanVerdict||'flag'))+'.';
+}
+
+function renderEligibilityGateEditor(a, g, eid, disabledAttr, reviewerName, canComment){
+  var v=a.humanGates[g.id];
+  var edited=a.editedGates.has(g.id);
+  var aiVerdict=(a.aiGates[g.id]&&a.aiGates[g.id].verdict)||'flag';
+  var comment=(a.eligibilityComments&&a.eligibilityComments[g.id])||'';
+  var name=reviewerDisplayName(reviewerName,'Reviewer');
+  var commentEditor=canComment
+    ? '<textarea class="review-input eligibility-comment-input" data-id="'+eid+'" data-gid="'+g.id+'" oninput="setEligibilityCommentInput(this)" placeholder="'+escapeHtml(name)+' eligibility comment (optional)..."'+disabledAttr+'>'+escapeHtml(comment)+'</textarea>'
+    : '';
+  return '<div class="ep-gate'+(edited?' edited':'')+'" id="epg-'+eid+'-'+g.id+'">'+
+    '<div class="epg-top"><span class="epg-name">'+g.label+'</span>'+
+    '<div class="pill-grp">'+
+    '<button class="epill'+(v==='pass'?' is-pass':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="pass" onclick="setGateBtn(this)"'+disabledAttr+'>Pass</button>'+
+    '<button class="epill'+(v==='fail'?' is-fail':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="fail" onclick="setGateBtn(this)"'+disabledAttr+'>Fail</button>'+
+    '<button class="epill'+(v==='flag'?' is-flag':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="flag" onclick="setGateBtn(this)"'+disabledAttr+'>Flag</button>'+
+    '</div></div>'+
+    '<div class="epg-note">'+formatAiNoteHtml(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div>'+
+    (edited?'<div class="edited-flag">'+formatReviewerGateChangeHtml(aiVerdict, v, name)+'</div>':'')+
+    commentEditor+
+    '</div>';
 }
 
 function renderAll(){
@@ -2461,8 +2641,6 @@ function cardHTML(a){
   var eid=escId(a.id);
   var ini=a.ventureName.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase()||'??';
   var avCls=['av-b','av-t','av-p','av-c','av-g'][Math.abs(hash(a.id))%5];
-  var displayScore=getDisplayScore(a);
-  var sc=displayScore>=75?'hi':displayScore>=60?'md':'lo';
   var vBadge=decisionVerdict==='advance'?'vb-adv':decisionVerdict==='review'?'vb-rev':'vb-rej';
   var vTxt=verdictLabel(decisionVerdict);
   var wfBadge=(workflowStatus==='needs-resolution'?'vb-rev':workflowStatus==='resolved'?'vb-sub':workflowStatus==='double-reviewed'?'vb-sub':workflowStatus==='submitted'?'vb-sub':'');
@@ -2477,7 +2655,7 @@ function cardHTML(a){
   var tags=tagData.slice(0,2).map(function(tag){return '<span class="tag '+tag.cls+'">'+tag.text+'</span>';});
   if (tagData.length>2) tags.push('<span class="tag t-muted">+'+(tagData.length-2)+'</span>');
   var subBanner=a.submitted?'<div class="sub-banner">'+(comparison.has?'⚠ ':'✓ ')+'Review submitted · '+getWorkflowStatusLabel(a)+' · '+(a.submittedAt&&a.submittedAt.toString().indexOf('Previously')>=0?a.submittedAt:new Date(a.submittedAt).toLocaleString())+'</div>':'';
-  var diffBadge=comparison.has?'<span class="diff-badge">Reviewer difference flagged</span>':'';
+  var diffBadge=comparison.has?'<span class="diff-badge">Reviewer decision disagreement</span>':'';
   var aiBadge=(aiStatus.label && aiStatus.tone!=='ok')?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'';
   var aiStripTone=(aiStatus.tone==='warn' || aiStatus.tone==='manual')?' '+aiStatus.tone:'';
   var aiStripLead=aiBadge?'<div class="ai-badges">'+aiBadge+'</div>':'';
@@ -2500,10 +2678,8 @@ function cardHTML(a){
     '</div></div>'+
     '<div class="score-row">'+
     '<div class="gates-wrap"><div class="gates-summary">Eligibility snapshot</div><div class="gates-grid" id="gg-'+eid+'">'+chips+'</div></div>'+
-    '<div class="score-col">'+
-    '<div class="cscore '+sc+'" id="sc-'+eid+'">'+displayScore+'</div>'+
-    '<div class="sbar"><div class="sfill '+sc+'" id="sf-'+eid+'" style="width:'+displayScore+'%"></div></div>'+
-    '</div></div>'+
+    renderScoreBoard(a)+
+    '</div>'+
     '<div class="ai-strip'+aiStripTone+'">'+aiStripLead+'<span class="ai-summary">'+aiSummaryText+'</span></div></div>'+
     '<div class="card-footer">'+
     '<div class="cf-left">'+assignSel+'</div>'+
@@ -2526,21 +2702,11 @@ function panelHTML(a){
   var comparison=getComparisonInfo(a);
   var aiStatus=getAiStatus(a);
   var gateCounts=getGateCounts(a);
-  var aiSummaryText=escapeHtml(a.aiSummary||aiStatus.detail||'No AI summary available yet.');
+  var activeReviewerName=reviewerDisplayName(a.activeReviewer||currentReviewer,'Reviewer');
+  var aiStatusTag=aiStatus.label?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'';
 
   var gateEds=GATES.map(function(g){
-    var v=a.humanGates[g.id]; var edited=a.editedGates.has(g.id);
-    var aiVerdict=(a.aiGates[g.id]&&a.aiGates[g.id].verdict)||'flag';
-    return '<div class="ep-gate'+(edited?' edited':'')+'" id="epg-'+eid+'-'+g.id+'">'+
-      '<div class="epg-top"><span class="epg-name">'+g.label+'</span>'+
-      '<div class="pill-grp">'+
-      '<button class="epill'+(v==='pass'?' sp':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="pass" onclick="setGateBtn(this)"'+disabledAttr+'>Pass</button>'+
-      '<button class="epill'+(v==='fail'?' sf':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="fail" onclick="setGateBtn(this)"'+disabledAttr+'>Fail</button>'+
-      '<button class="epill'+(v==='flag'?' sfl':'')+'" data-id="'+eid+'" data-gid="'+g.id+'" data-val="flag" onclick="setGateBtn(this)"'+disabledAttr+'>Flag</button>'+
-      '</div></div>'+
-      '<div class="epg-note">'+formatAiNoteHtml(a.aiGates[g.id]&&a.aiGates[g.id].note||'')+'</div>'+
-      (edited?'<div class="edited-flag">'+formatReviewerGateChangeHtml(aiVerdict, v)+'</div>':'')+
-      '</div>';
+    return renderEligibilityGateEditor(a, g, eid, disabledAttr, activeReviewerName, canReview);
   }).join('');
 
   var ratRows=RATINGS.map(function(r){
@@ -2555,8 +2721,17 @@ function panelHTML(a){
     }
     var comment=(a.categoryComments&&a.categoryComments[r.id])||'';
     var aiComment=(a.aiCategoryComments&&a.aiCategoryComments[r.id])||'';
-    var reviewerLabel=comment?'<div class="review-helper review-helper-user"><span class="note-prefix-blue">Reviewer:</span></div>':'';
-    return '<div class="rat-row"><span class="rlbl">'+r.label+' <span style="color:var(--text3);font-weight:400">('+r.weight+'pts)</span></span><div class="stars" id="st-'+eid+'-'+r.id+'">'+stars+'</div><span class="rat-ai'+(adj?' adj':'')+'" id="ra-'+eid+'-'+r.id+'">AI: '+av+'/5'+(adj?' · adj':'')+'</span>'+otherInfo+'<div class="rat-comment"><div class="review-helper"><span class="note-prefix-blue">AI:</span> "'+escapeHtml(aiComment||'No AI rationale.')+'"</div>'+reviewerLabel+'<textarea class="review-input" data-id="'+eid+'" data-rid="'+r.id+'" oninput="setCategoryCommentInput(this)" placeholder="Reviewer comment (optional)…"'+disabledAttr+'>'+escapeHtml(comment)+'</textarea></div></div>';
+    var submittedCommentEntries=getSubmittedAssignedReviews(a);
+    var submittedCommentsHtml=submittedCommentEntries.map(function(entry){
+      var submittedComment=(entry.state.categoryComments&&entry.state.categoryComments[r.id])||'';
+      if (!submittedComment) return '';
+      return '<div class="review-helper review-helper-user"><span class="note-prefix-blue">'+escapeHtml(entry.reviewer)+':</span> "'+escapeHtml(submittedComment)+'"</div>';
+    }).join('');
+    var reviewerEditor=canReview
+      ? (comment?'<div class="review-helper review-helper-user"><span class="note-prefix-blue">'+escapeHtml(activeReviewerName)+':</span></div>':'')+
+        '<textarea class="review-input" data-id="'+eid+'" data-rid="'+r.id+'" oninput="setCategoryCommentInput(this)" placeholder="'+escapeHtml(activeReviewerName)+' comment (optional)…"'+disabledAttr+'>'+escapeHtml(comment)+'</textarea>'
+      : '';
+    return '<div class="rat-row"><span class="rlbl">'+r.label+' <span style="color:var(--text3);font-weight:400">('+r.weight+'pts)</span></span><div class="stars" id="st-'+eid+'-'+r.id+'">'+stars+'</div><span class="rat-ai'+(adj?' adj':'')+'" id="ra-'+eid+'-'+r.id+'">AI: '+av+'/5'+(adj?' · adj':'')+'</span>'+otherInfo+'<div class="rat-comment"><div class="review-helper"><span class="note-prefix-blue">AI:</span> "'+escapeHtml(aiComment||'No AI rationale.')+'"</div>'+(submittedCommentsHtml||'')+reviewerEditor+'</div></div>';
   }).join('');
 
   var fields=a.rawFields||{};
@@ -2587,7 +2762,7 @@ function panelHTML(a){
       '<div class="resolution-box">'+
       '<div class="resolution-grid">'+
       '<div><div class="ep-nl">Resolution state</div><select class="review-input" id="resolution-state-'+eid+'" data-id="'+eid+'" onchange="setResolutionStateInput(this)"'+disabledAttr+'><option value="required"'+(resolutionState==='required'?' selected':'')+'>Needs resolution</option><option value="resolved"'+(resolutionState==='resolved'?' selected':'')+'>Resolved</option></select></div>'+
-      '<div><div class="ep-nl">Final decision</div><select class="review-input" id="resolution-verdict-'+eid+'" data-id="'+eid+'" onchange="setResolutionVerdictInput(this)"'+disabledAttr+'><option value="">Select final decision</option><option value="advance"'+(resolutionVerdict==='advance'?' selected':'')+'>Advance to interviews</option><option value="review"'+(resolutionVerdict==='review'?' selected':'')+'>Needs review</option><option value="reject"'+(resolutionVerdict==='reject'?' selected':'')+'>Do not advance</option></select></div>'+
+      '<div><div class="ep-nl">Final decision</div><select class="review-input" id="resolution-verdict-'+eid+'" data-id="'+eid+'" onchange="setResolutionVerdictInput(this)"'+disabledAttr+'>'+verdictOptionsHtml(resolutionVerdict,'Select final decision')+'</select></div>'+
       '</div>'+
       '<div class="ep-nl" style="margin-top:12px">Resolution notes</div>'+
       '<textarea class="ep-notes" id="resolution-notes-'+eid+'" data-id="'+eid+'" oninput="setResolutionNotesInput(this)" placeholder="Record how the disagreement was resolved…"'+disabledAttr+'>'+escapeHtml(resolutionNotes)+'</textarea>'+
@@ -2596,24 +2771,21 @@ function panelHTML(a){
   }
 
   return '<div class="expand-panel">'+
-    '<div class="ep-hdr">'+
-    '<span class="ep-title">Stage 1 review — '+a.ventureName+'</span>'+
-    '</div>'+
     '<div class="ep-verdict '+vc+'" id="epv-'+eid+'">'+
     '<span class="epv-lbl '+vc+'">Decision: '+vt+'</span>'+
-    '<span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+gateCounts.fail+' fail · '+gateCounts.flag+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>'+
+    '<span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Current reviewer: '+a.humanScore+'/100 · '+gateCounts.fail+' fail · '+gateCounts.flag+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>'+
     '</div>'+
-    ((aiStatus.label||aiStatus.detail)?'<div class="ai-status-row">'+(aiStatus.label?'<span class="ai-tag '+aiStatus.tone+'">'+aiStatus.label+'</span>':'')+(aiStatus.detail?'<span class="ai-status-detail">'+aiStatus.detail+'</span>':'')+'</div>':'')+
-    '<div class="ep-ai-summary">'+aiSummaryText+'</div>'+
-    '<div class="review-meta-grid"><div><div class="ep-nl">Conflict of interest</div><input class="review-input" id="coi-'+eid+'" data-id="'+eid+'" oninput="setConflictInput(this)" value="'+escapeHtml(a.conflictOfInterest||'')+'" placeholder="None disclosed"'+disabledAttr+'></div></div>'+
+    '<div class="review-meta-grid"><div><div class="ep-nl">Conflict of interest</div><input class="review-input" id="coi-'+eid+'" data-id="'+eid+'" oninput="setConflictInput(this)" value="'+escapeHtml(a.conflictOfInterest||'')+'" placeholder="None disclosed"'+disabledAttr+'></div><div class="review-meta-side">'+aiStatusTag+'</div></div>'+
     '<div class="ep-sec">Eligibility checks</div>'+
     '<div class="ep-gates">'+gateEds+'</div>'+
     '<div class="ep-sec">Stage 1 rubric</div>'+
     '<div class="ep-ratings">'+ratRows+'</div>'+
-    '<div class="ep-nl">Reviewer notes</div>'+
-    '<textarea class="ep-notes" id="notes-'+eid+'" placeholder="Add context, override rationale, or escalation notes…"'+disabledAttr+'>'+escapeHtml(a.notes||'')+'</textarea>'+
     resolutionSection+
     rawSection+
+    '<div class="review-decision-block"><div class="ep-nl">Reviewer decision</div>'+
+    '<select class="review-input" id="reviewer-verdict-'+eid+'" data-id="'+eid+'" onchange="setReviewerVerdictInput(this)"'+disabledAttr+'>'+verdictOptionsHtml(a.verdict,'Select reviewer decision')+'</select></div>'+
+    '<div class="review-notes-block"><div class="ep-nl">Reviewer notes</div>'+
+    '<textarea class="ep-notes" id="notes-'+eid+'" placeholder="Add context, override rationale, or escalation notes…"'+disabledAttr+'>'+escapeHtml(a.notes||'')+'</textarea></div>'+
     '<div class="ep-actions">'+
     '<span class="ep-act-l" id="ss-'+eid+'">'+(canReview?(otherReview?'Other review visible after your submission by '+otherReview.reviewer:(a.submitted?'You can update and resubmit your review':'Changes save to your reviewer record')):'View only — assign yourself as Reviewer 1 or Reviewer 2 to review this application')+'</span>'+
     '<div class="ep-act-r">'+
@@ -2772,12 +2944,41 @@ function setCategoryCommentInput(el){
   storeCurrentReviewerState(a);
 }
 
+function setEligibilityCommentInput(el){
+  var eid=el.dataset.id, gid=el.dataset.gid;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  if (!canReviewApp(a)) return;
+  if (!a.eligibilityComments) a.eligibilityComments={};
+  a.eligibilityComments[gid]=el.value;
+  storeCurrentReviewerState(a);
+}
+
+function syncEligibilityCommentInputs(a){
+  if (!a) return;
+  if (!a.eligibilityComments) a.eligibilityComments={};
+  GATES.forEach(function(g){
+    var el=document.querySelector('.eligibility-comment-input[data-id="'+escId(a.id)+'"][data-gid="'+g.id+'"]');
+    if (el) a.eligibilityComments[g.id]=el.value;
+  });
+}
+
 function setConflictInput(el){
   var eid=el.dataset.id;
   var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
   if (!canReviewApp(a)) return;
   a.conflictOfInterest=el.value;
   storeCurrentReviewerState(a);
+}
+
+function setReviewerVerdictInput(el){
+  var eid=el.dataset.id;
+  var a=apps.find(function(x){return escId(x.id)===eid;}); if (!a) return;
+  if (!canReviewApp(a)) return;
+  a.verdict=el.value||computeVerdict(a.humanGates,a.humanRatings);
+  a.decisionEdited=!!el.value;
+  storeCurrentReviewerState(a);
+  liveUpdate(a.id, a);
+  updateSummary();
 }
 
 function setResolutionStateInput(el){
@@ -2841,21 +3042,13 @@ function setGate(id,gid,val){
   var a=getApp(id); if (!a) return;
   a.humanGates[gid]=val;
   (val!==( a.aiGates[gid]&&a.aiGates[gid].verdict))?a.editedGates.add(gid):a.editedGates.delete(gid);
-  a.verdict=computeVerdict(a.humanGates,a.humanRatings);
+  if (!a.decisionEdited) a.verdict=computeVerdict(a.humanGates,a.humanRatings);
   a.humanScore=calcScore(a.humanGates,a.humanRatings);
   storeCurrentReviewerState(a);
   var el=document.getElementById('epg-'+escId(id)+'-'+gid);
   if (el){
-    var aiVerdict=(a.aiGates[gid]&&a.aiGates[gid].verdict)||'flag';
-    el.className='ep-gate'+(a.editedGates.has(gid)?' edited':'');
-    el.innerHTML='<div class="epg-top"><span class="epg-name">'+(GATES.find(function(g){return g.id===gid;})||{label:gid}).label+'</span>'+
-      '<div class="pill-grp">'+
-      '<button class="epill'+(val==='pass'?' sp':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="pass" onclick="setGateBtn(this)">Pass</button>'+
-      '<button class="epill'+(val==='fail'?' sf':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="fail" onclick="setGateBtn(this)">Fail</button>'+
-      '<button class="epill'+(val==='flag'?' sfl':'')+'" data-id="'+escId(id)+'" data-gid="'+gid+'" data-val="flag" onclick="setGateBtn(this)">Flag</button>'+
-      '</div></div>'+
-      '<div class="epg-note">'+formatAiNoteHtml(a.aiGates[gid]&&a.aiGates[gid].note||'')+'</div>'+
-      (a.editedGates.has(gid)?'<div class="edited-flag">'+formatReviewerGateChangeHtml(aiVerdict, val)+'</div>':'');
+    var gate=GATES.find(function(g){return g.id===gid;})||{id:gid,label:gid};
+    el.outerHTML=renderEligibilityGateEditor(a, gate, escId(id), '', reviewerDisplayName(a.activeReviewer||currentReviewer,'Reviewer'), canReviewApp(a));
   }
   liveUpdate(id,a); updateSummary();
   var gg=document.getElementById('gg-'+escId(id));
@@ -2867,7 +3060,7 @@ function setRating(id,rid,val){
   a.humanRatings[rid]=val;
   (val!==a.aiRatings[rid])?a.editedRatings.add(rid):a.editedRatings.delete(rid);
   a.humanScore=calcScore(a.humanGates,a.humanRatings);
-  a.verdict=computeVerdict(a.humanGates,a.humanRatings);
+  if (!a.decisionEdited) a.verdict=computeVerdict(a.humanGates,a.humanRatings);
   storeCurrentReviewerState(a);
   var st=document.getElementById('st-'+escId(id)+'-'+rid);
   if (st) st.innerHTML=[1,2,3,4,5].map(function(n){
@@ -2881,15 +3074,14 @@ function setRating(id,rid,val){
 }
 
 function liveUpdate(id,a){
-  var displayScore=getDisplayScore(a);
-  var sc=displayScore>=75?'hi':displayScore>=60?'md':'lo';
   var decisionVerdict=getEffectiveDecisionVerdict(a);
   var counts=getGateCounts(a);
   var comparison=a.comparison||getComparisonInfo(a);
-  var sel=document.getElementById('sc-'+escId(id)); var sfl=document.getElementById('sf-'+escId(id));
+  var scoreBoard=document.getElementById('score-board-'+escId(id));
   var vb=document.getElementById('vb-'+escId(id)); var wf=document.getElementById('wf-'+escId(id)); var epv=document.getElementById('epv-'+escId(id));
-  if (sel){sel.className='cscore '+sc;sel.textContent=displayScore;}
-  if (sfl){sfl.className='sfill '+sc;sfl.style.width=displayScore+'%';}
+  if (scoreBoard) scoreBoard.outerHTML=renderScoreBoard(a);
+  var reviewerVerdict=document.getElementById('reviewer-verdict-'+escId(id));
+  if (reviewerVerdict) reviewerVerdict.value=a.verdict||'';
   if (wf){
     var wfClass=getWorkflowStatus(a)==='needs-resolution'?' vb-rev':(getWorkflowStatus(a)==='submitted'||getWorkflowStatus(a)==='double-reviewed'||getWorkflowStatus(a)==='resolved'?' vb-sub':'');
     wf.className='workflow-badge'+wfClass;
@@ -2902,7 +3094,7 @@ function liveUpdate(id,a){
   if (epv){
     var vc3=decisionVerdict==='advance'?'adv':decisionVerdict==='review'?'rev':'rej';
     epv.className='ep-verdict '+vc3;
-    epv.innerHTML='<span class="epv-lbl '+vc3+'">Decision: '+verdictLabel(decisionVerdict)+'</span><span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Score: '+a.humanScore+'/100 · '+counts.fail+' fail · '+counts.flag+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>';
+    epv.innerHTML='<span class="epv-lbl '+vc3+'">Decision: '+verdictLabel(decisionVerdict)+'</span><span class="epv-score">Workflow: '+getWorkflowStatusLabel(a)+' · Current reviewer: '+a.humanScore+'/100 · '+counts.fail+' fail · '+counts.flag+' flag'+(comparison.has?' · disagreement requires resolution':'')+'</span>';
   }
 }
 
@@ -2910,6 +3102,7 @@ function saveDraft(id){
   var a=getApp(id); if (!a) return;
   var ne=document.getElementById('notes-'+escId(id)); if (ne) a.notes=ne.value;
   var coi=document.getElementById('coi-'+escId(id)); if (coi) a.conflictOfInterest=coi.value;
+  syncEligibilityCommentInputs(a);
   storeCurrentReviewerState(a);
   try{
     ensureWorkflowState(a);
@@ -2935,6 +3128,10 @@ function validateSubmission(a){
   }
   if (!String(a.conflictOfInterest||'').trim()){
     toast('Record the conflict of interest status before submitting.','error');
+    return false;
+  }
+  if (['advance','review','reject'].indexOf(a.verdict)<0){
+    toast('Pick your reviewer decision before submitting.','error');
     return false;
   }
   return true;
@@ -2970,6 +3167,12 @@ async function submitCard(id){
   var a=getApp(id); if (!a) return;
   var ne=document.getElementById('notes-'+escId(id)); if (ne) a.notes=ne.value;
   var coi=document.getElementById('coi-'+escId(id)); if (coi) a.conflictOfInterest=coi.value;
+  syncEligibilityCommentInputs(a);
+  var reviewerVerdict=document.getElementById('reviewer-verdict-'+escId(id));
+  if (reviewerVerdict) {
+    a.verdict=reviewerVerdict.value||a.verdict;
+    a.decisionEdited=!!reviewerVerdict.value;
+  }
   if (!scriptUrl||!secretKey){toast('No connection configured. Go to Settings.','error');return;}
   storeCurrentReviewerState(a);
   if (!validateSubmission(a)) return;
