@@ -1067,13 +1067,14 @@ function indexMap_(headers) {
 }
 
 function mapVerdictLabel_(label) {
-  if (label === "Advance to interviews") return "advance";
+  var normalized = String(label || "").trim().toLowerCase();
+  if (normalized === "advance" || normalized === "advance to interviews" || normalized === "adnace to interviews") return "advance";
   // Legacy verdict label intentionally disabled during Stage 1 sheet migration.
   // if (label === "Advance to Stage 1") return "advance";
-  if (label === "Needs review") return "review";
+  if (normalized === "needs review") return "review";
   // Legacy verdict label intentionally disabled during Stage 1 sheet migration.
   // if (label === "Needs review") return "review";
-  if (label === "Do not advance") return "reject";
+  if (normalized === "do not advance") return "reject";
   return "";
 }
 
@@ -2544,14 +2545,14 @@ function computeVerdict(gates, ratings){
 }
 
 function verdictLabel(verdict){
-  if (verdict==='advance') return 'Advance to interviews';
+  if (verdict==='advance') return 'Advance';
   if (verdict==='review') return 'Needs review';
   return 'Do not advance';
 }
 
 function verdictOptionsHtml(selected, placeholder){
   return (placeholder?'<option value="">'+escapeHtml(placeholder)+'</option>':'')+
-    '<option value="advance"'+(selected==='advance'?' selected':'')+'>Advance to interviews</option>'+
+    '<option value="advance"'+(selected==='advance'?' selected':'')+'>Advance</option>'+
     '<option value="review"'+(selected==='review'?' selected':'')+'>Needs review</option>'+
     '<option value="reject"'+(selected==='reject'?' selected':'')+'>Do not advance</option>';
 }
