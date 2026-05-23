@@ -359,6 +359,7 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
           <input class="field-control" type="url" id="setupScriptUrl" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" />
           <button class="btn-test" id="testBtn" onclick="testConnection()">Test</button>
         </div>
+        <p style="font-size:12px;color:var(--text2);margin:8px 0 0;line-height:1.5">Create the web app deployment once, then use <strong>Deploy → Manage deployments → Edit</strong> to point that same deployment at each new version. That keeps the <code>/exec</code> URL stable. Creating a brand-new deployment gives you a different URL.</p>
       </div>
 
       <div class="sf">
@@ -391,7 +392,7 @@ color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
       <div class="divider" hidden></div>
 
       <div class="section-title" hidden><div class="section-num">2</div>Apps Script — paste this into Extensions → Apps Script</div>
-      <p hidden style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Replace all existing code in the script editor with the template below. Set <strong>GEMINI_KEY</strong> only if you want Apps Script itself to support the optional <code>screen</code> action for testing or fallback. The normal app flow uses the Gemini API key entered above in the browser. After saving, click Deploy → New deployment → Web App → Execute as: Me · Who has access: Anyone → Deploy → copy the URL above.</p>
+      <p hidden style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Replace all existing code in the script editor with the template below. Set <strong>GEMINI_KEY</strong> only if you want Apps Script itself to support the optional <code>screen</code> action for testing or fallback. The normal app flow uses the Gemini API key entered above in the browser. For the first publish, use Deploy → New deployment → Web App → Execute as: Me · Who has access: Anyone. After that, create a new script version and use Deploy → Manage deployments → Edit so the same <code>/exec</code> URL keeps working.</p>
 
       <span class="script-toggle" hidden>Show script template →</span>
       <div class="script-box" id="scriptBox" hidden>
@@ -1144,7 +1145,7 @@ const TEAM=['Salah','Ismail','Fawwaz','Awais','Sahil','Cassandra','Faisal'];
 const LOCAL_DRAFT_KEY='tpss_stage1_local_drafts';
 const SETUP_CONFIG_KEY='tpss_stage1_setup_config';
 const DEFAULT_SHEET_NAME='Sheet1';
-const DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwDUq6asLTV4Dy9K56mR0BYgcg0avyJwzbl1yUhXgZSc5R6K9ybOWsbbF2L5P6yQhw/exec';
+const DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwGY3haF6Zq4e06lxXkj6YoxJUbycd6UGKnALml_5tO6WXeSJwwAwVOey4r9BjVERJZ/exec';
 // Stage 1 eligibility checks (pass/fail/flag)
 const GATES=[
   {id:'maqasid',    label:'Maqasid alignment'},
@@ -2221,9 +2222,13 @@ function hydrateReviewData(a, assignmentData, savedReviewData, resolutionData){
   if (savedReviewData) {
     Object.keys(savedReviewData).forEach(function(reviewer){
       a.reviewsByReviewer[reviewer]=normalizeSavedReview(savedReviewData[reviewer], a, reviewer);
-      if (savedReviewData[reviewer].assignedReviewer1 || savedReviewData[reviewer].assignedReviewer2) {
-        a.assignments.reviewer1=savedReviewData[reviewer].assignedReviewer1||a.assignments.reviewer1;
-        a.assignments.reviewer2=savedReviewData[reviewer].assignedReviewer2||a.assignments.reviewer2;
+      // The assignments sheet is authoritative; only backfill reviewer names from
+      // saved review rows when the current assignment row is blank.
+      if (!a.assignments.reviewer1 && savedReviewData[reviewer].assignedReviewer1) {
+        a.assignments.reviewer1=savedReviewData[reviewer].assignedReviewer1;
+      }
+      if (!a.assignments.reviewer2 && savedReviewData[reviewer].assignedReviewer2) {
+        a.assignments.reviewer2=savedReviewData[reviewer].assignedReviewer2;
       }
     });
   }
